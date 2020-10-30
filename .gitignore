@@ -9,6 +9,20 @@ target/
 .scala_dependencies
 .worksheet
 
+# sbt
+.cache
+.lib/
+dist/*
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
+project/project/
+logs/
+project/.sbtserver
+.sbtserver/
+
+# Floorbits
 /Xcom.iml
 /.flooignore
 /.floo
