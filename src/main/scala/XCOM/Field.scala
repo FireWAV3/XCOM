@@ -23,7 +23,7 @@ case class Field(pX: Int, pY: Int, cells: Vector[Cell], character: Vector[Charac
       temp += (i + 1 + "\t|")
       for (j <- 0 to sizeX) {
 
-        if (character.length > vectorcountC &&
+        /*if (character.length > vectorcountC &&
           character(vectorcountC).cell.x == j &&
           character(vectorcountC).cell.y == i) {
           temp += this.character(vectorcountC).displayname
@@ -38,7 +38,8 @@ case class Field(pX: Int, pY: Int, cells: Vector[Cell], character: Vector[Charac
           vectorcountF += 1
         } else {
           temp += "X\t"
-        }
+        }*/
+        temp += fieldPosReturn(j,i,this.cells,character)
       }
       temp += "\n"
     }
@@ -58,6 +59,21 @@ case class Field(pX: Int, pY: Int, cells: Vector[Cell], character: Vector[Charac
     }
     tempReturn += "\n"
     tempReturn
+  }
+
+  def fieldPosReturn(x:Int, y:Int, rocks:Vector[Cell], player:Vector[Character]) :String = {
+    player.foreach{ p =>
+      if(p.cell.x == x && p.cell.y == y){
+        return p.displayname + "\t"
+      }
+    }
+
+    rocks.foreach{ r =>
+      if(r.x == x && r.y == y){
+        return r.otype + "\t" //Falls otype Enum, hier toString von otype
+      }
+    }
+    return "X\t"
   }
 }
 
