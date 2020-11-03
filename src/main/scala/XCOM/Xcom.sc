@@ -3,6 +3,20 @@
 case class Cell(x:Int, y:Int, otype:String)
 case class Character(name:String, mrange:Int, srange:Int, damage:Int, hp:Int, side:Int, displayname:String,cell:Cell)
 
+def xAxisString(collums: Int) : String = {
+  var abc = "B"
+  var tempReturn = "A\t"
+  for(i <- 0 to collums-1) {
+    tempReturn += (abc+ "\t")
+    abc = (abc(0) + 1).toChar.toString
+  }
+  tempReturn += "\n  "
+  for (i <- 0 to collums){
+    tempReturn += "----"
+  }
+  tempReturn += "\n"
+  return tempReturn
+}
 
 case class Field(pX:Int, pY:Int, cells:Vector[Cell], character: Vector[Character]){
   var sizeX = pX-1
@@ -10,9 +24,8 @@ case class Field(pX:Int, pY:Int, cells:Vector[Cell], character: Vector[Character
 
   override def toString: String = {
     var vectorcountF, vectorcountC = 0
-    var count = 0
     var temp = "\t "
-    var abc = "A"
+    /*var abc = "A" //replaced by xAxisString
     for(i <- 0 to sizeX){
       temp += (abc+ "\t")
       abc = (abc(0) + 1).toChar.toString
@@ -21,7 +34,8 @@ case class Field(pX:Int, pY:Int, cells:Vector[Cell], character: Vector[Character
     for (i <- 0 to sizeX){
       temp += "----"
     }
-    temp += "\n"
+    temp += "\n"*/
+    temp += xAxisString(sizeX)
     for (i <- 0 to  sizeY){
       temp += (i+1 + "\t|")
       for (j <- 0 to  sizeX){
@@ -42,7 +56,6 @@ case class Field(pX:Int, pY:Int, cells:Vector[Cell], character: Vector[Character
         }
       }
       temp += "\n"
-      count += 6
     }
 
     return temp
