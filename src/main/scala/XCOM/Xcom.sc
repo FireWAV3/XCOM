@@ -44,17 +44,21 @@ case class Field(pX:Int, pY:Int, cells:Vector[Cell], character: Vector[Character
       temp += "\n"
       count += 6
     }
-
     return temp
   }
 }
-val test
+
+
+
+
+
+//start little test
 val sniper = Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 1, "C1"))
 val tank = Character("Tank", 5, 10, 70, 40, 0,"C2", Cell(4, 4, "C2"))
 val allCharacter = Vector[Character](sniper,tank)
 
 
-val field1 = Field(10+1, 20+1, Vector[Cell](
+val field1 = Field(6+1, 20+1, Vector[Cell](
   Cell(5, 0, "R"), Cell(2, 2, "R"), Cell(3, 2, "R"), Cell(3, 6, "R"), Cell(3, 7, "R")),
   allCharacter)
 
