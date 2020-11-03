@@ -26,3 +26,4 @@ project/.sbtserver
 /Xcom.iml
 /.flooignore
 /.floo
+.bsp/sbt.json
