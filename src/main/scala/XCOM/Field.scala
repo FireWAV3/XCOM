@@ -1,22 +1,36 @@
 package XCOM
 
-case class Field(pX: Int, pY: Int, cells: Vector[Cell], character: Vector[Character]) {
-  var sizeX = pX - 1
-  var sizeY = pY - 1
+case class Field(pX: Int, pY: Int, rocks: Vector[Cell], character: Vector[Character]) {
+  val sizeX = pX - 1
+  val sizeY = pY - 1
 
+
+  def this(pX:Int,pY:Int){
+    this(pX,pY,Vector[Cell](),Vector[Character]())
+  }
+
+  def this(character: Vector[Character]){
+    this(5,10,Vector[Cell](),character)
+  }
+
+  def this(rocks: Vector[Cell],i:String ){ //
+    this(5,10,rocks,Vector[Character]())
+  }
 
   override def toString: String = {
-    var vectorcountF, vectorcountC = 0
+    if(this.sizeX < 0 || this.sizeY < 0){
+      return ""
+    }
     var temp = "\t "
     temp += xAxisString(sizeX)
     for (i <- 0 to sizeY) {
       temp += (i + 1 + "\t|")
-      temp += printRow(sizeX, i, this.cells, character)
+      temp += printRow(i)
       temp += "\n"
     }
-
-    return temp;
+    temp
   }
+
   def xAxisString(collums: Int) : String = {
     var abc = "B"
     var tempReturn = "A\t"
@@ -32,25 +46,24 @@ case class Field(pX: Int, pY: Int, cells: Vector[Cell], character: Vector[Charac
     tempReturn
   }
 
-  def fieldPosReturn(x:Int, y:Int, rocks:Vector[Cell], player:Vector[Character]) :String = {
-    player.foreach{ p =>
+  def fieldPosReturn(x:Int, y:Int) :String = {
+    character.foreach{ p =>
       if(p.cell.x == x && p.cell.y == y){
         return Console.BLUE + p.displayname + "\t" + Console.RESET
       }
     }
-
     rocks.foreach{ r =>
       if(r.x == x && r.y == y){
-        return Console.WHITE_B + Console.BLACK + r.otype + Console.RESET + "\t"//If otype is Enum, use toString of otype
+        return Console.WHITE_B + Console.BOLD + Console.BLACK + r.otype + Console.RESET + "\t"//If otype is Enum, use toString of otype
       }
     }
     return "X\t"
   }
 
-  def printRow (xLength:Int, yRow:Int, rocks:Vector[Cell], player:Vector[Character]) :String = {
+  def printRow (yRow:Int) :String = {
     var retString = ""
-    for (j <- 0 to xLength){
-      retString += fieldPosReturn(j, yRow, rocks, player)
+    for (j <- 0 to sizeX){
+      retString += fieldPosReturn(j, yRow)
     }
     retString
   }

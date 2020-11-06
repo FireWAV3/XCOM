@@ -1,22 +1,94 @@
 package XCOM
+object GameState extends Enumeration {
+  type GameState = Value
+  val MENU, SUI, SHOOT, END = Value
+}
+import GameState._
+import scala.io._
 
 object XCOM {
+  //TODO : var ? val
+  val scenario = Scenario()//O-? orientier?
+
+
+
   def main(args: Array[String]): Unit = {
-
-    println("Welcome to Xcom!")
-
-    val sniper = Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 1, "C1"))
-    val tank = Character("Tank", 5, 10, 70, 40, 0,"C2", Cell(4, 4, "C2"))
-    val allCharacter = Vector[Character](sniper,tank)
+    var scenarioField = new Field(0,0)
+    var gameState = MENU
+    println("Welcome to Xcom!\nfor mor infomation enter Help\n")
+    println("If you want to start, enter number for Szenario  between 1 - " + scenario.ammount)
 
 
-    val field1 = Field(6+1, 20+1, Vector[Cell](
-      Cell(5, 0, "R"), Cell(2, 2, "R"), Cell(3, 2, "R"), Cell(3, 6, "R"), Cell(3, 7, "R")),
-      allCharacter)
+        //TODO: test scenario
+        //TODO: move
+        //TODO: shoot
+        //TODO: Y/N
+        //TODO: info
 
 
-    println(field1.toString)
+    while(true){
+      val input = readString()
+      val runT = run(gameState, scenarioField, input)
+      gameState = runT._1
+      scenarioField= runT._2
+      if(gameState == END){
+        println(runT._3)
+        return
+      }else{
+        println(scenarioField)
+        println(runT._3)
+      }
+    }
 
   }
-}
 
+  def run(gameState: GameState, cGameField:Field, input:String):(GameState, Field, String) = {
+    if(input == "EXIT"){
+      return (END,cGameField,"\nThanks for playing!\nGoodbye!\n")
+    }
+    if(input == "HELP"){
+      return (gameState,cGameField,"\nHELP" +
+        "\nExit:\t\t\texits the game" +
+        "\nMove C,X,Y :\tmove Character(C) to X, Y" +
+        "\nInfo C:\t\t\tStats about Character(C)" +
+        "\nshoot C,C:\t\tattack Character(C) | Character(C)\n")
+    }
+    gameState match{
+      case MENU =>{
+        menu(cGameField,input)
+      }
+      case SUI =>{
+        (END,cGameField,"\nThanks for playing!\nSUI!\n")
+      }
+      case SHOOT =>{
+        (END,cGameField,"\nThanks for playing!\nshoot!\n")
+      }
+    }
+  }
+
+  def menu(cGameField:Field, input:String):(GameState, Field, String) ={
+    val valreadInt = input.forall(_.isDigit)
+
+    if(valreadInt ){
+      if(input.toInt >= 1 && input.toInt <= scenario.ammount){//&& read() <= Vector.szenario.length
+        return  (SUI,scenario.loadScenario(input.toInt),"You can enter to play" +
+          "\nMove C,X,Y :\tmove Character(C) to X, Y" +
+          "\nInfo C:\t\t\tStats about Character(C)" +
+          "\nshoot C,C:\t\tattack Character(C) | Character(C)\n")
+      }
+    }
+    (MENU,cGameField,"if you want to start, enter number for Szenario  between 1 - " + scenario.ammount)
+  }
+
+  def sui(){  }
+
+  def readString() :String = {
+    val read = StdIn.readLine().toUpperCase()
+    read
+  }
+
+  def readInt() :Int = {
+    val read = StdIn.readInt()
+    read
+  }
+}
