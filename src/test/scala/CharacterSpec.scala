@@ -17,10 +17,10 @@ class CharacterSpec extends WordSpec{
     "have a shooting range" in{
       testCharacter.srange should be (10)
     }
-    "have a damage" in{
+    "have damage" in{
       testCharacter.damage should be (70)
     }
-    "have a Health points" in{
+    "have Health points" in{
       testCharacter.hp should be (40)
     }
     "have a team" in{

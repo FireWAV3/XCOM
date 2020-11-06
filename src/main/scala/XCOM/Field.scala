@@ -54,7 +54,7 @@ case class Field(pX: Int, pY: Int, rocks: Vector[Cell], character: Vector[Charac
     }
     rocks.foreach{ r =>
       if(r.x == x && r.y == y){
-        return Console.WHITE_B + Console.BOLD + Console.BLACK + r.otype + Console.RESET + "\t"//If otype is Enum, use toString of otype
+        return Console.WHITE_B + Console.BOLD + Console.BLACK + r.otype + Console.RESET + "\t"
       }
     }
     return "X\t"

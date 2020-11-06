@@ -8,15 +8,15 @@ import scala.io._
 
 object XCOM {
   //TODO : var ? val
-  val scenario = Scenario()//O-? orientier?
+  val scenario = Scenario()//O-? oriented?
 
 
 
   def main(args: Array[String]): Unit = {
     var scenarioField = new Field(0,0)
     var gameState = MENU
-    println("Welcome to Xcom!\nfor mor infomation enter Help\n")
-    println("If you want to start, enter number for Szenario  between 1 - " + scenario.ammount)
+    println("Welcome to Xcom!\nFor more information enter Help\n")
+    println("If you want to start, enter a number to choose a scenario  between 1 - " + scenario.ammount)
 
 
         //TODO: test scenario
@@ -50,8 +50,8 @@ object XCOM {
       return (gameState,cGameField,"\nHELP" +
         "\nExit:\t\t\texits the game" +
         "\nMove C,X,Y :\tmove Character(C) to X, Y" +
-        "\nInfo C:\t\t\tStats about Character(C)" +
-        "\nshoot C,C:\t\tattack Character(C) | Character(C)\n")
+        "\nInfo C:\t\t\tCurrent status of Character(C)" +
+        "\nshoot C,T:\t\tCharacter(C) attacks Target(T)\n")
     }
     gameState match{
       case MENU =>{
@@ -71,13 +71,13 @@ object XCOM {
 
     if(valreadInt ){
       if(input.toInt >= 1 && input.toInt <= scenario.ammount){//&& read() <= Vector.szenario.length
-        return  (SUI,scenario.loadScenario(input.toInt),"You can enter to play" +
+        return  (SUI,scenario.loadScenario(input.toInt),"You can now enter" +
           "\nMove C,X,Y :\tmove Character(C) to X, Y" +
-          "\nInfo C:\t\t\tStats about Character(C)" +
-          "\nshoot C,C:\t\tattack Character(C) | Character(C)\n")
+          "\nInfo C:\t\t\tCurrent status of Character(C)" +
+          "\nshoot C,T:\t\tCharacter(C) attacks Target(T)\n")
       }
     }
-    (MENU,cGameField,"if you want to start, enter number for Szenario  between 1 - " + scenario.ammount)
+    (MENU,cGameField,"If you want to start, enter a number to choose a scenario  between 1 - " + scenario.ammount)
   }
 
   def sui(){  }
