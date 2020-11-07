@@ -2,6 +2,9 @@ import XCOM.FieldStructure._
 import XCOM.{Cell, Character, Field}
 
 
+var string = "C1"
+println(string.length)
+
 //start little test
 val sniper = Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 1, C))
 val tank = Character("Tank", 5, 10, 70, 40, 0,"C2", Cell(4, 4, C))
@@ -13,4 +16,4 @@ val field1 = Field(6+1, 20+1, Vector[Cell](
   allCharacter)
 
 
-println(field1.toString)
+//println(field1.toString)

@@ -6,7 +6,9 @@ object FieldStructure extends Enumeration {
 }
 import FieldStructure._
 
-case class Cell(x: Int, y: Int, otype: FieldStructure){
+case class Cell(xPos: Int, yPos: Int, otype: FieldStructure){
+  var  x = xPos
+  var  y = yPos
 
   def this(){
     this(-10, -10, X)
@@ -15,7 +17,6 @@ case class Cell(x: Int, y: Int, otype: FieldStructure){
   def this(x:Int, y:Int){
     this(x, y, X)
   }
-
 
 
 }
