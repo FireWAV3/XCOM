@@ -2,7 +2,7 @@ package XCOM
 import FieldStructure._
 
 case class Scenario(){
-  val ammount = 1
+  val amount = 1
 
   def loadScenario(i: Int):Field = {
     //TODO: create different scenarios

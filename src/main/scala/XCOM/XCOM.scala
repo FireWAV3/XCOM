@@ -16,7 +16,7 @@ object XCOM {
     var scenarioField = new Field(0,0)
     var gameState = MENU
     println("Welcome to Xcom!\nFor more information enter Help\n")
-    println("If you want to start, enter a number to choose a scenario  between 1 - " + scenario.ammount)
+    println("If you want to start, enter a number to choose a scenario  between 1 - " + scenario.amount)
 
 
         //TODO: test scenario
@@ -48,8 +48,8 @@ object XCOM {
     }
     if(input == "HELP"){
       return (gameState,cGameField,"\nHELP" +
-        "\nExit:\t\t\texits the game" +
-        "\nMove C,X,Y :\tmove Character(C) to X, Y" +
+        "\nExit:\t\t\tExits the game" +
+        "\nMove C,X,Y :\tMove Character(C) to X, Y" +
         "\nInfo C:\t\t\tCurrent status of Character(C)" +
         "\nshoot C,T:\t\tCharacter(C) attacks Target(T)\n")
     }
@@ -70,20 +70,18 @@ object XCOM {
     val valreadInt = testInt(input)
 
     if(valreadInt ){
-      if(input.toInt >= 1 && input.toInt <= scenario.ammount){//&& read() <= Vector.szenario.length
+      if(input.toInt >= 1 && input.toInt <= scenario.amount){//&& read() <= Vector.szenario.length
         return  (SUI,scenario.loadScenario(input.toInt),"You can now enter" +
-          "\nMove C,X,Y :\tmove Character(C) to X, Y" +
+          "\nMove C,X,Y :\tMove Character(C) to X, Y" +
           "\nInfo C:\t\t\tCurrent status of Character(C)" +
           "\nshoot C,T:\t\tCharacter(C) attacks Target(T)\n")
       }
     }
-    (MENU,cGameField,"If you want to start, enter a number to choose a scenario  between 1 - " + scenario.ammount)
+    (MENU,cGameField,"If you want to start, enter a number to choose a scenario  between 1 - " + scenario.amount)
   }
 
   def sui(cGameField:Field, input:String):(GameState, Field, String) ={
     val comInput =  splitFlatString(input)
-
-    cGameField.character(0).cell.x = 1
 
     if(comInput(0) == "MOVE" && comInput.length == 4){
 
@@ -95,27 +93,27 @@ object XCOM {
           if(testInt(comInput(3))){
             if(!testRock(cGameField,comInput(2).toInt,comInput(3).toInt)){
               if(!testHero(cGameField,comInput(2).toInt,comInput(3).toInt)){
-                if(movePosible(aktHero, cGameField, comInput(2).toInt, comInput(3).toInt)){
+                if(movePossible(aktHero, cGameField, comInput(2).toInt, comInput(3).toInt)){
 
-                  return (SUI, move(aktHero,cGameField,comInput(2).toInt,comInput(3).toInt),"move successful")
+                  return (SUI, move(aktHero,cGameField,comInput(2).toInt,comInput(3).toInt),"Move successful!")
 
                 }else{
-                  return (SUI,cGameField,"Move not possible out of range")
+                  return (SUI,cGameField,"Move not possible. Target out of range")
                 }
               }else{
-                return (SUI,cGameField,"Move not possible there is a other Character at "+comInput(2)+","+ comInput(3))
+                return (SUI,cGameField,"Move not possible. There is another Character at "+comInput(2)+","+ comInput(3))
               }
             }else{
-              return (SUI,cGameField,"Move not possible there is a Rock at "+comInput(2)+","+ comInput(3))
+              return (SUI,cGameField,"Move not possible. There is a Rock at "+comInput(2)+","+ comInput(3))
             }
           }else{
-            return (SUI,cGameField,"the X Coordinate '"+ comInput(3) +"' is wrong")
+            return (SUI,cGameField,"the Y Coordinate '"+ comInput(3) +"' is wrong")
           }
         }else{
           return (SUI,cGameField,"the X Coordinate '"+ comInput(2) +"' is wrong")
         }
       }else{
-        return (SUI,cGameField,"the Character '"+ comInput(1) +"' dose not exist")
+        return (SUI,cGameField,"the Character '"+ comInput(1) +"' does not exist")
       }
 
     }else  if(comInput(0) == "INFO"){
@@ -150,9 +148,20 @@ object XCOM {
     false
   }
 
-  def movePosible(hero:Character, cGameField:Field, pX:Int, pY:Int):Boolean = {
-    //TODO A* für längen begrenzung
-   true
+  def movePossible(hero:Character, cGameField:Field, pX:Int, pY:Int):Boolean = {
+    val xDistance = pX - hero.cell.x
+    val yDistance = pY - hero.cell.y
+    var distance = 0
+    if (xDistance < 0){
+      distance = -xDistance + yDistance
+    } else if (yDistance < 0){
+      distance = xDistance - yDistance
+    } else if (xDistance < 0 && yDistance < 0){
+      distance = -xDistance - yDistance
+    } else {
+      distance = xDistance + yDistance
+    }
+   hero.mrange <= distance
   }
 
   def splitFlatString(input:String):Array[String] = {
