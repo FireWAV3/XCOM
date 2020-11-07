@@ -5,6 +5,8 @@ object GameState extends Enumeration {
 }
 import GameState._
 import scala.io._
+import scala.collection.mutable.ListBuffer
+import FieldStructure._
 
 object XCOM {
   //TODO : var ? val
@@ -89,7 +91,7 @@ object XCOM {
       var aktHero = new Character()
       for (e <- cGameField.character if e.displayname == comInput(1) ){(tempCharacter = comInput(1),aktHero = e)  }
       if(tempCharacter.length > 0){
-        if(testInt(comInput(2))){
+        if(testInt(comInput(2))){//TODO test if in bound of field
           if(testInt(comInput(3))){
             if(!testRock(cGameField,comInput(2).toInt,comInput(3).toInt)){
               if(!testHero(cGameField,comInput(2).toInt,comInput(3).toInt)){
@@ -125,17 +127,15 @@ object XCOM {
   }
 
   def move(hero:Character, cGameField:Field, pX:Int, pY:Int):Field = {
+    var newCharacterV = ListBuffer[Character]()
     for(e <- cGameField.character){
       if(e.displayname == hero.displayname){
-
-
-        //e.cell = Cell(pX-1, pY-1, e.cell.otype)
-        e.cell.x = pX-1
-        e.cell.y = pY-1
-
+        newCharacterV += Character(e.name,e.mrange,e.srange,e.damage,e.hp,e.side,e.displayname,Cell(pX-1, pY-1, C))
+      }else{
+        newCharacterV += e
       }
     }
-    cGameField
+    Field(cGameField.pX,cGameField.pY,cGameField.rocks,newCharacterV.toVector)
   }
 
   def testRock(cGameField:Field, pX: Int, pY: Int): Boolean = {
