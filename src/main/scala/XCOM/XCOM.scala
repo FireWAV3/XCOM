@@ -89,13 +89,13 @@ object XCOM {
       var aktHero = new Character()
       for (e <- cGameField.character if e.displayname == comInput(1) ){(tempCharacter = comInput(1),aktHero = e)  }
       if(tempCharacter.length > 0){
-        if(testInt(comInput(2)) && comInput(2).toInt-1 <= cGameField.sizeX){
-          if(testABC(cGameField,comInput(3)) && abctoInt(comInput(3)) - 1 <= cGameField.sizeY){
-            if(!testRock(cGameField,comInput(2).toInt,abctoInt(comInput(3)))){
-              if(!testHero(cGameField,comInput(2).toInt,abctoInt(comInput(3)))){
-                if(movePossible(aktHero, cGameField, comInput(2).toInt, abctoInt(comInput(3)))){
+        if(testABC(cGameField,comInput(2)) && abctoInt(comInput(2)) -1 <= cGameField.sizeX){
+          if(testInt(comInput(3)) && comInput(3).toInt - 1 <= cGameField.sizeY){
+            if(!testRock(cGameField,abctoInt(comInput(2)),comInput(3).toInt)){
+              if(!testHero(cGameField,abctoInt(comInput(2)),comInput(3).toInt)){
+                if(movePossible(aktHero, cGameField,abctoInt(comInput(2)), comInput(3).toInt)){
 
-                  return (SUI, move(aktHero,cGameField,comInput(2).toInt,abctoInt(comInput(3))),"Move successful!")
+                  return (SUI, move(aktHero,cGameField,abctoInt(comInput(2)),comInput(3).toInt),"Move successful!")
 
                 }else{
                   return (SUI,cGameField,"Move not possible. Target out of range")
@@ -197,7 +197,7 @@ object XCOM {
 
   def abctoInt(str: String):Int = {
     val chr = str.charAt(0)
-    chr.toInt-65
+    chr.toInt-65+1
   }
 
 }
