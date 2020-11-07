@@ -13,7 +13,7 @@ case class Field(pX: Int, pY: Int, rocks: Vector[Cell], character: Vector[Charac
     this(5,10,Vector[Cell](),character)
   }
 
-  def this(rocks: Vector[Cell],i:String ){ //
+  def this(rocks: Vector[Cell],i:String ){
     this(5,10,rocks,Vector[Character]())
   }
 

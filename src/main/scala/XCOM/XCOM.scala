@@ -10,7 +10,7 @@ import FieldStructure._
 
 object XCOM {
   //TODO : var ? val
-  val scenario = Scenario()//O-? oriented?
+  val scenario = Scenario()
 
 
 
@@ -28,15 +28,17 @@ object XCOM {
 
     while(true){
       val input = readString()
-      val runT = run(gameState, scenarioField, input)
-      gameState = runT._1
-      scenarioField= runT._2
-      if(gameState == END){
-        println(runT._3)
-        return
-      }else{
-        println(scenarioField)
-        println(runT._3)
+      if(input.length > 0){
+        val runT = run(gameState, scenarioField, input)
+        gameState = runT._1
+        scenarioField= runT._2
+        if(gameState == END){
+          println(runT._3)
+          return
+        }else{
+          println(scenarioField)
+          println(runT._3)
+        }
       }
     }
 
@@ -68,7 +70,6 @@ object XCOM {
 
   def menu(cGameField:Field, input:String):(GameState, Field, String) ={
     val valreadInt = testInt(input)
-
     if(valreadInt ){
       if(input.toInt >= 1 && input.toInt <= scenario.amount){//&& read() <= Vector.szenario.length
         return  (SUI,scenario.loadScenario(input.toInt),"You can now enter" +
@@ -84,18 +85,17 @@ object XCOM {
     val comInput =  splitFlatString(input)
 
     if(comInput(0) == "MOVE" && comInput.length == 4){
-
       var tempCharacter = ""
       var aktHero = new Character()
       for (e <- cGameField.character if e.displayname == comInput(1) ){(tempCharacter = comInput(1),aktHero = e)  }
       if(tempCharacter.length > 0){
         if(testInt(comInput(2)) && comInput(2).toInt-1 <= cGameField.sizeX){
-          if(testInt(comInput(3)) && comInput(3).toInt-1 <= cGameField.sizeY){
-            if(!testRock(cGameField,comInput(2).toInt,comInput(3).toInt)){
-              if(!testHero(cGameField,comInput(2).toInt,comInput(3).toInt)){
-                if(movePossible(aktHero, cGameField, comInput(2).toInt, comInput(3).toInt)){
+          if(testABC(cGameField,comInput(3)) && abctoInt(comInput(3)) - 1 <= cGameField.sizeY){
+            if(!testRock(cGameField,comInput(2).toInt,abctoInt(comInput(3)))){
+              if(!testHero(cGameField,comInput(2).toInt,abctoInt(comInput(3)))){
+                if(movePossible(aktHero, cGameField, comInput(2).toInt, abctoInt(comInput(3)))){
 
-                  return (SUI, move(aktHero,cGameField,comInput(2).toInt,comInput(3).toInt),"Move successful!")
+                  return (SUI, move(aktHero,cGameField,comInput(2).toInt,abctoInt(comInput(3))),"Move successful!")
 
                 }else{
                   return (SUI,cGameField,"Move not possible. Target out of range")
@@ -119,7 +119,7 @@ object XCOM {
     }else  if(comInput(0) == "INFO" && comInput.length == 2){
       var tempCharacter = ""
       var aktHero = new Character()
-      for (e <- cGameField.character if e.displayname == comInput(1) ){(tempCharacter = comInput(1),aktHero = e)  }
+      for (e <- cGameField.character if e.displayname == comInput(1) ){(tempCharacter = comInput(1),aktHero = e)}
       if(tempCharacter.length > 0){
           return (SUI, cGameField,"The Character '" + aktHero.name + "'(" + aktHero.displayname + ", Team "
             + aktHero.side + ") can move over " + aktHero.mrange + " and shoot over " + aktHero.srange
@@ -128,7 +128,7 @@ object XCOM {
         return (SUI,cGameField,"the Character '"+ comInput(1) +"' does not exist")
       }
     }else  if(comInput(0) == "SHOOT"){
-
+        //TODO Shoot
     }
     (SUI,cGameField,"Wrong command or wrong attributes")
   }
@@ -156,6 +156,7 @@ object XCOM {
   }
 
   def movePossible(hero:Character, cGameField:Field, pX:Int, pY:Int):Boolean = {
+    //TODO A*
     val xDistance = pX - hero.cell.x
     val yDistance = pY - hero.cell.y
     var distance = 0
@@ -184,8 +185,19 @@ object XCOM {
     read
   }
 
-  def readInt() :Int = {
-    val read = StdIn.readInt()
-    read
+  def testABC(cGameField:Field, str: String):Boolean = {
+    if(str.length == 1){
+      val chr = str.charAt(0)
+      if(chr >= 'A' && chr <= 'A'+cGameField.sizeX){
+        return true
+      }
+    }
+    false
   }
+
+  def abctoInt(str: String):Int = {
+    val chr = str.charAt(0)
+    chr.toInt-65
+  }
+
 }
