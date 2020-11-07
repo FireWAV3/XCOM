@@ -22,10 +22,8 @@ object XCOM {
 
 
         //TODO: test scenario
-        //TODO: move
         //TODO: shoot
         //TODO: Y/N
-        //TODO: info
 
 
     while(true){
@@ -91,8 +89,8 @@ object XCOM {
       var aktHero = new Character()
       for (e <- cGameField.character if e.displayname == comInput(1) ){(tempCharacter = comInput(1),aktHero = e)  }
       if(tempCharacter.length > 0){
-        if(testInt(comInput(2))){//TODO test if in bound of field
-          if(testInt(comInput(3))){
+        if(testInt(comInput(2)) && comInput(2).toInt-1 <= cGameField.sizeX){
+          if(testInt(comInput(3)) && comInput(3).toInt-1 <= cGameField.sizeY){
             if(!testRock(cGameField,comInput(2).toInt,comInput(3).toInt)){
               if(!testHero(cGameField,comInput(2).toInt,comInput(3).toInt)){
                 if(movePossible(aktHero, cGameField, comInput(2).toInt, comInput(3).toInt)){
@@ -118,8 +116,17 @@ object XCOM {
         return (SUI,cGameField,"the Character '"+ comInput(1) +"' does not exist")
       }
 
-    }else  if(comInput(0) == "INFO"){
-
+    }else  if(comInput(0) == "INFO" && comInput.length == 2){
+      var tempCharacter = ""
+      var aktHero = new Character()
+      for (e <- cGameField.character if e.displayname == comInput(1) ){(tempCharacter = comInput(1),aktHero = e)  }
+      if(tempCharacter.length > 0){
+          return (SUI, cGameField,"The Character '" + aktHero.name + "'(" + aktHero.displayname + ", Team "
+            + aktHero.side + ") can move over " + aktHero.mrange + " and shoot over " + aktHero.srange
+            + " tiles. He has " + aktHero.hp + " health points left.")
+      }else{
+        return (SUI,cGameField,"the Character '"+ comInput(1) +"' does not exist")
+      }
     }else  if(comInput(0) == "SHOOT"){
 
     }
@@ -161,7 +168,7 @@ object XCOM {
     } else {
       distance = xDistance + yDistance
     }
-   hero.mrange <= distance
+   hero.mrange >= distance
   }
 
   def splitFlatString(input:String):Array[String] = {
