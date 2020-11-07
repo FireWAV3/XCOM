@@ -5,6 +5,8 @@ object GameState extends Enumeration {
 }
 import GameState._
 import scala.io._
+import scala.collection.mutable.ListBuffer
+import FieldStructure._
 
 object XCOM {
   //TODO : var ? val
@@ -83,8 +85,6 @@ object XCOM {
   def sui(cGameField:Field, input:String):(GameState, Field, String) ={
     val comInput =  splitFlatString(input)
 
-    cGameField.character(0).cell.x = 1
-
     if(comInput(0) == "MOVE" && comInput.length == 4){
 
       var tempCharacter = ""
@@ -127,17 +127,15 @@ object XCOM {
   }
 
   def move(hero:Character, cGameField:Field, pX:Int, pY:Int):Field = {
+    var newCharacterV = ListBuffer[Character]()
     for(e <- cGameField.character){
       if(e.displayname == hero.displayname){
-
-
-        //e.cell = Cell(pX-1, pY-1, e.cell.otype)
-        e.cell.x = pX-1
-        e.cell.y = pY-1
-
+        newCharacterV += Character(e.name,e.mrange,e.srange,e.damage,e.hp,e.side,e.displayname,Cell(pX-1, pY-1, C))
+      }else{
+        newCharacterV += e
       }
     }
-    cGameField
+    Field(cGameField.pX,cGameField.pY,cGameField.rocks,newCharacterV.toVector)
   }
 
   def testRock(cGameField:Field, pX: Int, pY: Int): Boolean = {
