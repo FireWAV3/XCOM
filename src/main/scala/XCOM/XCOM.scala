@@ -12,19 +12,14 @@ object XCOM {
   //TODO : var ? val
   val scenario = Scenario()
 
-
-
   def main(args: Array[String]): Unit = {
     var scenarioField = new Field(0,0)
     var gameState = MENU
     println("Welcome to Xcom!\nFor more information enter Help\n")
     println("If you want to start, enter a number to choose a scenario  between 1 - " + scenario.amount)
-
-
         //TODO: test scenario
         //TODO: shoot
         //TODO: Y/N
-
 
     while(true){
       val input = readString()
@@ -197,7 +192,7 @@ object XCOM {
 
   def abctoInt(str: String):Int = {
     val chr = str.charAt(0)
-    chr.toInt-65+1
+    chr - 'A' +1
   }
 
 }
