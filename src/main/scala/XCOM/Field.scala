@@ -49,7 +49,12 @@ case class Field(pX: Int, pY: Int, rocks: Vector[Cell], character: Vector[Charac
   def fieldPosReturn(x:Int, y:Int) :String = {
     character.foreach{ p =>
       if(p.cell.x == x && p.cell.y == y){
-        return Console.BLUE + p.displayname + "\t" + Console.RESET
+        if(p.side == 1){
+          return Console.RED + p.displayname + "\t" + Console.RESET
+        }else{
+          return Console.BLUE + p.displayname + "\t" + Console.RESET
+        }
+
       }
     }
     rocks.foreach{ r =>
