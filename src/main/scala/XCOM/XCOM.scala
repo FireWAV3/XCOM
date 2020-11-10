@@ -4,6 +4,7 @@ object GameState extends Enumeration {
   val MENU, SUI, SHOOT, END = Value
 }
 import GameState._
+
 import scala.io._
 import scala.collection.mutable.ListBuffer
 import FieldStructure._
@@ -15,6 +16,7 @@ object XCOM {
   def main(args: Array[String]): Unit = {
     var scenarioField = new Field(0,0)
     var gameState = MENU
+    var attack = new AttackScenario()
     println("Welcome to Xcom!\nFor more information enter Help\n")
     println("If you want to start, enter a number to choose a scenario  between 1 - " + scenario.amount)
         //TODO: test scenario
@@ -24,13 +26,16 @@ object XCOM {
     while(true){
       val input = readString()
       if(input.length > 0){
-        val runT = run(gameState, scenarioField, input)
+        val runT = run(gameState, scenarioField, input, attack)
         gameState = runT._1
-        scenarioField= runT._2
+        scenarioField = runT._2
+        attack = runT._4
         if(gameState == END){
           println(runT._3)
           return
-        }else{
+        } else if(gameState == SHOOT){
+          println(runT._3)
+        } else{
           println(scenarioField)
           println(runT._3)
         }
@@ -39,26 +44,27 @@ object XCOM {
 
   }
 
-  def run(gameState: GameState, cGameField:Field, input:String):(GameState, Field, String) = {
+  def run(gameState: GameState, cGameField:Field, input:String, attack:AttackScenario):(GameState, Field, String, AttackScenario) = {
     if(input == "EXIT"){
-      return (END,cGameField,"\nThanks for playing!\nGoodbye!\n")
+      return (END,cGameField,"\nThanks for playing!\nGoodbye!\n", attack)
     }
     if(input == "HELP"){
       return (gameState,cGameField,"\nHELP" +
         "\nExit:\t\t\tExits the game" +
         "\nMove C,X,Y :\tMove Character(C) to X, Y" +
         "\nInfo C:\t\t\tCurrent status of Character(C)" +
-        "\nshoot C,T:\t\tCharacter(C) attacks Target(T)\n")
+        "\nshoot C,T:\t\tCharacter(C) attacks Target(T)\n", attack)
     }
     gameState match{
       case MENU =>{
-        menu(cGameField,input)
+        val newReturn = menu(cGameField,input)
+        (newReturn._1, newReturn._2, newReturn._3, attack)
       }
       case SUI =>{
         sui(cGameField,input)
       }
       case SHOOT =>{
-        (END,cGameField,"\nThanks for playing!\nshoot!\n")
+        shoot(cGameField,input,attack)
       }
     }
   }
@@ -76,7 +82,24 @@ object XCOM {
     (MENU,cGameField,"If you want to start, enter a number to choose a scenario  between 1 - " + scenario.amount)
   }
 
-  def sui(cGameField:Field, input:String):(GameState, Field, String) ={
+  def shoot(cGameField: Field, input: String, attack: AttackScenario):(GameState, Field, String, AttackScenario)  ={
+    if (input == "YES" || input == "Y"){
+      val random = scala.util.Random
+      val randInt = random.nextInt(101)
+      if (randInt <= attack.probability){
+        val retGameField = fire(cGameField,attack.attHero,attack.defHero)
+        return (SUI, retGameField._1, attack.attHero.name + "(" + attack.attHero.displayname + ") dealt "
+                + retGameField._2 + " damage to " + attack.defHero.name + "(" + attack.defHero.displayname + ")("
+                + retGameField._3 + " hp left)", new AttackScenario())
+      }
+      return (SUI, cGameField, "Shot missed by " +(randInt-attack.probability) + " cm", new AttackScenario())
+    } else if (input == "NO" || input == "N"){
+      return (SUI, cGameField, "Shot canceled", new AttackScenario())
+    }
+    (SHOOT, cGameField, "Please enter 'Yes' or 'No'",attack)
+  }
+
+  def sui(cGameField:Field, input:String):(GameState, Field, String, AttackScenario) ={
     val comInput =  splitFlatString(input)
 
     if(comInput(0) == "MOVE" && comInput.length == 4){
@@ -90,25 +113,25 @@ object XCOM {
               if(!testHero(cGameField,abctoInt(comInput(2)),comInput(3).toInt)){
                 if(movePossible(aktHero, cGameField,abctoInt(comInput(2)), comInput(3).toInt)){
 
-                  return (SUI, move(aktHero,cGameField,abctoInt(comInput(2)),comInput(3).toInt),"Move successful!")
+                  return (SUI, move(aktHero,cGameField,abctoInt(comInput(2)),comInput(3).toInt),"Move successful!", new AttackScenario())
 
                 }else{
-                  return (SUI,cGameField,"Move not possible. Target out of range")
+                  return (SUI,cGameField,"Move not possible. Target out of range", new AttackScenario())
                 }
               }else{
-                return (SUI,cGameField,"Move not possible. There is another Character at "+comInput(2)+","+ comInput(3))
+                return (SUI,cGameField,"Move not possible. There is another Character at "+comInput(2)+","+ comInput(3), new AttackScenario())
               }
             }else{
-              return (SUI,cGameField,"Move not possible. There is a Rock at "+comInput(2)+","+ comInput(3))
+              return (SUI,cGameField,"Move not possible. There is a Rock at "+comInput(2)+","+ comInput(3), new AttackScenario())
             }
           }else{
-            return (SUI,cGameField,"the Y Coordinate '"+ comInput(3) +"' is wrong")
+            return (SUI,cGameField,"the Y Coordinate '"+ comInput(3) +"' is wrong", new AttackScenario())
           }
         }else{
-          return (SUI,cGameField,"the X Coordinate '"+ comInput(2) +"' is wrong")
+          return (SUI,cGameField,"the X Coordinate '"+ comInput(2) +"' is wrong", new AttackScenario())
         }
       }else{
-        return (SUI,cGameField,"the Character '"+ comInput(1) +"' does not exist")
+        return (SUI,cGameField,"the Character '"+ comInput(1) +"' does not exist", new AttackScenario())
       }
 
     }else  if(comInput(0) == "INFO" && comInput.length == 2){
@@ -118,14 +141,35 @@ object XCOM {
       if(tempCharacter.length > 0){
           return (SUI, cGameField,"The Character '" + aktHero.name + "'(" + aktHero.displayname + ", Team "
             + aktHero.side + ") can move over " + aktHero.mrange + " and shoot over " + aktHero.srange
-            + " tiles. He has " + aktHero.hp + " health points left.")
+            + " tiles. He has " + aktHero.hp + " health points left.", new AttackScenario())
       }else{
-        return (SUI,cGameField,"the Character '"+ comInput(1) +"' does not exist")
+        return (SUI,cGameField,"the Character '"+ comInput(1) +"' does not exist", new AttackScenario())
       }
-    }else  if(comInput(0) == "SHOOT"){
-        //TODO Shoot
+    }else  if(comInput(0) == "SHOOT" && comInput.length == 3){
+      var tempCharacter1 = ""
+      var tempCharacter2 = ""
+      var aktHero1 = new Character()
+      var aktHero2 = new Character()
+      for (e <- cGameField.character){
+        if (e.displayname == comInput(1)){
+          tempCharacter1 = comInput(1)
+          aktHero1 = e
+        } else if (e.displayname == comInput(2)){
+          tempCharacter2 = comInput(2)
+          aktHero2 = e
+        }
+      }
+      if (tempCharacter1.length > 0 && tempCharacter2.length > 0 && tempCharacter1 != tempCharacter2){
+          val percentage = shootpercentage(cGameField,aktHero1,aktHero2)
+          return (SHOOT,cGameField,"The chance to hit " + aktHero2.name + "(" + aktHero2.displayname+ ") with "
+                  + aktHero1.name + "(" + aktHero1.displayname + ") is: " + percentage
+                  + "%. If you want to shoot, enter 'Yes' otherwise enter 'No'",
+                  AttackScenario(aktHero1, aktHero2, percentage))
+      } else {
+        return (SUI,cGameField,"Please enter two valid Characters", new AttackScenario())
+      }
     }
-    (SUI,cGameField,"Wrong command or wrong attributes")
+    (SUI,cGameField,"Wrong command or wrong attributes", new AttackScenario())
   }
 
   def move(hero:Character, cGameField:Field, pX:Int, pY:Int):Field = {
@@ -152,8 +196,8 @@ object XCOM {
 
   def movePossible(hero:Character, cGameField:Field, pX:Int, pY:Int):Boolean = {
     //TODO A*
-    val xDistance = pX - hero.cell.x
-    val yDistance = pY - hero.cell.y
+    val xDistance = pX - 1 - hero.cell.x
+    val yDistance = pY - 1 - hero.cell.y
     var distance = 0
     if (xDistance < 0){
       distance = -xDistance + yDistance
@@ -165,6 +209,47 @@ object XCOM {
       distance = xDistance + yDistance
     }
    hero.mrange >= distance
+  }
+
+  def shootpercentage(cGameField: Field, attHero: Character, defHero: Character): Int ={
+    val xDistance = attHero.cell.x - defHero.cell.x
+    val yDistance = attHero.cell.y - defHero.cell.y
+    var distance = 0
+    if (xDistance < 0){
+      distance = -xDistance + yDistance
+    } else if (yDistance < 0){
+      distance = xDistance - yDistance
+    } else if (xDistance < 0 && yDistance < 0){
+      distance = -xDistance - yDistance
+    } else {
+      distance = xDistance + yDistance
+    }
+    if (distance > attHero.srange){
+      return 0
+    }
+    val minPercentage = 20
+    val maxPercentage = 99
+    if (attHero.srange == 1){
+      return 95
+    }
+    val hitChance = maxPercentage - (((maxPercentage-minPercentage)/(attHero.srange-1))*distance)
+    if (hitChance < 20){
+      return 20
+    }
+    hitChance
+  }
+
+  def fire(cGameField:Field, attHero: Character, defHero: Character): (Field,Int,Int) ={
+    var newCharacterV = ListBuffer[Character]()
+    for(e <- cGameField.character){
+      if(e.displayname == defHero.displayname){
+        if (defHero.hp - attHero.damage > 0)
+        newCharacterV += Character(e.name,e.mrange,e.srange,e.damage,e.hp-attHero.damage,e.side,e.displayname,e.cell)
+      }else{
+        newCharacterV += e
+      }
+    }
+    (Field(cGameField.pX,cGameField.pY,cGameField.rocks,newCharacterV.toVector),attHero.damage,if ((defHero.hp-attHero.damage)>0) (defHero.hp-attHero.damage) else 0)
   }
 
   def splitFlatString(input:String):Array[String] = {

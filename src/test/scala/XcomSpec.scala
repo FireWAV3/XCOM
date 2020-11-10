@@ -62,24 +62,37 @@ class XcomSpec extends WordSpec{
     "have a methode sui" in{
       val tempField = Scenario().loadScenario(1)
       //move
-      XCOM.sui(tempField,"MOVE C1,5,2")._3 should be("Move successful!")
-      XCOM.sui(tempField,"MOVE C2,6,20")._3 should be("Move not possible. Target out of range")
+      XCOM.sui(tempField,"MOVE C1,E,2")._3 should be("Move successful!")
+      XCOM.sui(tempField,"MOVE C2,F,20")._3 should be("Move not possible. Target out of range")
       //Info
       XCOM.sui(tempField,"INFO C2")._3 should include("The Character 'Tank'")
       XCOM.sui(tempField,"INFO ABBA")._3 should include("does not exist")
     }
     "have a methode abctoInt" in {
-      XCOM.abctoInt("A") should be(0)
-      XCOM.abctoInt("B") should be(1)
-      XCOM.abctoInt("F") should be(5)
+      XCOM.abctoInt("A") should be(1)
+      XCOM.abctoInt("B") should be(2)
+      XCOM.abctoInt("F") should be(6)
     }
     "have a methode testABC" in {
       XCOM.testABC(new Field(5,5),"A") should be(true)
       XCOM.testABC(new Field(5,5),"F") should be(false)
     }
     "have a methode run" in {
-      XCOM.run(MENU,new Field(5,5),"EXIT")._3 should include("Goodbye")
-      XCOM.run(MENU,new Field(5,5),"HELP")._3 should include("HELP")
+      XCOM.run(MENU,new Field(5,5),"EXIT",new AttackScenario())._3 should include("Goodbye")
+      XCOM.run(MENU,new Field(5,5),"HELP",new AttackScenario())._3 should include("HELP")
+    }
+    "have a methode shoot" in {
+      XCOM.shoot(new Field(5,5),"YES",AttackScenario(Character("Attack",100,100,100,100,0,"A",Cell(5,5,C)),new Character(),100))._3 should include("dealt")
+      XCOM.shoot(new Field(5,5),"YES",AttackScenario(Character("Attack",100,100,100,100,0,"A",Cell(5,5,C)),new Character(),0))._3 should include("missed")
+      XCOM.shoot(new Field(5,5),"NO",AttackScenario(Character("Attack",100,100,100,100,0,"A",Cell(5,5,C)),new Character(),50))._3 should include("canceled")
+    }
+    "have a methode shootpercentage" in{
+      XCOM.shootpercentage(new Field(5,5),Character("Attack",100,100,100,100,0,"A",Cell(5,5,C)),Character("Defender",100,100,100,100,0,"D",Cell(5,4,C))) should be(99)
+      XCOM.shootpercentage(new Field(5,5),Character("Attack",1,1,100,100,0,"A",Cell(5,50,C)),Character("Defender",100,100,100,100,0,"D",Cell(5,4,C))) should be(0)
+    }
+    "have a methode fire" in{
+      val tempHeros = Vector[Character](Character("Attack",10,10,50,100,0,"A",Cell(1,1,C)),Character("Defense",10,10,50,100,0,"D",Cell(1,2,C)))
+      XCOM.fire(new Field(tempHeros),tempHeros(0),tempHeros(1))._1.character(1).hp should be(50)
     }
   }
 }

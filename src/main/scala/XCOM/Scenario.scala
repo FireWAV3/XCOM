@@ -3,7 +3,7 @@ import FieldStructure._
 
 case class Scenario(){
   val amount = 1
-  //TODO laod Scenariso form .xml File
+  //TODO laod Scenario form .xml File
 
   def loadScenario(i: Int):Field = {
     //TODO: create different scenarios
