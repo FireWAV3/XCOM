@@ -199,12 +199,12 @@ object XCOM {
     val xDistance = pX - 1 - hero.cell.x
     val yDistance = pY - 1 - hero.cell.y
     var distance = 0
-    if (xDistance < 0){
-      distance = -xDistance + yDistance
+    if (xDistance < 0 && yDistance < 0){
+      distance = -xDistance - yDistance
     } else if (yDistance < 0){
       distance = xDistance - yDistance
-    } else if (xDistance < 0 && yDistance < 0){
-      distance = -xDistance - yDistance
+    } else if (xDistance < 0){
+      distance = -xDistance + yDistance
     } else {
       distance = xDistance + yDistance
     }
@@ -215,12 +215,12 @@ object XCOM {
     val xDistance = attHero.cell.x - defHero.cell.x
     val yDistance = attHero.cell.y - defHero.cell.y
     var distance = 0
-    if (xDistance < 0){
-      distance = -xDistance + yDistance
+    if (xDistance < 0  && yDistance < 0){
+      distance = -xDistance - yDistance
     } else if (yDistance < 0){
       distance = xDistance - yDistance
-    } else if (xDistance < 0 && yDistance < 0){
-      distance = -xDistance - yDistance
+    } else if (xDistance < 0){
+      distance = -xDistance + yDistance
     } else {
       distance = xDistance + yDistance
     }
