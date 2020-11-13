@@ -1,7 +1,8 @@
-import XCOM.Cell
+package XCOM
+
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
-import XCOM.FieldStructure._
+import FieldStructure._
 
 class CellSpec extends WordSpec{
   "A Cell" should{
@@ -14,7 +15,6 @@ class CellSpec extends WordSpec{
     "have a type" in {
       new Cell(2,5,X).otype should be(X)
     }
-
     "have a default X position" in {
       new Cell().x should be(-10)
     }

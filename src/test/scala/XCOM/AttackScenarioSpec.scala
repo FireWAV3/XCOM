@@ -1,6 +1,7 @@
-import org.scalatest.WordSpec
+package XCOM
+
 import org.scalatest.Matchers._
-import XCOM._
+import org.scalatest.WordSpec
 
 class AttackScenarioSpec extends WordSpec{
   "An AttackScenario" should{
