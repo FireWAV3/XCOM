@@ -1,6 +1,7 @@
-import XCOM.{Field, Scenario}
-import org.scalatest.WordSpec
+package XCOM
+
 import org.scalatest.Matchers._
+import org.scalatest.WordSpec
 
 class ScenarioSpec extends WordSpec{
   "A Scenario" should{
