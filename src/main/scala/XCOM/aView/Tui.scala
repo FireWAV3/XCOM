@@ -3,62 +3,73 @@ package XCOM.aView
 import XCOM.controller.GameState._
 import XCOM.controller.{Controller, GameState}
 import XCOM.model.{AttackScenario, Character, Field, Scenario}
+import XCOM.util.Observer
 
-case class Tui(var c : Controller){
+case class Tui(var c : Controller) extends Observer{
+  c.add(this)
 
   println("Welcome to Xcom!\nFor more information enter Help\n")
-  println("If you want to start, enter a number to choose a scenario  between 1 - " + c.laodScenario(0)._2)
+  println("If you want to start, enter 'Load,Number' to choose a scenario with Number  between 1 and " + c.loadScenario(0))
 
   def processInputLine(input: String): Boolean ={
     if(input.length > 0){
-      val runT = run(c.gameState, c.field, input, c.attack)
-      c.gameState = runT._1
-      c.field = runT._2
-      c.attack = runT._4
-
-      if(c.gameState == END){
-        println(runT._3)
-        return false
-      }else if(c.gameState == SHOOT){
-        println(runT._3)
-      }else{
-        println(c.field)
-        println(runT._3)
-      }
+      run(input)
     }
-    true
+    c.gameState != END
   }
 
-  //TODO def HELP
+  def load(input :String): Boolean ={
+    if(c.testInt(input)){
+      if(input.toInt >= 1 && input.toInt <= c.loadScenario(0)){
+        c.loadScenario(input.toInt)
+        return true
+      }
+    }
+    false
+  }
 
-  def run(gameState: GameState, cGameField:Field, input:String, attack:AttackScenario):(GameState, Field, String, AttackScenario) = {
-    if(input == "EXIT"){
-      return (END,cGameField,"\nThanks for playing!\nGoodbye!\n", attack)
+
+  def move(str: String, str1: String, str2: String): Boolean = {
+    //TODO in c + übergabe von move in c
+  }
+
+  def run(input:String): Unit = {
+    val comInput =  c.splitFlatString(input)
+
+    comInput(0) match {
+      case "EXIT" => c.exit
+      case "HELP" => c.help
+      case "LOAD" => if(comInput.length == 2) load(comInput(1)) else c.wrongInput(input)
+      case "INFO" => if(comInput.length == 2) c.info(comInput(1)) else c.wrongInput(input)
+      case "SHOOT" => if(comInput.length == 3) c.aim(comInput(1),comInput(2)) else c.wrongInput(input)//TODO in c
+      case "MOVE" => if(comInput.length == 3) move(comInput(1),comInput(2),comInput(3)) else c.wrongInput(input)//TODO in move
     }
-    if(input == "HELP"){
-      return (gameState,cGameField,"\nHELP" +
-        "\nExit:\t\t\tExits the game" +
-        "\nMove C,X,Y :\tMove Character(C) to X, Y" +
-        "\nInfo C:\t\t\tCurrent status of Character(C)" +
-        "\nshoot C,T:\t\tCharacter(C) attacks Target(T)\n", attack)
-    }
-    gameState match{
-      case MENU =>{
-        val newReturn = menu(cGameField,input)
-        (newReturn._1, newReturn._2, newReturn._3, attack)
-      }
-      case SUI =>{
-        sui(cGameField,input)
-      }
-      case SHOOT =>{
-        shoot(cGameField,input,attack)
-      }
-    }
+
+
+
+
+
+
+//
+//    gameState match{
+//      case MENU =>{
+//        val newReturn = menu(cGameField,input)
+//        (newReturn._1, newReturn._2, newReturn._3, attack)
+//      }
+//      case SUI =>{
+//        sui(cGameField,input)
+//      }
+//      case SHOOT =>{
+//        shoot(cGameField,input,attack)
+//      }
+//    }
+
+
   }
 
   def menu(cGameField:Field, input:String):(GameState, Field, String) ={
     val valreadInt = c.testInt(input)
-    if(valreadInt ){
+    if(valreadInt){
       if(input.toInt >= 1 && input.toInt <= c.laodScenario(0)._2){//&& read() <= Vector.szenario.length
         return  (SUI,c.laodScenario(input.toInt)._1,"You can now enter" +
           "\nMove C,X,Y :\tMove Character(C) to X, Y" +
@@ -135,8 +146,8 @@ case class Tui(var c : Controller){
     }else  if(comInput(0) == "SHOOT" && comInput.length == 3){
       var tempCharacter1 = ""
       var tempCharacter2 = ""
-      var aktHero1 = new Character()//TODO c
-      var aktHero2 = new Character()//TODO c
+      var aktHero1 = new Character()
+      var aktHero2 = new Character()
       for (e <- cGameField.character){
         if (e.displayname == comInput(1)){
           tempCharacter1 = comInput(1)
@@ -159,6 +170,23 @@ case class Tui(var c : Controller){
     (SUI,cGameField,"Wrong command or wrong attributes", new AttackScenario())
   }
 
+  override def update: Unit = {
+    if(c.gameState == END){
+      println("\nThanks for playing!\nGoodbye!\n")
+    }else if(c.gameState == SHOOT){
+      println(c.output)
+    }else if(c.gameState == SINGLEOUT){
+      println(c.output)
+    }else if(c.gameState == HELP){
+      println("\nHELP" +
+              "\nExit:\t\t\tExits the game" +
+              "\nMove C,X,Y :\tMove Character(C) to X, Y" +
+              "\nInfo C:\t\t\tCurrent status of Character(C)" +
+              "\nShoot C,T:\t\tCharacter(C) attacks Target(T)\n")
+    }else{
+      println(c.fieldToString)
+      println(c.output)
+    }
 
-
+  }
 }

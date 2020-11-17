@@ -2,27 +2,71 @@ package XCOM.controller
 import XCOM.model
 import XCOM.model.{AttackScenario, Cell, Character, Field, Scenario}
 import XCOM.model.FieldStructure._
+import XCOM.util.Observable
 
 import scala.collection.mutable.ListBuffer
 
 object GameState extends Enumeration {
 type GameState = Value
-  val MENU, SUI, SHOOT, END , HELP = Value
+  val MENU, SUI, SHOOT, END , HELP ,SINGLEOUT = Value
 }
 import GameState._
 
-case class Controller(var gameState: GameState,var field: Field, var attack : AttackScenario){
+case class Controller(var gameState: GameState,var field: Field, var attack : AttackScenario) extends Observable{
+  var output = ""
 
   def this (){
     this(MENU, new Field(0,0),new AttackScenario())
   }
 
-  def laodScenario(index:Int): (Field,Int) ={
+  def help:Unit={
+    singleOut("",HELP)
+  }
+
+  def exit:Unit ={
+    gameState = END
+    notifyObservers
+  }
+
+  def info(str: String): Boolean ={
+    val hero = isHero(str)
+    if(hero._1){
+      singleOut(hero._2.toString,SINGLEOUT)
+      return true
+    }
+    singleOut(str +" is not a Hero",SINGLEOUT)
+    false
+  }
+
+  def singleOut(message : String,state : GameState){
+    val oldState = gameState
+    gameState = state
+    output = message
+    notifyObservers
+    gameState = oldState
+  }
+
+  def fieldToString:String = field.toString
+
+
+  def loadScenario(index:Int): Int ={
     val scenario = Scenario()
-    (scenario.loadScenario(index.toInt),scenario.amount)
+    field = scenario.loadScenario(index)
+    scenario.amount
+  }
+
+  def wrongInput(input : String):Unit={
+    singleOut("Falsche eingabe: [" + input +"]",SINGLEOUT)
   }
 
   def move(hero:model.Character, cGameField:Field, pX:Int, pY:Int):Field = {
+
+    //TODO Game stateif(){}
+
+
+
+
+
     var newCharacterV = ListBuffer[model.Character]()
     for(e <- cGameField.character){
       if(e.displayname == hero.displayname){
@@ -43,6 +87,12 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
     for(e <- cGameField.character if e.cell.x == pX-1 && e.cell.y == pY-1)return true
     false
   }
+
+  def isHero(input : String): (Boolean,Character)= {
+    field.character.map(i => if(i.displayname == input) return (true,i))
+    (false,new Character())
+  }
+
 
   def movePossible(hero:model.Character, cGameField:Field, pX:Int, pY:Int):Boolean = {
     //TODO A*
@@ -119,6 +169,7 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
     }
     false
   }
+
 
   def abctoInt(str: String):Int = {
     val chr = str.charAt(0)

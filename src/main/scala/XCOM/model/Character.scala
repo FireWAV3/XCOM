@@ -7,4 +7,10 @@ case class Character(name: String, mrange: Int, srange: Int, damage: Int, hp: In
     this("Test", 2, 2, 0, 1, 0, "TT", Cell(0, 0, C))
   }
 
+  override def toString: String = {
+    ("The Character '" + this.name + "'(" + this.displayname + ", Team "
+      + this.side + ") can move over " + this.mrange + " and shoot over " + this.srange
+      + " tiles. He has " + this.hp + " health points left.")
+  }
+
 }
