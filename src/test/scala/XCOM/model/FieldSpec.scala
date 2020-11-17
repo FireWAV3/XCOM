@@ -1,8 +1,8 @@
-package XCOM
+package XCOM.model
 
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
-import FieldStructure._
+import XCOM.model.FieldStructure._
 
 class FieldSpec extends WordSpec{
 

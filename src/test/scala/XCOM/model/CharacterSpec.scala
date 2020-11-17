@@ -1,9 +1,8 @@
-package XCOM
+package XCOM.model
 
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
-import FieldStructure._
-
+import XCOM.model.FieldStructure._
 
 class CharacterSpec extends WordSpec{
   var testCharacter = Character("Tank", 5, 10, 70, 40, 0,"C2", Cell(4, 8, C))

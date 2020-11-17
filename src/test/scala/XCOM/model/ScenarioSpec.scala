@@ -1,4 +1,4 @@
-package XCOM
+package XCOM.model
 
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
