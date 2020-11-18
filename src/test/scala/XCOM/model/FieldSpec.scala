@@ -41,6 +41,8 @@ class FieldSpec extends WordSpec{
       var testField = new Field(6,6)
       testField.toString() should include("6")
       testField.toString() should not include("7")
+      testField = new Field(0,0)
+      testField.toString() should be("")
     }
   }
 
