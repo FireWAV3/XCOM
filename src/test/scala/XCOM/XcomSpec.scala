@@ -1,9 +1,8 @@
 package XCOM
 
 
-import org.scalatest.Matchers._
 import org.scalatest.WordSpec
-import GameState._
+//import GameState._
 
 class XcomSpec extends WordSpec{
 //  "Xcom" should{

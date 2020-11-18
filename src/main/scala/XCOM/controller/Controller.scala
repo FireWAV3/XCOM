@@ -1,16 +1,14 @@
 package XCOM.controller
 import XCOM.model
-import XCOM.model.{AttackScenario, Cell, Character, Field, Scenario}
 import XCOM.model.FieldStructure._
+import XCOM.model.{AttackScenario, Cell, Character, Field, Scenario}
 import XCOM.util.Observable
-
-import scala.collection.mutable.ListBuffer
 
 object GameState extends Enumeration {
 type GameState = Value
   val MENU, SUI, SHOOT, END , HELP ,SINGLEOUT = Value
 }
-import GameState._
+import XCOM.controller.GameState._
 
 case class Controller(var gameState: GameState,var field: Field, var attack : AttackScenario) extends Observable{
   var output = ""
@@ -26,6 +24,39 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
   def exit:Unit ={
     gameState = END
     notifyObservers
+  }
+
+  def out(str:String,state :GameState):Unit ={
+    output = str
+    gameState = state
+    notifyObservers
+  }
+
+  def shoot(approval:Boolean):Boolean={
+    if(gameState == SHOOT){
+      if(approval){
+        val random = scala.util.Random
+        val randInt = random.nextInt(101)
+        if (randInt <= attack.probability){
+         val result = fire(attack.attHero, attack.defHero)
+          out((attack.attHero.name + "(" + attack.attHero.displayname + ") dealt "
+              + result._1 + " damage to " + attack.defHero.name + "(" + attack.defHero.displayname
+              + ")(" + result._2 + " hp left)")
+              ,SUI)
+          attack = new AttackScenario()
+          return true
+        }else{
+          out(("Shot missed by " + (randInt-attack.probability) + " cm"),SUI)
+          attack = new AttackScenario()
+        }
+      }else{
+        out("Shot canceled",SUI)
+        attack = new AttackScenario()
+      }
+    }else{
+      wrongGameState()
+    }
+    false
   }
 
   def info(str: String): Boolean ={
@@ -48,43 +79,113 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
 
   def fieldToString:String = field.toString
 
-
-  def loadScenario(index:Int): Int ={
+  def scenarioAmmount:Int ={
     val scenario = Scenario()
-    field = scenario.loadScenario(index)
     scenario.amount
   }
 
-  def wrongInput(input : String):Unit={
-    singleOut("Falsche eingabe: [" + input +"]",SINGLEOUT)
-  }
 
-  def move(hero:model.Character, cGameField:Field, pX:Int, pY:Int):Field = {
-
-    //TODO Game stateif(){}
-
-
-
-
-
-    var newCharacterV = ListBuffer[model.Character]()
-    for(e <- cGameField.character){
-      if(e.displayname == hero.displayname){
-        newCharacterV += Character(e.name,e.mrange,e.srange,e.damage,e.hp,e.side,e.displayname,Cell(pX-1, pY-1, C))
-      }else{
-        newCharacterV += e
-      }
+  def loadScenario(index:Int): Boolean ={
+    val scenario = Scenario()
+    if(gameState == MENU){
+      field = scenario.loadScenario(index)
+      out("Successfully loaded scenario "+ index +"\n"
+        + "You can now enter"
+        + "\nMove C,X,Y :\tMove Character(C) to X, Y"
+        + "\nInfo C:\t\t\tCurrent status of Character(C)"
+        + "\nshoot C,T:\t\tCharacter(C) attacks Target(T)\n"
+        ,SUI)
+      return true
     }
-    Field(cGameField.pX,cGameField.pY,cGameField.rocks,newCharacterV.toVector)
+    false
+
   }
 
-  def testRock(cGameField:Field, pX: Int, pY: Int): Boolean = {
-    for(e <- cGameField.rocks if e.x == (pX-1)  if e.y == (pY-1) ) return true
+  def wrongInput(input : String):Unit={
+    singleOut("Wrong input: [" + input +"]",SINGLEOUT)
+  }
+
+  def wrongGameState() = singleOut("You are not allowed to use that command right now",SINGLEOUT)
+
+  def aim(str1:String, str2:String):Boolean ={
+    if(gameState == SUI){
+      val hero1 = isHero(str1)
+      val hero2 = isHero(str2)
+        if(hero1._1 && hero2._1){
+          if(hero1._2.side != hero2._2.side){
+            val percentage = shootpercentage(hero1._2, hero2._2)
+            attack = AttackScenario(hero1._2, hero2._2, percentage)
+            out(("The chance to hit " + hero2._2.name + "(" + hero2._2.displayname+ ") with "
+              + hero1._2.name + "(" + hero1._2.displayname + ") is: " + percentage
+              + "%. If you want to shoot, enter 'Yes' otherwise enter 'No'")
+              ,SHOOT)
+          }else{
+            singleOut("Heros are on the same team",SINGLEOUT)
+          }
+        }else{
+          singleOut("Please enter 2 valid heros",SINGLEOUT)
+        }
+    }else{
+      wrongGameState()
+    }
     false
   }
 
-  def testHero(cGameField: Field, pX: Int, pY: Int): Boolean = {
-    for(e <- cGameField.character if e.cell.x == pX-1 && e.cell.y == pY-1)return true
+  def boundsX(x:Int): Boolean ={
+    if(field.sizeX >= x && x >= 0){
+      return true
+    }
+    false
+  }
+
+  def boundsY(y:Int): Boolean ={
+    if(field.sizeY >= y && y >= 0){
+      return true
+    }
+    false
+  }
+
+
+  def move(str: String,pX:Int, pY:Int):Boolean ={
+    //TODO STATE CHECk
+    val hero = isHero(str)
+    if(hero._1){
+      if(boundsX(pX) && boundsY(pY)){
+        if(!testHero(pX, pY) && !testRock(pX, pY)){
+          if(movePossible(hero._2, pX, pY)){
+            field = Field(field.pX,field.pY,field.rocks,
+              field.character.map{ i =>
+                if(i.displayname == hero._2.displayname){
+                  Character(i.name,i.mrange,i.srange,i.damage,i.hp,i.side,i.displayname,Cell(pX-1, pY-1, C))
+                }else{
+                  i
+                }
+              }
+            )
+            out("move successful",SUI)
+            return true
+          }else{
+            singleOut("Move not possible: Hero can't move this far",SINGLEOUT)
+          }
+        }else{
+          singleOut("Move not possible: There is another object at this position",SINGLEOUT)
+        }
+      }else{
+        singleOut("Move not possible: not a tile on the field",SINGLEOUT)
+      }
+    }else{
+      singleOut( str + " is not a valid Hero",SINGLEOUT)
+    }
+    false
+  }
+
+  def testRock( pX: Int, pY: Int): Boolean = {
+    for(e <- field.rocks if e.x == (pX-1)  if e.y == (pY-1) ) return true
+    false
+  }
+
+  def testHero(pX: Int, pY: Int): Boolean = {
+    for(e <- field.character if e.cell.x == pX-1 && e.cell.y == pY-1)return true
     false
   }
 
@@ -94,7 +195,7 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
   }
 
 
-  def movePossible(hero:model.Character, cGameField:Field, pX:Int, pY:Int):Boolean = {
+  def movePossible(hero:model.Character, pX:Int, pY:Int):Boolean = {
     //TODO A*
     val xDistance = pX - 1 - hero.cell.x
     val yDistance = pY - 1 - hero.cell.y
@@ -111,7 +212,7 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
     hero.mrange >= distance
   }
 
-  def shootpercentage(cGameField: Field, attHero: model.Character, defHero: model.Character): Int ={
+  def shootpercentage(attHero: model.Character, defHero: model.Character): Int ={
     val xDistance = attHero.cell.x - defHero.cell.x
     val yDistance = attHero.cell.y - defHero.cell.y
     var distance = 0
@@ -139,17 +240,22 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
     hitChance
   }
 
-  def fire(cGameField:Field, attHero: model.Character, defHero: model.Character): (Field,Int,Int) ={
-    var newCharacterV = ListBuffer[model.Character]()
-    for(e <- cGameField.character){
-      if(e.displayname == defHero.displayname){
-        if (defHero.hp - attHero.damage > 0)
-          newCharacterV += Character(e.name,e.mrange,e.srange,e.damage,e.hp-attHero.damage,e.side,e.displayname,e.cell)
-      }else{
-        newCharacterV += e
+  def fire(attHero: model.Character, defHero: model.Character): (Int,Int) ={
+    if(defHero.hp - attHero.damage <= 0){
+      val temp = field.character.filter(i => i.displayname!= defHero.displayname)
+      field = Field(field.pX,field.pY,field.rocks,temp)
+    }else{
+      val temp = field.character.map{ i =>
+        if(i.displayname == defHero.displayname ){
+          Character(i.name,i.mrange,i.srange,i.damage,i.hp - attHero.damage,i.side,i.displayname,i.cell)
+        }else{
+          i
+        }
       }
+      field = Field(field.pX,field.pY,field.rocks,temp)
     }
-    (Field(cGameField.pX,cGameField.pY,cGameField.rocks,newCharacterV.toVector),attHero.damage,if ((defHero.hp-attHero.damage)>0) (defHero.hp-attHero.damage) else 0)
+
+    (attHero.damage, if ((defHero.hp-attHero.damage)>0) (defHero.hp-attHero.damage) else 0)
   }
 
   def splitFlatString(input:String):Array[String] = {
@@ -160,10 +266,10 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
     input.forall(_.isDigit)
   }
 
-  def testABC(cGameField:Field, str: String):Boolean = {
+  def testABC(str: String):Boolean = {
     if(str.length == 1){
       val chr = str.charAt(0)
-      if(chr >= 'A' && chr <= 'A'+cGameField.sizeX){
+      if(chr >= 'A' && chr <= 'A'+ field.sizeX){
         return true
       }
     }
@@ -171,7 +277,7 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
   }
 
 
-  def abctoInt(str: String):Int = {
+  def abcToInt(str: String):Int = {
     val chr = str.charAt(0)
     chr - 'A' +1
   }

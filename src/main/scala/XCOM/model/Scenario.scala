@@ -11,7 +11,7 @@ case class Scenario() {
     i match {
       case 1 => {
         val sniper = Character("Sniper", 5, 10, 70, 40, 0, "C1", Cell(5, 1, C))
-        val tank = Character("Tank", 5, 10, 70, 40, 0, "C2", Cell(4, 4, C))
+        val tank = Character("Tank", 5, 10, 30, 40, 0, "C2", Cell(4, 4, C))
         val assassin = Character("Assassin", 8, 1, 150, 50, 1, "C3", Cell(6, 4, C))
         val allCharacter = Vector[Character](sniper, tank, assassin)
         val field = Field(6 + 1, 20 + 1, Vector[Cell](
