@@ -38,5 +38,14 @@ class CharacterSpec extends WordSpec{
     "have a Celltype" in{
       testCharacter.cell.otype should be (C)
     }
+    "have an empty Constructor" in{
+      val Hero = new Character()
+      Hero.name should be("Test")
+    }
+    "have a toString methode" in{
+      testCharacter.toString should be("The Character '" + testCharacter.name + "'(" + testCharacter.displayname + ", Team "
+        + testCharacter.side + ") can move over " + testCharacter.mrange + " and shoot over " + testCharacter.srange
+        + " tiles with a damage of " + testCharacter.damage + ". He has " + testCharacter.hp + " health points left.")
+    }
   }
 }

@@ -1,5 +1,5 @@
 package XCOM.controller
-import XCOM.controller.GameState.MENU
+import GameState.MENU
 import XCOM.model.{AttackScenario, Cell, Character, Field}
 import org.scalatest.WordSpec
 import XCOM.model.FieldStructure._

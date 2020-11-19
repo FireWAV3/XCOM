@@ -1,9 +1,7 @@
 package XCOM.model
 
-import XCOM.model
-
-case class AttackScenario(attHero: model.Character, defHero: model.Character, probability: Int) {
+case class AttackScenario(attHero: Character, defHero: Character, probability: Int) {
   def this() {
-    this(new model.Character(), new model.Character(), 0)
+    this(new Character(), new Character(), 0)
   }
 }

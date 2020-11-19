@@ -15,5 +15,11 @@ class AttackScenarioSpec extends WordSpec{
     "have a Hitpercentage" in{
       AttackScenario(new model.Character(),new model.Character(),30).probability should be(30)
     }
+    "have an empty Constructor" in{
+      val attack = new AttackScenario()
+      attack.attHero.name should be("Test")
+      attack.defHero.name should be("Test")
+      attack.probability should be(0)
+    }
   }
 }

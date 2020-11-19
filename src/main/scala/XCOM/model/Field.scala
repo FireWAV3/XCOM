@@ -63,7 +63,7 @@ case class Field(pX: Int, pY: Int, rocks: Vector[Cell], character: Vector[Charac
         return Console.WHITE_B + Console.BOLD + Console.BLACK + r.otype + Console.RESET + "\t"
       }
     }
-    return "X\t"
+    "X\t"
   }
 
   def printRow(yRow: Int): String = {
