@@ -158,14 +158,14 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
   }
 
   def boundsX(x:Int): Boolean ={
-    if(field.sizeX >= x && x >= 0){
+    if(field.sizeX >= x-1 && x-1 > 0){
       return true
     }
     false
   }
 
   def boundsY(y:Int): Boolean ={
-    if(field.sizeY >= y && y >= 0){
+    if(field.sizeY >= y-1 && y-1 > 0){
       return true
     }
     false
