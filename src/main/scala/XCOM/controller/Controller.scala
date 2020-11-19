@@ -17,6 +17,10 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
     this(MENU, new Field(0,0),new AttackScenario())
   }
 
+  def this (gameState:GameState){
+    this(gameState, new Field(0,0),new AttackScenario())
+  }
+
   def help:Unit={
     singleOut("",HELP)
   }
