@@ -7,8 +7,19 @@ import org.scalatest.Matchers._
 
 class ControllerSpec extends  WordSpec{
   "A Controller" should{
-    var testField = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C))))
+    var testField = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C1", Cell(5, 6, C))))
     var c = Controller(MENU, testField ,new AttackScenario())
+    "have a methode fire" in{
+      var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
+      var cShoot = Controller(MENU, shootingRange ,new AttackScenario())
+      val attack1 = cShoot.fire(shootingRange.character(0),shootingRange.character(1))
+      val attack2 = cShoot.fire(shootingRange.character(1),shootingRange.character(0))
+      attack1._1 should be(70)
+      attack1._2 should be(20)
+      attack2._1 should be(50)
+      attack2._2 should be(0)
+      cShoot.field.character should be(Vector[Character](Character("Tank", 5, 10, 50, 20, 0,"C2", Cell(5, 6, C))))
+    }
     "have a methode boundsX" in{
       c.boundsX(0) should be(false)
       c.boundsX(5) should be(true)
