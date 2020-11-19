@@ -33,7 +33,7 @@ case class Tui(var c : Controller) extends Observer{
 
   def load(input :String): Boolean ={
     if(c.testInt(input)){
-      if(input.toInt >= 1 && input.toInt <= c.scenarioAmmount){
+      if(input.toInt >= 0 && input.toInt <= c.scenarioAmmount){
         c.loadScenario(input.toInt)
         return true
       }
