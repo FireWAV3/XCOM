@@ -6,7 +6,8 @@ import org.scalatest.Matchers._
 import org.scalatest.WordSpec
 
 class TuiSpec extends WordSpec{
-  val tui = Tui(new Controller())
+  val c = new Controller()
+  val tui = Tui(c)
   "A Tui" should{
     "have a Controller" in {
       tui.c shouldBe a [Controller]
@@ -17,7 +18,17 @@ class TuiSpec extends WordSpec{
       tui2.processInputLine("test") should be(false)
     }
     "have a methode load" in{
-
+      tui.run("LOAD 1")
+      c.gameState should be(SUI)
+      //
+      tui.run("HELP")
+      c.gameState should be(HELP)
+      //
+      tui.run("INFO C1")
+      c.gameState should be(SINGLEOUT)
+      //
+      tui.run("EXIT")
+      c.gameState should be(END)
     }
   }
 }

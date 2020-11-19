@@ -1,5 +1,4 @@
 package XCOM.model
-
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
 import XCOM.model.FieldStructure._
