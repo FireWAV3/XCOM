@@ -22,45 +22,12 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
   }
 
   def help:Unit={
-    singleOut("",HELP)
+    singleOut("help",HELP)
   }
 
   def exit:Unit ={
     gameState = END
     notifyObservers
-  }
-
-  def out(str:String,state :GameState):Unit ={
-    output = str
-    gameState = state
-    notifyObservers
-  }
-
-  def shoot(approval:Boolean):Boolean={
-    if(gameState == SHOOT){
-      if(approval){
-        val random = scala.util.Random
-        val randInt = random.nextInt(101)
-        if (randInt <= attack.probability){
-         val result = fire(attack.attHero, attack.defHero)
-          out((attack.attHero.name + "(" + attack.attHero.displayname + ") dealt "
-              + result._1 + " damage to " + attack.defHero.name + "(" + attack.defHero.displayname
-              + ")(" + result._2 + " hp left)")
-              ,SUI)
-          attack = new AttackScenario()
-          return true
-        }else{
-          out(("Shot missed by " + (randInt-attack.probability) + " cm"),SUI)
-          attack = new AttackScenario()
-        }
-      }else{
-        out("Shot canceled",SUI)
-        attack = new AttackScenario()
-      }
-    }else{
-      wrongGameState()
-    }
-    false
   }
 
   def info(str: String): Boolean ={
@@ -72,22 +39,6 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
     singleOut(str +" is not a Hero",SINGLEOUT)
     false
   }
-
-  def singleOut(message : String,state : GameState){
-    val oldState = gameState
-    gameState = state
-    output = message
-    notifyObservers
-    gameState = oldState
-  }
-
-  def fieldToString:String = field.toString
-
-  def scenarioAmmount:Int ={
-    val scenario = Scenario()
-    scenario.amount
-  }
-
 
   def loadScenario(index:Int): Boolean ={
     val scenario = Scenario()
@@ -102,53 +53,7 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
       return true
     }
     false
-
   }
-
-  def wrongInput(input : String):Unit={
-    singleOut("Wrong input: [" + input +"]",SINGLEOUT)
-  }
-
-  def wrongGameState() = singleOut("You are not allowed to use that command right now",SINGLEOUT)
-
-  def aim(str1:String, str2:String):Boolean ={
-    if(gameState == SUI){
-      val hero1 = isHero(str1)
-      val hero2 = isHero(str2)
-        if(hero1._1 && hero2._1){
-          if(hero1._2.side != hero2._2.side){
-            val percentage = shootpercentage(hero1._2, hero2._2)
-            attack = AttackScenario(hero1._2, hero2._2, percentage)
-            out(("The chance to hit " + hero2._2.name + "(" + hero2._2.displayname+ ") with "
-              + hero1._2.name + "(" + hero1._2.displayname + ") is: " + percentage
-              + "%. If you want to shoot, enter 'Yes' otherwise enter 'No'")
-              ,SHOOT)
-          }else{
-            singleOut("Heros are on the same team",SINGLEOUT)
-          }
-        }else{
-          singleOut("Please enter 2 valid heros",SINGLEOUT)
-        }
-    }else{
-      wrongGameState()
-    }
-    false
-  }
-
-  def boundsX(x:Int): Boolean ={
-    if(field.sizeX >= x && x >= 0){
-      return true
-    }
-    false
-  }
-
-  def boundsY(y:Int): Boolean ={
-    if(field.sizeY >= y && y >= 0){
-      return true
-    }
-    false
-  }
-
 
   def move(str: String,pX:Int, pY:Int):Boolean ={
     //TODO STATE CHECk
@@ -179,6 +84,89 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
       }
     }else{
       singleOut( str + " is not a valid Hero",SINGLEOUT)
+    }
+    false
+  }
+
+  def aim(str1:String, str2:String):Boolean ={
+    if(gameState == SUI){
+      val hero1 = isHero(str1)
+      val hero2 = isHero(str2)
+      if(hero1._1 && hero2._1){
+        if(hero1._2.side != hero2._2.side){
+          val percentage = shootpercentage(hero1._2, hero2._2)
+          attack = AttackScenario(hero1._2, hero2._2, percentage)
+          out(("The chance to hit " + hero2._2.name + "(" + hero2._2.displayname+ ") with "
+            + hero1._2.name + "(" + hero1._2.displayname + ") is: " + percentage
+            + "%. If you want to shoot, enter 'Yes' otherwise enter 'No'")
+            ,SHOOT)
+        }else{
+          singleOut("Heros are on the same team",SINGLEOUT)
+        }
+      }else{
+        singleOut("Please enter 2 valid heros",SINGLEOUT)
+      }
+    }else{
+      wrongGameState()
+    }
+    false
+  }
+
+  def shoot(approval:Boolean):Boolean={
+    if(gameState == SHOOT){
+      if(approval){
+        val random = scala.util.Random
+        val randInt = random.nextInt(101)
+        if (randInt <= attack.probability){
+          val result = fire(attack.attHero, attack.defHero)
+          out((attack.attHero.name + "(" + attack.attHero.displayname + ") dealt "
+            + result._1 + " damage to " + attack.defHero.name + "(" + attack.defHero.displayname
+            + ")(" + result._2 + " hp left)")
+            ,SUI)
+          attack = new AttackScenario()
+          return true
+        }else{
+          out(("Shot missed by " + (randInt-attack.probability) + " cm"),SUI)
+          attack = new AttackScenario()
+        }
+      }else{
+        out("Shot canceled",SUI)
+        attack = new AttackScenario()
+      }
+    }else{
+      wrongGameState()
+    }
+    false
+  }
+
+  def fire(attHero: model.Character, defHero: model.Character): (Int,Int) ={
+    if(defHero.hp - attHero.damage <= 0){
+      val temp = field.character.filter(i => i.displayname!= defHero.displayname)
+      field = Field(field.pX,field.pY,field.rocks,temp)
+    }else{
+      val temp = field.character.map{ i =>
+        if(i.displayname == defHero.displayname ){
+          Character(i.name,i.mrange,i.srange,i.damage,i.hp - attHero.damage,i.side,i.displayname,i.cell)
+        }else{
+          i
+        }
+      }
+      field = Field(field.pX,field.pY,field.rocks,temp)
+    }
+
+    (attHero.damage, if ((defHero.hp-attHero.damage)>0) (defHero.hp-attHero.damage) else 0)
+  }
+
+  def boundsX(x:Int): Boolean ={
+    if(field.sizeX >= x && x >= 0){
+      return true
+    }
+    false
+  }
+
+  def boundsY(y:Int): Boolean ={
+    if(field.sizeY >= y && y >= 0){
+      return true
     }
     false
   }
@@ -244,22 +232,32 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
     hitChance
   }
 
-  def fire(attHero: model.Character, defHero: model.Character): (Int,Int) ={
-    if(defHero.hp - attHero.damage <= 0){
-      val temp = field.character.filter(i => i.displayname!= defHero.displayname)
-      field = Field(field.pX,field.pY,field.rocks,temp)
-    }else{
-      val temp = field.character.map{ i =>
-        if(i.displayname == defHero.displayname ){
-          Character(i.name,i.mrange,i.srange,i.damage,i.hp - attHero.damage,i.side,i.displayname,i.cell)
-        }else{
-          i
-        }
-      }
-      field = Field(field.pX,field.pY,field.rocks,temp)
-    }
+  def out(str:String,state :GameState):Unit ={
+    output = str
+    gameState = state
+    notifyObservers
+  }
 
-    (attHero.damage, if ((defHero.hp-attHero.damage)>0) (defHero.hp-attHero.damage) else 0)
+  def singleOut(message : String,state : GameState){
+    val oldState = gameState
+    gameState = state
+    output = message
+    notifyObservers
+    gameState = oldState
+  }
+
+
+  def wrongInput(input : String):Unit={
+    singleOut("Wrong input: [" + input +"]",SINGLEOUT)
+  }
+
+  def wrongGameState() = singleOut("You are not allowed to use that command right now",SINGLEOUT)
+
+  def fieldToString:String = field.toString
+
+  def scenarioAmmount:Int ={
+    val scenario = Scenario()
+    scenario.amount
   }
 
   def splitFlatString(input:String):Array[String] = {
@@ -268,6 +266,11 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
 
   def testInt(input:String):Boolean = {
     input.forall(_.isDigit)
+  }
+
+  def abcToInt(str: String):Int = {
+    val chr = str.charAt(0)
+    chr - 'A' +1
   }
 
   def testABC(str: String):Boolean = {
@@ -280,9 +283,4 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
     false
   }
 
-
-  def abcToInt(str: String):Int = {
-    val chr = str.charAt(0)
-    chr - 'A' +1
-  }
 }

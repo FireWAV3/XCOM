@@ -22,10 +22,10 @@ class TuiSpec extends WordSpec{
       c.gameState should be(SUI)
       //
       tui.run("HELP")
-      c.gameState should be(HELP)
+      c.output should be("help")
       //
       tui.run("INFO C1")
-      c.gameState should be(SINGLEOUT)
+      c.output should include("C1")
       //
       tui.run("EXIT")
       c.gameState should be(END)
