@@ -56,34 +56,37 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
   }
 
   def move(str: String,pX:Int, pY:Int):Boolean ={
-    //TODO STATE CHECk
-    val hero = isHero(str)
-    if(hero._1){
-      if(boundsX(pX) && boundsY(pY)){
-        if(!testHero(pX, pY) && !testRock(pX, pY)){
-          if(movePossible(hero._2, pX, pY)){
-            field = Field(field.pX,field.pY,field.rocks,
-              field.character.map{ i =>
-                if(i.displayname == hero._2.displayname){
-                  Character(i.name,i.mrange,i.srange,i.damage,i.hp,i.side,i.displayname,Cell(pX-1, pY-1, C))
-                }else{
-                  i
+    if(gameState == SUI) {
+      val hero = isHero(str)
+      if (hero._1) {
+        if (boundsX(pX) && boundsY(pY)) {
+          if (!testHero(pX, pY) && !testRock(pX, pY)) {
+            if (movePossible(hero._2, pX, pY)) {
+              field = Field(field.pX, field.pY, field.rocks,
+                field.character.map { i =>
+                  if (i.displayname == hero._2.displayname) {
+                    Character(i.name, i.mrange, i.srange, i.damage, i.hp, i.side, i.displayname, Cell(pX - 1, pY - 1, C))
+                  } else {
+                    i
+                  }
                 }
-              }
-            )
-            out("move successful",SUI)
-            return true
-          }else{
-            singleOut("Move not possible: Hero can't move this far",SINGLEOUT)
+              )
+              out("move successful", SUI)
+              return true
+            } else {
+              singleOut("Move not possible: Hero can't move this far", SINGLEOUT)
+            }
+          } else {
+            singleOut("Move not possible: There is another object at this position", SINGLEOUT)
           }
-        }else{
-          singleOut("Move not possible: There is another object at this position",SINGLEOUT)
+        } else {
+          singleOut("Move not possible: not a tile on the field", SINGLEOUT)
         }
-      }else{
-        singleOut("Move not possible: not a tile on the field",SINGLEOUT)
+      } else {
+        singleOut(str + " is not a valid Hero", SINGLEOUT)
       }
-    }else{
-      singleOut( str + " is not a valid Hero",SINGLEOUT)
+    } else {
+      wrongGameState()
     }
     false
   }
@@ -100,6 +103,7 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
             + hero1._2.name + "(" + hero1._2.displayname + ") is: " + percentage
             + "%. If you want to shoot, enter 'Yes' otherwise enter 'No'")
             ,SHOOT)
+          return true
         }else{
           singleOut("Heros are on the same team",SINGLEOUT)
         }
@@ -158,14 +162,14 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
   }
 
   def boundsX(x:Int): Boolean ={
-    if(field.sizeX >= x-1 && x-1 > 0){
+    if(field.sizeX >= x-1 && x-1 >= 0){
       return true
     }
     false
   }
 
   def boundsY(y:Int): Boolean ={
-    if(field.sizeY >= y-1 && y-1 > 0){
+    if(field.sizeY >= y-1 && y-1 >= 0){
       return true
     }
     false
