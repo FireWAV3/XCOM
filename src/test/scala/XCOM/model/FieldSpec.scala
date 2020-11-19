@@ -12,7 +12,6 @@ class FieldSpec extends WordSpec{
     "have a Y size" in {
       new Field(10,20).sizeY should be(19)
     }
-
     "have a methode xAxisString" in {
       var testField = new Field(6,6)
       testField.xAxisString(5) should include("A\tB\tC\tD\tE\tF")

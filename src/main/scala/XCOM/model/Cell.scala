@@ -15,6 +15,4 @@ case class Cell(x: Int, y: Int, otype: FieldStructure){
   def this(x:Int, y:Int){
     this(x, y, X)
   }
-
-
 }

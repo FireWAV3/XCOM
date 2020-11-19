@@ -10,7 +10,9 @@ class TuiSpec extends WordSpec{
   val c = new Controller()
   val tui = Tui(c)
   "A Tui" should{
-    "have a Controller" in {
+    "have a Constructor" in{
+      val c = new Controller()
+      val tui = Tui(c)
       tui.c shouldBe a [Controller]
     }
     "have a methode processInputLine" in {

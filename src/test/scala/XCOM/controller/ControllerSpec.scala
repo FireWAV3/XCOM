@@ -1,5 +1,5 @@
 package XCOM.controller
-import GameState.{MENU, SUI, SHOOT}
+import GameState.{MENU, SUI, SHOOT,END}
 import XCOM.model.{AttackScenario, Cell, Character, Field}
 import org.scalatest.WordSpec
 import XCOM.model.FieldStructure._
@@ -9,6 +9,39 @@ class ControllerSpec extends  WordSpec{
   "A Controller" should{
     var testField = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C1", Cell(5, 6, C))))
     var c = Controller(MENU, testField ,new AttackScenario())
+    "have a standard Constructor "in{
+      Controller(MENU, testField ,new AttackScenario()).gameState should be(MENU)
+     }
+    "have a default Constructor" in {
+      val cC = new Controller()
+      cC.gameState should be(MENU)
+      cC.field.sizeX should be(-1)
+    }
+    "have a gameState Constructor" in {
+      val cC = new Controller(END)
+      cC.gameState should be(END)
+    }
+    "have a methode help" in{
+      c.help
+      c.output should be("help")
+    }
+    "have a methode exit" in{
+      val cC = new Controller()
+      cC.exit
+      cC.gameState should be(END)
+    }
+    "have a methode info" in{
+      c.info("AA") should be(false)
+      c.output should be("AA is not a Hero")
+      c.info("C1") should be(true)
+      c.output should include("C1")
+    }
+    "have a methode loadScenario" in{
+      val cC = new Controller()
+      cC.loadScenario(0) should be (true)
+      cC.gameState = SUI
+      cC.loadScenario(0) should be(false)
+    }
     "have a methode move" in{
       var movementRange = new Field(5,10,Vector[Cell](Cell(3,3,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(4, 4, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(4, 5, C))))
       var cMove = Controller(MENU, movementRange ,new AttackScenario())
