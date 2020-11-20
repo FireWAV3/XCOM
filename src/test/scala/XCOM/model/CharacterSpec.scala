@@ -1,9 +1,8 @@
-package XCOM
+package XCOM.model
 
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
-import FieldStructure._
-
+import XCOM.model.FieldStructure._
 
 class CharacterSpec extends WordSpec{
   var testCharacter = Character("Tank", 5, 10, 70, 40, 0,"C2", Cell(4, 8, C))
@@ -38,6 +37,15 @@ class CharacterSpec extends WordSpec{
     }
     "have a Celltype" in{
       testCharacter.cell.otype should be (C)
+    }
+    "have an empty Constructor" in{
+      val Hero = new Character()
+      Hero.name should be("Test")
+    }
+    "have a toString methode" in{
+      testCharacter.toString should be("The Character '" + testCharacter.name + "'(" + testCharacter.displayname + ", Team "
+        + testCharacter.side + ") can move over " + testCharacter.mrange + " and shoot over " + testCharacter.srange
+        + " tiles with a damage of " + testCharacter.damage + ". He has " + testCharacter.hp + " health points left.")
     }
   }
 }

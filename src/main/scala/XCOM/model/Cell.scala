@@ -1,10 +1,10 @@
-package XCOM
+package XCOM.model
 
 object FieldStructure extends Enumeration {
   type FieldStructure = Value
   val X, R, C = Value
 }
-import FieldStructure._
+import XCOM.model.FieldStructure._
 
 case class Cell(x: Int, y: Int, otype: FieldStructure){
 
@@ -15,6 +15,4 @@ case class Cell(x: Int, y: Int, otype: FieldStructure){
   def this(x:Int, y:Int){
     this(x, y, X)
   }
-
-
 }
