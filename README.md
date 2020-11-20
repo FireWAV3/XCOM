@@ -8,4 +8,4 @@ Every success on an attack is randomly based on distance and skills of the attac
 
 Coverage in Develop branch
 [![Build Status](https://travis-ci.com/FireWAV3/XCOM.svg?branch=Develop)](https://travis-ci.com/FireWAV3/XCOM)
-[![Coverage Status](https://coveralls.io/repos/github/FireWAV3/XCOM/badge.svg?branch=main)](https://coveralls.io/github/FireWAV3/XCOM?branch=Develop)
+[![Coverage Status](https://coveralls.io/repos/github/FireWAV3/XCOM/badge.svg?branch=Develop)](https://coveralls.io/github/FireWAV3/XCOM?branch=Develop)
