@@ -11,9 +11,7 @@ case class Tui(var c : Controller) extends Observer{
   println("If you want to start, enter 'Load,Number' to choose a scenario with Number  between 1 and " + c.scenarioAmmount)
 
   def processInputLine(input: String): Boolean ={
-    if(input.length > 0){
-      run(input)
-    }
+    run(input)
     c.gameState != END
   }
 
@@ -31,7 +29,6 @@ case class Tui(var c : Controller) extends Observer{
         case _ => c.wrongInput(input)
       }
     }
-
   }
 
   def load(input :String): Boolean ={

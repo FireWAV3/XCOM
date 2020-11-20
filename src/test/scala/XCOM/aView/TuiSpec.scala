@@ -39,6 +39,8 @@ class TuiSpec extends WordSpec{
       //
       tui.run("INFO C1")
       c.output should include("C1")
+      tui.run("INFO XX")
+      c.output should include("XX is not a Hero")
       //
       tui.run("MOVE C1 E 1")
       c.gameState should be(SUI)
