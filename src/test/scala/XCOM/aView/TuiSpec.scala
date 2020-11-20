@@ -21,6 +21,16 @@ class TuiSpec extends WordSpec{
       tui2.processInputLine("test") should be(false)
     }
     "have a methode run" in{
+      tui.run("")
+      c.gameState should be(MENU)
+      tui.run("     ")
+      c.gameState should be(MENU)
+      tui.run(",,, ,,,")
+      c.gameState should be(MENU)
+      //
+      tui.run("LOAD -1")
+      c.output should be("Wrong input: [-1]")
+      c.gameState should be(MENU)
       tui.run("LOAD 0")
       c.gameState should be(SUI)
       //
@@ -34,8 +44,10 @@ class TuiSpec extends WordSpec{
       c.gameState should be(SUI)
       c.field.character(0).cell.x should be (4)
       c.field.character(0).cell.y should be (0)
-      tui.run("MOVE C1 5 Z")
-      c.output should be("Wrong input: [C1 5 Z]")
+      tui.run("MOVE C1 5 5")
+      c.output should be("Wrong input: [C1 5 5]")
+      tui.run("MOVE C1 E Z")
+      c.output should be("Wrong input: [C1 E Z]")
       //
       tui.run("SHOOT C1 C3")
       c.gameState should be(SHOOT)
