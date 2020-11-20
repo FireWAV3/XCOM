@@ -28,6 +28,8 @@ class TuiSpec extends WordSpec{
       tui.run(",,, ,,,")
       c.gameState should be(MENU)
       //
+      tui.run("LOAD")
+      c.output should be("Wrong input: [LOAD]")
       tui.run("LOAD -1")
       c.output should be("Wrong input: [-1]")
       c.gameState should be(MENU)
