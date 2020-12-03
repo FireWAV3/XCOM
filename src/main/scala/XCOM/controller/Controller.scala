@@ -1,17 +1,21 @@
 package XCOM.controller
+import XCOM.controller.GameStatus._
 import XCOM.model
 import XCOM.model.FieldStructure._
-import XCOM.model.{AttackScenario, Cell, Character, Field, Scenario}
+import XCOM.model.{AttackScenario, Cell, Character, Field, Scenario, TurnScenario}
 import XCOM.util.Observable
+import XCOM.controller.PlayerStatus._
 
-object GameState extends Enumeration {
-type GameState = Value
-  val MENU, SUI, SHOOT, END , HELP ,SINGLEOUT = Value
-}
-import XCOM.controller.GameState._
+
 
 case class Controller(var gameState: GameState,var field: Field, var attack : AttackScenario) extends Observable{
+
+
   var output = ""
+
+  //TODO in Kunstruktor
+  var PlayerState : PlayerStatus = BLUE
+  val turnS = TurnScenario()
 
   def this (){
     this(MENU, new Field(0,0),new AttackScenario())
@@ -40,6 +44,7 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
     false
   }
 
+
   def loadScenario(index:Int): Boolean ={
     val scenario = Scenario()
     if(gameState == MENU){
@@ -50,12 +55,33 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
         + "\nInfo C:\t\t\tCurrent status of Character(C)"
         + "\nshoot C,T:\t\tCharacter(C) attacks Target(T)\n"
         ,SUI)
+      turnS.laod(PlayerStatus.turn(PlayerState),field)
       return true
     }
     false
   }
 
+
   def move(str: String,pX:Int, pY:Int):Boolean ={
+    val hero = isHero(str)
+    if(hero._1){
+      if(PlayerStatus.turn(PlayerState) == hero._2.side ){
+        if(turnS.movable(hero._2.displayname)){
+          return moveI(str, pX, pY)
+        }else{
+          singleOut(str + " already moved", SINGLEOUT)
+        }
+      }else {
+        singleOut(str + " is not a member of the Team that has the control", SINGLEOUT)
+      }
+    }else{
+      singleOut(str + " is not a valid Hero", SINGLEOUT)
+    }
+    false
+  }
+
+
+  def moveI(str: String,pX:Int, pY:Int):Boolean ={
     if(gameState == SUI) {
       val hero = isHero(str)
       if (hero._1) {
@@ -65,22 +91,23 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
               field = Field(field.pX, field.pY, field.rocks,
                 field.character.map { i =>
                   if (i.displayname == hero._2.displayname) {
+                    turnS.movedHero(hero._2.displayname)
                     Character(i.name, i.mrange, i.srange, i.damage, i.hp, i.side, i.displayname, Cell(pX - 1, pY - 1, C))
                   } else {
                     i
                   }
                 }
               )
-              out("move successful", SUI)
+              out(" move successful", SUI)
               return true
             } else {
-              singleOut("Move not possible: Hero can't move this far", SINGLEOUT)
+              singleOut(" Move not possible: Hero can't move this far", SINGLEOUT)
             }
           } else {
-            singleOut("Move not possible: There is another object at this position", SINGLEOUT)
+            singleOut(" Move not possible: There is another object at this position", SINGLEOUT)
           }
         } else {
-          singleOut("Move not possible: not a tile on the field", SINGLEOUT)
+          singleOut(" Move not possible: not a tile on the field", SINGLEOUT)
         }
       } else {
         singleOut(str + " is not a valid Hero", SINGLEOUT)
@@ -92,6 +119,26 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
   }
 
   def aim(str1:String, str2:String):Boolean ={
+    val hero1 = isHero(str1)
+    val hero2 = isHero(str2)
+    if(hero1._1 && hero2._1){
+      if(PlayerStatus.turn(PlayerState) == hero1._2.side ){
+        if(turnS.shootable(hero1._2.displayname)){
+
+          return aimI(str1:String, str2:String)
+        }else{
+          singleOut(str1 + " already shot", SINGLEOUT)
+        }
+      }else {
+        singleOut(str1 + " is not a member of the Team that has the control", SINGLEOUT)
+      }
+    }else{
+      singleOut(" Please enter 2 valid heros",SINGLEOUT)
+    }
+    false
+  }
+
+  def aimI(str1:String, str2:String):Boolean ={
     if(gameState == SUI){
       val hero1 = isHero(str1)
       val hero2 = isHero(str2)
@@ -99,8 +146,8 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
         if(hero1._2.side != hero2._2.side){
           val percentage = shootpercentage(hero1._2, hero2._2)
           attack = AttackScenario(hero1._2, hero2._2, percentage)
-          out(("The chance to hit " + hero2._2.name + "(" + hero2._2.displayname+ ") with "
-            + hero1._2.name + "(" + hero1._2.displayname + ") is: " + percentage
+          out(("The chance to hit " + hero2._2.name + " (" + hero2._2.displayname+ ") with "
+            + hero1._2.name + " (" + hero1._2.displayname + ") is: " + percentage
             + "%. If you want to shoot, enter 'Yes' otherwise enter 'No'")
             ,SHOOT)
           return true
@@ -116,22 +163,64 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
     false
   }
 
+  //TODO ander pos im code
+  def nextPlayerState(side: PlayerStatus) : PlayerStatus = {
+    if(PlayerState == BLUE){
+      return RED
+    }
+    BLUE
+  }
+
+  def next : Boolean = {
+    if(gameState == SUI){
+      PlayerState = nextPlayerState(PlayerState);
+      turnS.laod( PlayerStatus.turn(PlayerState),field)
+      singleOut("Turn of the " + PlayerState+" Team started" ,SUI)
+      return true
+    }else{
+      wrongGameState()
+    }
+    false
+  }
+
   def shoot(approval:Boolean):Boolean={
     if(gameState == SHOOT){
       if(approval){
+        turnS.shootHero(attack.attHero.displayname)
         val random = scala.util.Random
         val randInt = random.nextInt(101)
         if (randInt <= attack.probability){
           val result = fire(attack.attHero, attack.defHero)
-          out((attack.attHero.name + "(" + attack.attHero.displayname + ") dealt "
-            + result._1 + " damage to " + attack.defHero.name + "(" + attack.defHero.displayname
+          out((attack.attHero.name + " (" + attack.attHero.displayname + ") dealt "
+            + result._1 + " damage to " + attack.defHero.name + " (" + attack.defHero.displayname
             + ")(" + result._2 + " hp left)")
             ,SUI)
+
           attack = new AttackScenario()
+
+
+          //Check defeded
+          val turnSnext = TurnScenario()
+          turnSnext.laod( PlayerStatus.turn(nextPlayerState(PlayerState)),field)
+          if(turnSnext.testEnd()){
+            out("The Team: " + nextPlayerState(PlayerState) +" has won",END)
+          }
+
+          if(turnS.testEnd()){
+            PlayerState = nextPlayerState(PlayerState)
+            turnS.laod( PlayerStatus.turn(PlayerState),field)
+            singleOut("Turn of the " + PlayerState+" Team started" ,SINGLEOUT)
+          }
           return true
         }else{
           out(("Shot missed by " + (randInt-attack.probability) + " cm"),SUI)
           attack = new AttackScenario()
+        }
+
+        if(turnS.testEnd()){
+          PlayerState = nextPlayerState(PlayerState)
+          turnS.laod( PlayerStatus.turn(PlayerState),field)
+          singleOut("Turn of the " + PlayerState+" Team started" ,SINGLEOUT)
         }
       }else{
         out("Shot canceled",SUI)
@@ -193,6 +282,9 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
 
   def movePossible(hero:model.Character, pX:Int, pY:Int):Boolean = {
     //TODO A*
+
+
+
     val xDistance = pX - 1 - hero.cell.x
     val yDistance = pY - 1 - hero.cell.y
     var distance = 0
@@ -206,6 +298,7 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
       distance = xDistance + yDistance
     }
     hero.mrange >= distance
+
   }
 
   def shootpercentage(attHero: model.Character, defHero: model.Character): Int ={
