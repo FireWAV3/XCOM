@@ -1,7 +1,7 @@
 package XCOM.aView
 
 import XCOM.controller.Controller
-import XCOM.controller.GameState._
+import XCOM.controller.GameStatus._
 import XCOM.util.Observer
 
 case class Tui(var c : Controller) extends Observer{
@@ -19,8 +19,10 @@ case class Tui(var c : Controller) extends Observer{
     val comInput =  c.splitFlatString(input)
     if(comInput.length > 0){
       comInput(0) match {
+        //TODO Next command
         case "EXIT" => c.exit
         case "HELP" => c.help
+        case "NEXT" => c.next
         case "LOAD" => if(comInput.length == 2) load(comInput(1)) else c.wrongInput(input)
         case "INFO" => if(comInput.length == 2) c.info(comInput(1)) else c.wrongInput(input)
         case "SHOOT" => if(comInput.length == 3) c.aim(comInput(1),comInput(2)) else c.wrongInput(input)
@@ -55,7 +57,8 @@ case class Tui(var c : Controller) extends Observer{
 
   override def update: Unit = {
     if(c.gameState == END){
-      println("\nThanks for playing!\nGoodbye!\n")
+      println(c.output)
+      println("Thanks for playing!\nGoodbye!\n")
     }else if(c.gameState == SHOOT || c.gameState == SINGLEOUT || c.gameState == MENU){
       println(c.output)
     }

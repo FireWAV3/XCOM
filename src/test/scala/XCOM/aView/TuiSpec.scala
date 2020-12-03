@@ -1,7 +1,8 @@
 package XCOM.aView
 
 import XCOM.controller.Controller
-import XCOM.controller.GameState._
+import XCOM.controller.GameStatus._
+import XCOM.controller.PlayerStatus._
 import XCOM.model.AttackScenario
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
@@ -43,6 +44,11 @@ class TuiSpec extends WordSpec{
       c.output should include("C1")
       tui.run("INFO XX")
       c.output should include("XX is not a Hero")
+      //
+      tui.run("NEXT")
+      c.PlayerState should be (RED)
+      tui.run("NEXT")
+      c.PlayerState should be (BLUE)
       //
       tui.run("MOVE C1 E 1")
       c.gameState should be(SUI)
