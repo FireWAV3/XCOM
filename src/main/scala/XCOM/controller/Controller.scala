@@ -183,6 +183,16 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
     false
   }
 
+  def checkTurn() : Boolean = {
+    if(turnS.testEnd()){
+      PlayerState = nextPlayerState(PlayerState)
+      turnS.laod( PlayerStatus.turn(PlayerState),field)
+      singleOut("Turn of the " + PlayerState+" Team started" ,SINGLEOUT)
+      return true
+    }
+    false
+  }
+
   def shoot(approval:Boolean):Boolean={
     if(gameState == SHOOT){
       if(approval){
@@ -199,29 +209,19 @@ case class Controller(var gameState: GameState,var field: Field, var attack : At
           attack = new AttackScenario()
 
 
-          //Check defeded
+          //Check defeated
           val turnSnext = TurnScenario()
           turnSnext.laod( PlayerStatus.turn(nextPlayerState(PlayerState)),field)
           if(turnSnext.testEnd()){
             out("The Team: " + nextPlayerState(PlayerState) +" has won",END)
           }
-
-          if(turnS.testEnd()){
-            PlayerState = nextPlayerState(PlayerState)
-            turnS.laod( PlayerStatus.turn(PlayerState),field)
-            singleOut("Turn of the " + PlayerState+" Team started" ,SINGLEOUT)
-          }
+          checkTurn()
           return true
         }else{
           out(("Shot missed by " + (randInt-attack.probability) + " cm"),SUI)
           attack = new AttackScenario()
         }
-
-        if(turnS.testEnd()){
-          PlayerState = nextPlayerState(PlayerState)
-          turnS.laod( PlayerStatus.turn(PlayerState),field)
-          singleOut("Turn of the " + PlayerState+" Team started" ,SINGLEOUT)
-        }
+        checkTurn()
       }else{
         out("Shot canceled",SUI)
         attack = new AttackScenario()

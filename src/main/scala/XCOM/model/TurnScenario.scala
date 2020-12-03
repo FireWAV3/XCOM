@@ -6,6 +6,7 @@ case class TurnScenario() {
 
 
   def laod(team : Int, field : Field): Unit ={
+      map = Map[String, Boolean]()
       for(e <- field.character if e.side == team){
         map += (
             e.displayname -> true
