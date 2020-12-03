@@ -17,5 +17,4 @@ object  PlayerStatus extends Enumeration {
 
   def turn(side: PlayerStatus) = map(side)
 
-
 }

@@ -1,9 +1,10 @@
 package XCOM.controller
-import GameStatus.{MENU, SUI, SHOOT,END}
-import XCOM.model.{AttackScenario, Cell, Character, Field}
-import org.scalatest.WordSpec
+import XCOM.controller.GameStatus.{END, MENU, SHOOT, SUI}
+import XCOM.controller.PlayerStatus._
 import XCOM.model.FieldStructure._
+import XCOM.model.{AttackScenario, Cell, Character, Field}
 import org.scalatest.Matchers._
+import org.scalatest.WordSpec
 
 class ControllerSpec extends  WordSpec{
   "A Controller" should{
@@ -43,40 +44,57 @@ class ControllerSpec extends  WordSpec{
       cC.loadScenario(0) should be(false)
     }
     "have a methode move" in{
-      var movementRange = new Field(5,10,Vector[Cell](Cell(3,3,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(4, 4, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(4, 5, C))))
+      var movementRange = new Field(5,10,Vector[Cell](Cell(3,3,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(4, 4, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(4, 5, C)),Character("SniperRED", 5, 10, 70, 40, 1,"C3", Cell(4, 3, C))))
       var cMove = Controller(MENU, movementRange ,new AttackScenario())
+      cMove.turnS.laod(0,movementRange)
       cMove.move("C1",5,7) should be(false)
       cMove.output should be("You are not allowed to use that command right now")
       cMove.gameState = SUI
+      cMove.move("C3",5,6) should be(false)
+      cMove.output should include("is not a member of the Team")
       cMove.move("AA",5,7) should be(false)
       cMove.output should include("is not a valid Hero")
       cMove.move("C1",6,6) should be(false)
-      cMove.output should be("Move not possible: not a tile on the field")
+      cMove.output should include("Move not possible: not a tile on the field")
       cMove.move("C1",5,6) should be(false)
-      cMove.output should be("Move not possible: There is another object at this position")
+      cMove.output should include("Move not possible: There is another object at this position")
       cMove.move("C1",4,4) should be(false)
-      cMove.output should be("Move not possible: There is another object at this position")
+      cMove.output should include("Move not possible: There is another object at this position")
       cMove.move("C1",1,10) should be(false)
-      cMove.output should be("Move not possible: Hero can't move this far")
+      cMove.output should include("Move not possible: Hero can't move this far")
       cMove.move("C1",5,7) should be(true)
-      cMove.field.character should be(Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(4, 6, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(4, 5, C))))
+      cMove.field.character should be(Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(4, 6, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(4, 5, C)),Character("SniperRED", 5, 10, 70, 40, 1,"C3", Cell(4, 3, C))))
+      cMove.move("C1",4,7) should be(false)
+      cMove.output should include("already moved")
+      cMove.gameState = SHOOT
+      cMove.attack = new AttackScenario(cMove.field.character(0),cMove.field.character(1),0)
+      cMove.shoot(true)
+      cMove.move("C1",5,7) should be(false)
+      cMove.output should include("already moved")
     }
     "have a methode aim" in{
       var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),
         Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C)),Character("Assassin", 5, 10, 50, 90, 1,"C3", Cell(6, 6, C))))
       var cShoot = Controller(MENU, shootingRange ,new AttackScenario())
+      cShoot.turnS.laod(0,shootingRange)
       cShoot.aim("C1","C2") should be(false)
       cShoot.output should be("You are not allowed to use that command right now")
       cShoot.gameState = SUI
+      cShoot.aim("C3","C2") should be(false)
+      cShoot.output should include("is not a member of the Team")
       cShoot.aim("AA","C2") should be(false)
-      cShoot.output should be("Please enter 2 valid heros")
+      cShoot.output should include("Please enter 2 valid heros")
       cShoot.aim("C1","C2") should be(false)
-      cShoot.output should be("Heros are on the same team")
+      cShoot.output should include("Heros are on the same team")
       cShoot.aim("C1","C3") should be(true)
+      cShoot.shoot(true)
+      cShoot.aim("C1","C3") should be(false)
+      cShoot.output should include("already shot")
     }
     "have a methode shoot" in{
       var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
       var cShoot = Controller(MENU, shootingRange ,new AttackScenario())
+      cShoot.turnS.laod(0,shootingRange)
       cShoot.shoot(true) should be(false)
       cShoot.output should be("You are not allowed to use that command right now")
       cShoot.gameState = SHOOT
@@ -100,6 +118,18 @@ class ControllerSpec extends  WordSpec{
       attack2._1 should be(50)
       attack2._2 should be(0)
       cShoot.field.character should be(Vector[Character](Character("Tank", 5, 10, 50, 20, 0,"C2", Cell(5, 6, C))))
+    }
+    "have a methode next" in{
+      var sleepingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
+      var cSleep = Controller(MENU, sleepingRange ,new AttackScenario())
+      cSleep.next should be(false)
+      cSleep.output should be("You are not allowed to use that command right now")
+      cSleep.gameState = SUI
+      cSleep.next should be(true)
+      cSleep.PlayerState should be(RED)
+      cSleep.next should be(true)
+      cSleep.PlayerState should be(BLUE)
+
     }
     "have a methode boundsX" in{
       c.boundsX(0) should be(false)
