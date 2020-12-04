@@ -1,5 +1,5 @@
+
 package XCOM.controller
-import XCOM.controller.GameStatus.{END, MENU, SHOOT, SUI}
 import XCOM.controller.PlayerStatus._
 import XCOM.model.FieldStructure._
 import XCOM.model.{AttackScenario, Cell, Character, Field}
@@ -9,47 +9,43 @@ import org.scalatest.WordSpec
 class ControllerSpec extends  WordSpec{
   "A Controller" should{
     var testField = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C1", Cell(5, 6, C))))
-    var c = Controller(MENU, testField ,new AttackScenario())
+    var c = Controller(testField ,new AttackScenario())
     "have a standard Constructor "in{
-      Controller(MENU, testField ,new AttackScenario()).gameState should be(MENU)
+      Controller(testField ,new AttackScenario()).context.state shouldBe a [MenuState]
      }
     "have a default Constructor" in {
       val cC = new Controller()
-      cC.gameState should be(MENU)
+      cC.context.state shouldBe a [MenuState]
       cC.field.sizeX should be(-1)
     }
-    "have a gameState Constructor" in {
-      val cC = new Controller(END)
-      cC.gameState should be(END)
-    }
-    "have a methode help" in{
+     "have a methode help" in{
       c.help
-      c.output should be("help")
+      c.output should include("HELP")
     }
-    "have a methode exit" in{
-      val cC = new Controller()
-      cC.exit
-      cC.gameState should be(END)
-    }
+
     "have a methode info" in{
+      c.context.state = new SuiState(c)
       c.info("AA") should be(false)
       c.output should be("AA is not a Hero")
       c.info("C1") should be(true)
       c.output should include("C1")
+      c.context.state = new MenuState(c)
+      c.info("C1") should be(false)
+      c.output should include("You are not allowed to use that command right now")
     }
     "have a methode loadScenario" in{
       val cC = new Controller()
       cC.loadScenario(0) should be (true)
-      cC.gameState = SUI
+      cC.context.state shouldBe a [SuiState]
       cC.loadScenario(0) should be(false)
     }
     "have a methode move" in{
       var movementRange = new Field(5,10,Vector[Cell](Cell(3,3,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(4, 4, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(4, 5, C)),Character("SniperRED", 5, 10, 70, 40, 1,"C3", Cell(4, 3, C))))
-      var cMove = Controller(MENU, movementRange ,new AttackScenario())
-      cMove.turnS.laod(0,movementRange)
+      var cMove = Controller(movementRange ,new AttackScenario())
+      cMove.turnS.load(0,movementRange)
       cMove.move("C1",5,7) should be(false)
       cMove.output should be("You are not allowed to use that command right now")
-      cMove.gameState = SUI
+      cMove.context.state = new SuiState(cMove)
       cMove.move("C3",5,6) should be(false)
       cMove.output should include("is not a member of the Team")
       cMove.move("AA",5,7) should be(false)
@@ -66,20 +62,24 @@ class ControllerSpec extends  WordSpec{
       cMove.field.character should be(Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(4, 6, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(4, 5, C)),Character("SniperRED", 5, 10, 70, 40, 1,"C3", Cell(4, 3, C))))
       cMove.move("C1",4,7) should be(false)
       cMove.output should include("already moved")
-      cMove.gameState = SHOOT
-      cMove.attack = new AttackScenario(cMove.field.character(0),cMove.field.character(1),0)
+      cMove.context.state = new ShootState(cMove)
+      cMove.attack = AttackScenario(cMove.field.character(0),cMove.field.character(1),0)
       cMove.shoot(true)
       cMove.move("C1",5,7) should be(false)
       cMove.output should include("already moved")
+
+      cMove.contextTravel.travelState = new AStar(cMove)
+      cMove.contextTravel.travelState.movePossible(cMove.field.character(1),5,4) should be(false)
+      cMove.output should include("not implemented")
     }
     "have a methode aim" in{
       var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),
         Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C)),Character("Assassin", 5, 10, 50, 90, 1,"C3", Cell(6, 6, C))))
-      var cShoot = Controller(MENU, shootingRange ,new AttackScenario())
-      cShoot.turnS.laod(0,shootingRange)
+      var cShoot = Controller(shootingRange ,new AttackScenario())
+      cShoot.turnS.load(0,shootingRange)
       cShoot.aim("C1","C2") should be(false)
       cShoot.output should be("You are not allowed to use that command right now")
-      cShoot.gameState = SUI
+      cShoot.context.state = new SuiState(cShoot)
       cShoot.aim("C3","C2") should be(false)
       cShoot.output should include("is not a member of the Team")
       cShoot.aim("AA","C2") should be(false)
@@ -92,25 +92,25 @@ class ControllerSpec extends  WordSpec{
       cShoot.output should include("already shot")
     }
     "have a methode shoot" in{
-      var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
-      var cShoot = Controller(MENU, shootingRange ,new AttackScenario())
-      cShoot.turnS.laod(0,shootingRange)
+      var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C)),Character("TankR", 5, 10, 50, 90, 1,"C3", Cell(5, 6, C))))
+      var cShoot = Controller(shootingRange ,new AttackScenario())
+      cShoot.turnS.load(0,shootingRange)
       cShoot.shoot(true) should be(false)
       cShoot.output should be("You are not allowed to use that command right now")
-      cShoot.gameState = SHOOT
+      cShoot.context.state = new ShootState(cShoot)
       cShoot.shoot(false) should be(false)
       cShoot.output should be("Shot canceled")
-      cShoot.gameState = SHOOT
+      cShoot.context.state = new ShootState(cShoot)
       cShoot.attack = AttackScenario(cShoot.field.character(0),cShoot.field.character(1),0)
       cShoot.shoot(true) should be(false)
       cShoot.output should include("Shot missed by ")
-      cShoot.gameState = SHOOT
+      cShoot.context.state = new ShootState(cShoot)
       cShoot.attack = AttackScenario(cShoot.field.character(0),cShoot.field.character(1),100)
       cShoot.shoot(true) should be(true)
     }
     "have a methode fire" in{
       var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
-      var cShoot = Controller(MENU, shootingRange ,new AttackScenario())
+      var cShoot = Controller(shootingRange ,new AttackScenario())
       val attack1 = cShoot.fire(shootingRange.character(0),shootingRange.character(1))
       val attack2 = cShoot.fire(shootingRange.character(1),shootingRange.character(0))
       attack1._1 should be(70)
@@ -121,10 +121,10 @@ class ControllerSpec extends  WordSpec{
     }
     "have a methode next" in{
       var sleepingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
-      var cSleep = Controller(MENU, sleepingRange ,new AttackScenario())
+      var cSleep = Controller( sleepingRange ,new AttackScenario())
       cSleep.next should be(false)
       cSleep.output should be("You are not allowed to use that command right now")
-      cSleep.gameState = SUI
+      cSleep.context.state = new SuiState(cSleep)
       cSleep.next should be(true)
       cSleep.PlayerState should be(RED)
       cSleep.next should be(true)
@@ -152,6 +152,9 @@ class ControllerSpec extends  WordSpec{
     "have a methode isHero" in{
       c.isHero("C1")._1 should be(true)
       c.isHero("C2")._1 should be(false)
+    }
+    "have a methode aStarMove" in{
+      c.aStarMove(0,0,0,0) should be(false)
     }
     "have a methode movePossible" in{
       //down
@@ -185,9 +188,8 @@ class ControllerSpec extends  WordSpec{
       c.shootpercentage(shootingRange.character(0),shootingRange.character(3)) should be(83)
     }
     "have a methode out" in{
-      c.out("Test", SUI)
+      c.out("Test")
       c.output should be("Test")
-      c.gameState should be(SUI)
     }
     "have a methode wrongInput" in{
       c.wrongInput("Error123")
@@ -223,3 +225,4 @@ class ControllerSpec extends  WordSpec{
     }
   }
 }
+

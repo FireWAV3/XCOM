@@ -1,20 +1,20 @@
 package XCOM
-
-import aView.Tui
+import aView.UiTrait
 import controller.Controller
+
 import scala.io._
 
 object XCOM {
-
   val c = new Controller()
-  val tui = Tui(c)
+
+  val uiType = "TUI"
+  val ui = UiTrait(uiType, c)
+  c.notifyObservers
 
   def main(args: Array[String]): Unit = {
-    var running = true
-
-    do{
+    while(true){
       val input = StdIn.readLine().toUpperCase()
-      running = tui.processInputLine(input)
-    }while(running)
+      ui.run(input)
+    }
   }
 }

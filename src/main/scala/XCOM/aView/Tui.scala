@@ -1,19 +1,13 @@
 package XCOM.aView
-
-import XCOM.controller.Controller
-import XCOM.controller.GameStatus._
+import XCOM.controller._
 import XCOM.util.Observer
 
-case class Tui(var c : Controller) extends Observer{
+case class Tui(var c : Controller) extends Observer with UiTrait{
   c.add(this)
 
   println("Welcome to Xcom!\nFor more information enter Help\n")
   println("If you want to start, enter 'Load,Number' to choose a scenario with Number  between 1 and " + c.scenarioAmmount)
 
-  def processInputLine(input: String): Boolean ={
-    run(input)
-    c.gameState != END
-  }
 
   def run(input:String): Unit = {
     val comInput =  c.splitFlatString(input)
@@ -56,21 +50,7 @@ case class Tui(var c : Controller) extends Observer{
   }
 
   override def update: Unit = {
-    if(c.gameState == END){
-      println(c.output)
-      println("Thanks for playing!\nGoodbye!\n")
-    }else if(c.gameState == SHOOT || c.gameState == SINGLEOUT || c.gameState == MENU){
-      println(c.output)
-    }
-    else if(c.gameState == HELP){
-      println("\nHELP" +
-              "\nExit:\t\t\tExits the game" +
-              "\nMove C,X,Y :\tMove Character(C) to X, Y" +
-              "\nInfo C:\t\t\tCurrent status of Character(C)" +
-              "\nShoot C,T:\t\tCharacter(C) attacks Target(T)\n")
-    }else{
-      println(c.fieldToString)
-      println(c.output)
-    }
+    println(c.fieldToString)
+    println(c.output)
   }
 }
