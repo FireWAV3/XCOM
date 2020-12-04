@@ -9,8 +9,8 @@ class GuiSpec extends WordSpec{
   "A Gui" should{
     "have a Constructor"in{
       val c = new Controller()
-      val gui = Gui(c)
-      gui.c shouldBe a [Controller]
+      val ui = UiTrait("GUI", c)
+      ui shouldBe a [Gui]
     }
   }
 }

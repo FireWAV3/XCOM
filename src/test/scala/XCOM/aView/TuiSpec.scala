@@ -13,8 +13,8 @@ class TuiSpec extends WordSpec{
   "A Tui" should{
     "have a Constructor" in{
       val c = new Controller()
-      val tui = Tui(c)
-      tui.c shouldBe a [Controller]
+      val ui = UiTrait("TUI", c)
+      ui shouldBe a [Tui]
     }
     "have a methode run" in{
       tui.run("")
