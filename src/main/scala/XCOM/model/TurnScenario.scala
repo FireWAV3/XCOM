@@ -5,7 +5,7 @@ case class TurnScenario() {
   var map = Map[String, Boolean]()
 
 
-  def laod(team : Int, field : Field): Unit ={
+  def load(team : Int, field : Field): Unit ={
       map = Map[String, Boolean]()
       for(e <- field.character if e.side == team){
         map += (

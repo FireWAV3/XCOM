@@ -1,7 +1,7 @@
+
 package XCOM.aView
 
-import XCOM.controller.Controller
-import XCOM.controller.GameStatus._
+import XCOM.controller._
 import XCOM.controller.PlayerStatus._
 import XCOM.model.AttackScenario
 import org.scalatest.Matchers._
@@ -16,29 +16,24 @@ class TuiSpec extends WordSpec{
       val tui = Tui(c)
       tui.c shouldBe a [Controller]
     }
-    "have a methode processInputLine" in {
-      val tui2 = Tui(new Controller(END))
-      tui.processInputLine("test") should be(true)
-      tui2.processInputLine("test") should be(false)
-    }
     "have a methode run" in{
       tui.run("")
-      c.gameState should be(MENU)
+      c.context.state shouldBe a [MenuState]
       tui.run("     ")
-      c.gameState should be(MENU)
+      c.context.state shouldBe a [MenuState]
       tui.run(",,, ,,,")
-      c.gameState should be(MENU)
+      c.context.state shouldBe a [MenuState]
       //
       tui.run("LOAD")
       c.output should be("Wrong input: [LOAD]")
       tui.run("LOAD -1")
       c.output should be("Wrong input: [-1]")
-      c.gameState should be(MENU)
+      c.context.state shouldBe a [MenuState]
       tui.run("LOAD 0")
-      c.gameState should be(SUI)
+      c.context.state shouldBe a [SuiState]
       //
       tui.run("HELP")
-      c.output should be("help")
+      c.output should include("HELP")
       //
       tui.run("INFO C1")
       c.output should include("C1")
@@ -51,7 +46,7 @@ class TuiSpec extends WordSpec{
       c.PlayerState should be (BLUE)
       //
       tui.run("MOVE C1 E 1")
-      c.gameState should be(SUI)
+      c.context.state shouldBe a [SuiState]
       c.field.character(0).cell.x should be (4)
       c.field.character(0).cell.y should be (0)
       tui.run("MOVE C1 5 5")
@@ -60,29 +55,28 @@ class TuiSpec extends WordSpec{
       c.output should be("Wrong input: [C1 E Z]")
       //
       tui.run("SHOOT C1 C3")
-      c.gameState should be(SHOOT)
+      c.context.state shouldBe a [ShootState]
       c.attack = new AttackScenario(c.field.character(0),c.field.character(2),100)
       tui.run("NO")
-      c.gameState should be(SUI)
+      c.context.state shouldBe a [SuiState]
 
       tui.run("SHOOT C2 C3")
       val prevHP =   c.field.character(2).hp
-      c.gameState should be(SHOOT)
+      c.context.state shouldBe a [ShootState]
       c.attack = new AttackScenario(c.field.character(1),c.field.character(2),100)
       tui.run("YES")
       (c.field.character(2).hp < prevHP) should be (true)
 
       tui.run("SHOOT C1 C3")
-      c.gameState should be(SHOOT)
+      c.context.state shouldBe a [ShootState]
       c.attack = new AttackScenario(c.field.character(0),c.field.character(2),100)
       tui.run("YES")
-      c.field.character should be(Vector[XCOM.model.Character](c.field.character(0),c.field.character(1)))
+      c.field.character should be(Vector[XCOM.model.Character](c.field.character(0),c.field.character(1),c.field.character(2)))
       //
       tui.run("GABAGUL")
       c.output should be("Wrong input: [GABAGUL]")
       //
-      tui.run("EXIT")
-      c.gameState should be(END)
+      //tui.run("EXIT")
     }
     "have a methode load" in{
       val c = new Controller()
@@ -90,7 +84,8 @@ class TuiSpec extends WordSpec{
       tui.run("LOAD -1")
       c.output should be("Wrong input: [-1]")
       tui.run("LOAD 0")
-      c.gameState should be(SUI)
+      c.context.state shouldBe a [SuiState]
     }
   }
 }
+

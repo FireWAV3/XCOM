@@ -1,10 +1,5 @@
 package XCOM.controller
 
-object  GameStatus extends Enumeration {
-  type GameState = Value
-  val MENU, SUI, SHOOT, END , HELP ,SINGLEOUT = Value
-}
-
 
 object  PlayerStatus extends Enumeration {
   type PlayerStatus = Value
