@@ -1,6 +1,6 @@
 package XCOM.controller
 import XCOM.model.FieldStructure._
-import XCOM.model.{AttackScenario, Cell, Character, Field, Scenario, TurnScenario}
+import XCOM.model._
 
 trait GameStateTrait{
   //def handle(c : Controller,str : Vector[String], num :Vector[Int])
@@ -10,11 +10,18 @@ trait GameStateTrait{
   def loadScenario(index:Int): Boolean
   def move(str:String, pX:Int, pY:Int): Boolean
   def aim(str1:String, str2:String): Boolean
-  def shoot(approval:Boolean): Boolean
+  def shoot(approval: Boolean,seed: Int): Boolean
   def next(): Boolean
 }
 
 class Context(c : Controller){
+
+  def deepCoppy(): Context = {
+    var Cout = new Context(this.c)
+    Cout.state = this.state
+    Cout
+  }
+
   var state:GameStateTrait = new MenuState(c)
 }
 
@@ -48,7 +55,7 @@ class GameState(c:Controller) extends GameStateTrait{
 
   override def aim(str1: String, str2: String): Boolean = {c.wrongGameState(); false}
 
-  override def shoot(approval: Boolean): Boolean = {c.wrongGameState(); false}
+  override def shoot(approval: Boolean,seed: Int): Boolean = {c.wrongGameState(); false}
 
   override def next(): Boolean = {
     c.PlayerState = c.nextPlayerState(c.PlayerState)
@@ -132,6 +139,7 @@ class SuiState(c : Controller) extends GameState(c) {
           if(hero1._2.side != hero2._2.side){
             val percentage = c.shootpercentage(hero1._2, hero2._2)
             c.attack = AttackScenario(hero1._2, hero2._2, percentage)
+            c.seed = scala.util.Random.nextInt()
             c.out(("The chance to hit " + hero2._2.name + " (" + hero2._2.displayname+ ") with "
               + hero1._2.name + " (" + hero1._2.displayname + ") is: " + percentage
               + "%. If you want to shoot, enter 'Yes' otherwise enter 'No'"))
@@ -154,10 +162,10 @@ class SuiState(c : Controller) extends GameState(c) {
 }
 
 class ShootState(c : Controller) extends GameState(c){
-  override def shoot(approval: Boolean): Boolean = {
+  override def shoot(approval: Boolean,seed: Int): Boolean = {
     if(approval){
       c.turnS.shootHero(c.attack.attHero.displayname)
-      val random = scala.util.Random
+      val random = new scala.util.Random(seed)
       val randInt = random.nextInt(101)
       if (randInt <= c.attack.probability){
         val result = c.fire(c.attack.attHero, c.attack.defHero)

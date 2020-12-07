@@ -1,20 +1,7 @@
-val vector = Vector(5,6,7,20,11)
-var map = Map[Int, Boolean]()
+var redoStack : List[Int]= Nil
 
-for(e <- vector){
-  map += (
-    e -> false
-    )
+redoStack
 
-}
+redoStack = 1::redoStack
 
-print(vector)
-
-
-map += 5 -> true
-
-print(map)
-
-map -= 5
-
-print(map)
+redoStack = 5::redoStack

@@ -6,6 +6,12 @@ trait TravelStrategyTrait{
 }
 
 class ContextTravel(c:Controller){
+  def deepCoppy(): ContextTravel = {
+    var CTout = new ContextTravel(this.c)
+    CTout.travelState = this.travelState
+    CTout
+  }
+
   var travelState:TravelStrategyTrait = new Manhattan(c)
 }
 

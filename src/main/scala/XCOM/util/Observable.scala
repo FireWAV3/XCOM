@@ -12,5 +12,7 @@ class Observable {
 
   def remove(s: Observer): Unit = subscribers = subscribers.filterNot(o => o == s)
 
+  def removeAll(): Unit = subscribers = Vector()
+
   def notifyObservers: Unit = subscribers.foreach(o => o.update)
 }

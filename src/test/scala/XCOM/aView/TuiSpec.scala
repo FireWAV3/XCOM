@@ -2,7 +2,7 @@
 package XCOM.aView
 
 import XCOM.controller._
-import XCOM.controller.PlayerStatus._
+import XCOM.model.PlayerStatus._
 import XCOM.model.AttackScenario
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec

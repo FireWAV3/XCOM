@@ -14,6 +14,7 @@ object XCOM {
   def main(args: Array[String]): Unit = {
     while(true){
       val input = StdIn.readLine().toUpperCase()
+      println("input: "+ input)
       ui.run(input)
     }
   }

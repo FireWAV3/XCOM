@@ -1,6 +1,6 @@
 
 package XCOM.controller
-import XCOM.controller.PlayerStatus._
+import XCOM.model.PlayerStatus._
 import XCOM.model.FieldStructure._
 import XCOM.model.{AttackScenario, Cell, Character, Field}
 import org.scalatest.Matchers._

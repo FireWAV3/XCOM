@@ -1,23 +1,41 @@
 package XCOM.controller
-import XCOM.controller.PlayerStatus._
 import XCOM.model
-import XCOM.model.{AttackScenario, Character, Field, Scenario, TurnScenario}
-import XCOM.util.Observable
+import XCOM.model.PlayerStatus._
+import XCOM.model.{AttackScenario, Character, Field, PlayerStatus, Scenario, TurnScenario}
+import XCOM.util.{Observable, UndoManager}
 
 
 
 case class Controller(var field: Field, var attack : AttackScenario) extends Observable{
 
+  def deepCopy():Controller = {
+    var Cout = Controller(this.field,this.attack)
+    Cout.context = this.context.deepCoppy()
+    Cout.contextTravel=  this.contextTravel.deepCoppy()
+    Cout.turnS = this.turnS.deepCoppy()
+    Cout.output =  this.output
+    Cout.seed =  this.seed
+    Cout.PlayerState = this.PlayerState
+    Cout.subscribers =  this.subscribers
+    Cout
+  }
+
+
   var context = new Context(this)
   var contextTravel = new ContextTravel(this)
   var output = ""
+  var seed = 0
 
   //TODO in Kunstruktor
   var PlayerState : PlayerStatus = BLUE
-  val turnS = TurnScenario()
+  var turnS = TurnScenario()
 
   def this (){
     this(new Field(0,0),new AttackScenario())
+  }
+
+  def this (c: Controller){
+    this(c.field,c.attack)
   }
 
   def help:Unit={
@@ -45,11 +63,22 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
   }
 
   def shoot(approval:Boolean):Boolean={
-    context.state.shoot(approval)
+    context.state.shoot(approval,seed)
   }
 
   def next() : Boolean = {
     context.state.next()
+  }
+
+  def undo(uManager: UndoManager): Controller = {
+    val newC = uManager.undoStep(this)
+    newC
+  }
+  def redo(uManager: UndoManager): Controller = {
+    val newC =  uManager.redoStep(this)
+    output = "redid"
+    notifyObservers
+    newC
   }
 
   def fire(attHero: model.Character, defHero: model.Character): (Int,Int) ={
@@ -192,5 +221,7 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
     }
     false
   }
+
+
 
 }

@@ -1,6 +1,12 @@
 package XCOM.model
 
 case class TurnScenario() {
+  def deepCoppy(): TurnScenario = {
+    var TSout = new TurnScenario
+    TSout.map = this.map
+    TSout
+  }
+
 
   var map = Map[String, Boolean]()
 
