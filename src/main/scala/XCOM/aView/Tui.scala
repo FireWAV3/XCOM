@@ -27,7 +27,9 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
                   // println("sub pre: "+c)
           val temp:Controller = c.undo(uManager)
           c = new Controller()
-          c = temp
+          c = temp.copy()
+          println("###########################################\n"+c.output+"\n####################################")
+          c.output = "step was undun"
                    // println("sub post: "+c)
           c.notifyObservers
         }
@@ -42,13 +44,12 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
           } else c.wrongInput(input)
         }
         case "INFO" => {
-          uManager.doStep(c)
           if (comInput.length == 2) {
             c.info(comInput(1))
           } else c.wrongInput(input)
         }
         case "SHOOT" => {
-          uManager.doStep(c)
+
           if (comInput.length == 3) {
             c.aim(comInput(1), comInput(2))
           } else c.wrongInput(input)
@@ -60,13 +61,16 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
           } else c.wrongInput(input)
         }
         case "YES" | "Y" | "NO" | "N" => {
-          uManager.doStep(c)
-          if (comInput(0) == "YES" || comInput(0) == "Y") c.shoot(true) else c.shoot(false)
+          if (comInput(0) == "YES" || comInput(0) == "Y") {
+            uManager.doStep(c)
+            c.shoot(true)
+          }else c.shoot(false)
 
         }
         case _ => c.wrongInput(input)
       }
-      //print(uManager.toString)
+      println(uManager.sizeUNDO)
+      println(uManager.sizeREDO)
     }
   }
 
@@ -95,5 +99,6 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
   override def update: Unit = {
     println(c.fieldToString)
     println(c.output)
+
   }
 }

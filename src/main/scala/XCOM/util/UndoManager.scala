@@ -38,4 +38,10 @@ case class UndoManager() {
   override def toString : String={
     undoStack.toString()
   }
+  def sizeUNDO : String={
+    undoStack.size.toString
+  }
+  def sizeREDO : String={
+    redoStack.size.toString
+  }
 }

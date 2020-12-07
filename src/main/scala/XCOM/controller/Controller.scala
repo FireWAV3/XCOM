@@ -72,12 +72,12 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
 
   def undo(uManager: UndoManager): Controller = {
     val newC = uManager.undoStep(this)
+
     newC
   }
   def redo(uManager: UndoManager): Controller = {
     val newC =  uManager.redoStep(this)
-    output = "redid"
-    notifyObservers
+
     newC
   }
 
