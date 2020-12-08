@@ -9,6 +9,7 @@ case class UndoManager() {
   private var redoStack : List[Controller]= Nil
   def doStep(c: Controller) ={
     val newC = c.deepCopy()
+    redoStack = Nil
     undoStack = newC::undoStack
   }
   def undoStep(c: Controller) : Controller ={
@@ -16,9 +17,10 @@ case class UndoManager() {
     undoStack match {
       case  Nil => c
       case head::stack => {
-        val oldhead = undoStack.head
+        val oldhead = head
+        val redoHead = c.deepCopy()
         undoStack = stack
-        redoStack = oldhead::redoStack
+        redoStack = redoHead::redoStack
         oldhead
       }
     }
@@ -28,15 +30,16 @@ case class UndoManager() {
     redoStack match {
       case Nil => c
       case head::stack =>{
-        val newC = head
+        val oldhead =  head
+        val undoHead = c.deepCopy()
         redoStack = stack
-        undoStack = head::redoStack
-        newC
+        undoStack = undoHead::undoStack
+        oldhead
       }
     }
   }
   override def toString : String={
-    undoStack.toString()
+    redoStack.toString()
   }
   def sizeUNDO : String={
     undoStack.size.toString

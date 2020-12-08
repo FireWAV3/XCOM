@@ -70,15 +70,29 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
     context.state.next()
   }
 
-  def undo(uManager: UndoManager): Controller = {
+  def undo(uManager: UndoManager) = {
     val newC = uManager.undoStep(this)
-
-    newC
+    field = newC.field
+    attack = newC.attack
+    turnS = newC.turnS
+    context = newC.context
+    contextTravel=  newC.contextTravel
+    output = "step was undone \n "
+    seed =  newC.seed
+    PlayerState = newC.PlayerState
+    notifyObservers
   }
-  def redo(uManager: UndoManager): Controller = {
-    val newC =  uManager.redoStep(this)
-
-    newC
+  def redo(uManager: UndoManager) = {
+    val newC = uManager.redoStep(this)
+    field = newC.field
+    attack = newC.attack
+    turnS = newC.turnS
+    context = newC.context
+    contextTravel=  newC.contextTravel
+    output = "step was redone \n "
+    seed =  newC.seed
+    PlayerState = newC.PlayerState
+    notifyObservers
   }
 
   def fire(attHero: model.Character, defHero: model.Character): (Int,Int) ={

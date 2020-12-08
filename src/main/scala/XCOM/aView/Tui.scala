@@ -12,7 +12,7 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
 
 
   def run(input:String): Unit = {
-    val comInput =  c.splitFlatString(input)
+    val comInput =  this.c.splitFlatString(input)
     if(comInput.length > 0){
 
       comInput(0) match {
@@ -24,19 +24,10 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
           c.next
         }
         case "UNDO" => {
-                  // println("sub pre: "+c)
-          val temp:Controller = c.undo(uManager)
-          c = new Controller()
-          c = temp.copy()
-          println("###########################################\n"+c.output+"\n####################################")
-          c.output = "step was undun"
-                   // println("sub post: "+c)
-          c.notifyObservers
+          c.undo(uManager)
         }
         case "REDO" => {
-          val newC = c.redo(uManager)
-          c = newC
-          update
+          c.redo(uManager)
         }
         case "LOAD" => {
           if (comInput.length == 2) {
@@ -49,7 +40,6 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
           } else c.wrongInput(input)
         }
         case "SHOOT" => {
-
           if (comInput.length == 3) {
             c.aim(comInput(1), comInput(2))
           } else c.wrongInput(input)
@@ -69,8 +59,6 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
         }
         case _ => c.wrongInput(input)
       }
-      println(uManager.sizeUNDO)
-      println(uManager.sizeREDO)
     }
   }
 
@@ -97,8 +85,8 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
   }
 
   override def update: Unit = {
-    println(c.fieldToString)
-    println(c.output)
+    println(this.c.fieldToString)
+    println(this.c.output)
 
   }
 }

@@ -2,7 +2,7 @@ package XCOM.util
 
 
 trait Observer{
-  def update : Unit
+  def update : Unit = println("not implemented")
 }
 
 class Observable {
