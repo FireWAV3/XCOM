@@ -189,6 +189,8 @@ class ControllerSpec extends  WordSpec{
       intercept[Exception] {c.movePossible(testField.character(0),3,2)}
       intercept[Exception] {c.movePossible(testField.character(0),2,3)}
       intercept[Exception] {c.movePossible(testField.character(0), 3, 3)}
+
+      intercept[Exception] {c.movePossible(new Character("Nix_Name",0,0,0,1,-1,"Banane",new Cell()), 3, 3)}
     }
     "have a methode shootpercentage" in{
       var shootingRange = new Field(Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(1, 1, C)),

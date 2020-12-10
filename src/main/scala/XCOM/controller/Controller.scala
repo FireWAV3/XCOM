@@ -165,7 +165,7 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
   }
 
   def movePossible(hero:model.Character, pX:Int, pY:Int):Boolean = {
-    if(true/*hero.ability >= 10*/){//TODO implement ability
+    if(hero.side >= 0/*hero.ability >= 10*/){//TODO implement ability
       contextTravel.travelState = new Manhattan(this)
     }else{
       contextTravel.travelState = new AStar(this)

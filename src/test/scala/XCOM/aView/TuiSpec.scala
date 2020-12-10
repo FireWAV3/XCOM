@@ -17,6 +17,7 @@ class TuiSpec extends WordSpec{
       ui shouldBe a [Tui]
     }
     "have a methode run" in{
+      intercept[Exception] {tui.run("EXIT")}
       tui.run("")
       c.context.state shouldBe a [MenuState]
       tui.run("     ")
@@ -107,11 +108,6 @@ class TuiSpec extends WordSpec{
       c.output should be("Wrong input: [LOAD -1]")
       tui.run("LOAD 0")
       c.context.state shouldBe a [SuiState]
-    }
-    "have a methode exit" in{
-      val c = new Controller()
-      val tui = Tui(c)
-      intercept[Exception] {c.exit}
     }
   }
 }
