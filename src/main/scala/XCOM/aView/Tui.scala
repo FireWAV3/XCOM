@@ -1,7 +1,9 @@
 package XCOM.aView
 import XCOM.controller._
-import XCOM.util.Observer
-import XCOM.util.UndoManager
+import XCOM.util.{Observer, UndoManager}
+
+import scala.util.{Failure, Success, Try}
+//import scala.util.{Try, Success, Failure}
 
 case class Tui(var c : Controller) extends Observer with UiTrait{
 
@@ -14,74 +16,81 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
   def run(input:String): Unit = {
     val comInput =  this.c.splitFlatString(input)
     if(comInput.length > 0){
-
       comInput(0) match {
-        //TODO Next command
         case "EXIT" => c.exit
-        case "HELP" =>  c.help
+        case "HELP" | "H" =>  c.help
         case "NEXT" => {
           uManager.doStep(c)
           c.next
         }
-        case "UNDO" => {
+        case "UNDO" | "U" => {
           c.undo(uManager)
         }
-        case "REDO" => {
+        case "REDO" | "R" => {
           c.redo(uManager)
         }
-        case "LOAD" => {
-          if (comInput.length == 2) {
-            load(comInput(1))
-          } else c.wrongInput(input)
+        case "LOAD" | "L" => {
+          if(!load(comInput.lift(1))){
+            c.wrongInput(input)
+          }
         }
-        case "INFO" => {
-          if (comInput.length == 2) {
-            c.info(comInput(1))
-          } else c.wrongInput(input)
+        case "INFO" | "I" => {
+          if(!c.info(comInput.lift(1))){
+            c.wrongInput(input)
+          }
         }
-        case "SHOOT" => {
-          if (comInput.length == 3) {
-            c.aim(comInput(1), comInput(2))
-          } else c.wrongInput(input)
+        case "SHOOT" | "S" => {
+          if(!c.aim(comInput.lift(1), comInput.lift(2))){
+            c.wrongInput(input)
+          }
         }
-        case "MOVE" => {
+        case "MOVE"  | "M" => {
           uManager.doStep(c)
-          if (comInput.length == 4) {
-            move(comInput(1), comInput(2), comInput(3))
-          } else c.wrongInput(input)
+          if(!move(comInput.lift(1), comInput.lift(2), comInput.lift(3))){
+            c.wrongInput(input)
+          }
         }
-        case "YES" | "Y" | "NO" | "N" => {
-          if (comInput(0) == "YES" || comInput(0) == "Y") {
-            uManager.doStep(c)
-            c.shoot(true)
-          }else c.shoot(false)
-
+        case "YES" | "Y"  => {
+          uManager.doStep(c)
+          c.shoot(true)
+        }
+        case "NO" | "N" => {
+          c.shoot(false)
         }
         case _ => c.wrongInput(input)
       }
     }
   }
 
-  def load(input :String): Boolean ={
-    if(c.testInt(input)){
-      if(input.toInt >= 0 && input.toInt <= c.scenarioAmmount){
-        c.loadScenario(input.toInt)
-        return true
+  def load(input: Option[String]): Boolean ={
+    input match {
+      case Some(s) => {
+        val isValid = c.scenarioAmmountTest(Try(s.toInt))
+        isValid match{
+          case Success(value) => {
+            if(value) c.loadScenario(s.toInt) else false
+          }
+          case Failure(exception) => false
+        }
       }
+      case None => false
     }
-    c.wrongInput(input)
-    false
   }
 
-  def move(str: String, str1: String, str2: String): Boolean = {
-    if(c.testABC(str1)){
-      if(c.testInt(str2)){
-        c.move(str, c.abcToInt(str1), str2.toInt)
-        return true
+  def move(str: Option[String], str1: Option[String], str2: Option[String]): Boolean = {
+    str2 match {
+      case Some(s) => {
+        if(c.testABC(str1.get)) {
+          Try(c.move(str.get, c.abcToInt(str1.get), str2.get.toInt)) match {
+            case Success(value) => return true
+          }
+        }
+        false
+      }
+      case None => {
+       false
       }
     }
-    c.wrongInput(str +" "+ str1 +" " +str2 )
-    false
   }
 
   override def update: Unit = {

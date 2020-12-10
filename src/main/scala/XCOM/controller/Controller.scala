@@ -5,8 +5,25 @@ import XCOM.model.{AttackScenario, Character, Field, PlayerStatus, Scenario, Tur
 import XCOM.util.{Observable, UndoManager}
 
 
+import scala.util.Try
+
 
 case class Controller(var field: Field, var attack : AttackScenario) extends Observable{
+
+  var context = new Context(this)
+  var contextTravel = new ContextTravel(this)
+  var output = ""
+  var seed = 0
+  var PlayerState : PlayerStatus = BLUE
+  var turnS = TurnScenario()
+
+  def this (){
+    this(new Field(0,0),new AttackScenario())
+  }
+
+  def this (c: Controller){
+    this(c.field,c.attack)
+  }
 
   def deepCopy():Controller = {
     var Cout = Controller(this.field,this.attack)
@@ -20,24 +37,6 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
     Cout
   }
 
-
-  var context = new Context(this)
-  var contextTravel = new ContextTravel(this)
-  var output = ""
-  var seed = 0
-
-  //TODO in Kunstruktor
-  var PlayerState : PlayerStatus = BLUE
-  var turnS = TurnScenario()
-
-  def this (){
-    this(new Field(0,0),new AttackScenario())
-  }
-
-  def this (c: Controller){
-    this(c.field,c.attack)
-  }
-
   def help:Unit={
     context.state.help()
   }
@@ -46,8 +45,13 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
     context.state.exit("")
   }
 
-  def info(str: String): Boolean ={
-    context.state.info(str)
+  def info(str: Option[String]): Boolean ={
+    str match {
+      case Some(s) => {
+        context.state.info(s)
+      }
+      case None => false
+    }
   }
 
   def loadScenario(index:Int): Boolean ={
@@ -58,8 +62,13 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
     context.state.move(str, pX, pY)
   }
 
-  def aim(str1:String, str2:String):Boolean ={
-    context.state.aim(str1, str2)
+  def aim(str1: Option[String], str2: Option[String]):Boolean ={
+    str2 match {
+      case Some(s) => {
+        context.state.aim(str1.get, str2.get)
+      }
+      case None => false
+    }
   }
 
   def shoot(approval:Boolean):Boolean={
@@ -131,38 +140,31 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
   }
 
   def boundsX(x:Int): Boolean ={
-    if(field.sizeX >= x-1 && x-1 >= 0){
-      return true
-    }
-    false
+    if(field.sizeX >= x-1 && x-1 >= 0)true else throw new Exception("Move not possible: not a tile on the field")
   }
 
   def boundsY(y:Int): Boolean ={
-    if(field.sizeY >= y-1 && y-1 >= 0){
-      return true
-    }
-    false
+    if(field.sizeY >= y-1 && y-1 >= 0) true else throw new Exception("Move not possible: not a tile on the field")
   }
 
   def testRock( pX: Int, pY: Int): Boolean = {
-    for(e <- field.rocks if e.x == (pX-1)  if e.y == (pY-1) ) return true
-    false
+    for(e <- field.rocks if e.x == (pX-1)  if e.y == (pY-1) )  throw new Exception("Move not possible: There is a Rock at this position")
+    true
   }
 
   def testHero(pX: Int, pY: Int): Boolean = {
-    for(e <- field.character if e.cell.x == pX-1 && e.cell.y == pY-1)return true
-    false
+    for(e <- field.character if e.cell.x == pX-1 && e.cell.y == pY-1) throw new Exception("Move not possible: There is another Hero at this position")
+    true
   }
 
-  def isHero(input : String): (Boolean,Character)= {
-    field.character.map(i => if(i.displayname == input) return (true,i))
-    (false,new Character())
+  def isHero(input : String): Option[Character]= {
+    field.character.map(i => if(i.displayname == input) return Some(i))
+    None
   }
 
   def aStarMove(startX:Int,startY:Int,goalX:Int,goalY:Int) : Boolean = {
     //TODO A*
-    out("not implemented yet")
-    false
+    throw new Exception("not implemented yet")
   }
 
   def movePossible(hero:model.Character, pX:Int, pY:Int):Boolean = {
@@ -236,6 +238,15 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
     false
   }
 
+  def opponent(hero1: Character, hero2: Character): Boolean = {
+    if(hero1.side == hero2.side) throw new Exception("Heros are on the same team") else true
+  }
+
+  def scenarioAmmountTest(input: Try[Int]):Try[Boolean] = Try(input.get >= 0 && input.get <= scenarioAmmount)
+
+  def checkSide(side: Int): Boolean = {
+    if(PlayerStatus.turn(PlayerState) == side) true else throw new Exception("Not a member of the Team that has the control")
+  }
 
 
 }

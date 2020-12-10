@@ -1,3 +1,4 @@
+/*
 
 package XCOM.controller
 import XCOM.model.PlayerStatus._
@@ -226,3 +227,4 @@ class ControllerSpec extends  WordSpec{
   }
 }
 
+*/
