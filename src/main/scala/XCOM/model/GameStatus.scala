@@ -1,5 +1,4 @@
-package XCOM.controller
-
+package XCOM.model
 
 object  PlayerStatus extends Enumeration {
   type PlayerStatus = Value

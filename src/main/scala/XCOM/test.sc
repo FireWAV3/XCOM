@@ -1,20 +1,18 @@
-val vector = Vector(5,6,7,20,11)
-var map = Map[Int, Boolean]()
+var redoStack : List[String]= Nil
 
-for(e <- vector){
-  map += (
-    e -> false
-    )
+redoStack
 
+redoStack = "fghjk"::redoStack
+
+redoStack = "ghjkl"::redoStack
+
+def testS (input: Option[String])={
+  input match {
+    case Some(s) => println(input.get +" jo")
+    case None => println(" found none")
+  }
 }
 
-print(vector)
+testS(redoStack.lift(1))
 
 
-map += 5 -> true
-
-print(map)
-
-map -= 5
-
-print(map)

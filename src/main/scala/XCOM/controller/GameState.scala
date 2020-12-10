@@ -1,6 +1,8 @@
 package XCOM.controller
 import XCOM.model.FieldStructure._
-import XCOM.model.{AttackScenario, Cell, Character, Field, Scenario, TurnScenario}
+import XCOM.model._
+
+import scala.util.{Failure, Success, Try}
 
 trait GameStateTrait{
   //def handle(c : Controller,str : Vector[String], num :Vector[Int])
@@ -10,11 +12,18 @@ trait GameStateTrait{
   def loadScenario(index:Int): Boolean
   def move(str:String, pX:Int, pY:Int): Boolean
   def aim(str1:String, str2:String): Boolean
-  def shoot(approval:Boolean): Boolean
+  def shoot(approval: Boolean,seed: Int): Boolean
   def next(): Boolean
 }
 
 class Context(c : Controller){
+
+  def deepCoppy(): Context = {
+    var Cout = new Context(this.c)
+    Cout.state = this.state
+    Cout
+  }
+
   var state:GameStateTrait = new MenuState(c)
 }
 
@@ -24,22 +33,21 @@ class GameState(c:Controller) extends GameStateTrait{
       "\nExit:\t\t\tExits the game" +
       "\nMove C,X,Y :\tMove Character(C) to X, Y" +
       "\nInfo C:\t\t\tCurrent status of Character(C)" +
-      "\nShoot C,T:\t\tCharacter(C) attacks Target(T)\n")
+      "\nShoot C,T:\t\tCharacter(C) attacks Target(T)\n"+
+      "\nUndo:\t\tmove you back in Time to the last step you made\n"+
+      "\nRedo:\t\treverts the Undo Time travel\n")
   }
 
   override def exit(str:String): Unit = {
     c.out(str + "\nThanks for playing!\nGoodbye!\n")
-    sys.exit()
+    throw new Exception("EXIT")
   }
 
   override def info(str: String): Boolean = {
-    val hero = c.isHero(str)
-    if(hero._1){
-      c.out(hero._2.toString)
-      return true
+    c.isHero(str) match {
+      case Some(value) => c.out(value.toString) ; true
+      case None =>  c.out(str +" is not a Hero") ; false
     }
-    c.out(str +" is not a Hero")
-    false
   }
 
   override def loadScenario(index: Int): Boolean = {c.wrongGameState(); false}
@@ -48,7 +56,7 @@ class GameState(c:Controller) extends GameStateTrait{
 
   override def aim(str1: String, str2: String): Boolean = {c.wrongGameState(); false}
 
-  override def shoot(approval: Boolean): Boolean = {c.wrongGameState(); false}
+  override def shoot(approval: Boolean,seed: Int): Boolean = {c.wrongGameState(); false}
 
   override def next(): Boolean = {
     c.PlayerState = c.nextPlayerState(c.PlayerState)
@@ -84,80 +92,79 @@ class SuiState(c : Controller) extends GameState(c) {
 
   override def move(str: String, pX: Int, pY: Int): Boolean = {
     val hero = c.isHero(str)
-    if (hero._1) {
-      if(PlayerStatus.turn(c.PlayerState) == hero._2.side ){
-        if(c.turnS.movable(hero._2.displayname)){
-          if (c.boundsX(pX) && c.boundsY(pY)) {
-            if (!c.testHero(pX, pY) && !c.testRock(pX, pY)) {
-              if (c.movePossible(hero._2, pX, pY)) {
-                c.field = Field(c.field.pX, c.field.pY, c.field.rocks,
-                  c.field.character.map { i =>
-                    if (i.displayname == hero._2.displayname) {
-                      c.turnS.movedHero(hero._2.displayname)
-                      Character(i.name, i.mrange, i.srange, i.damage, i.hp, i.side, i.displayname, Cell(pX - 1, pY - 1, C))
-                    } else {
-                      i
-                    }
+    hero match {
+      case Some(value) => {
+        val allowed = Try(
+              c.checkSide(value.side)
+          && c.turnS.movable(value.displayname)
+          && c.boundsX(pX)
+          && c.boundsY(pY)
+          && c.testHero(pX, pY)
+          && c.testRock(pX, pY)
+          && c.movePossible(value, pX, pY)
+        )
+        allowed match {
+          case Success(bool) => {
+            c.field = Field(c.field.pX, c.field.pY, c.field.rocks,
+              c.field.character.map { i =>
+                i.displayname match {
+                  case value.displayname =>{
+                    c.turnS.movedHero(value.displayname)
+                    Character(i.name, i.mrange, i.srange, i.damage, i.hp, i.side, i.displayname, Cell(pX - 1, pY - 1, C))
                   }
-                )
-                c.out(" move successful")
-                return true
-              } else {
-                c.out(" Move not possible: Hero can't move this far")
+                  case _ => i
+                }
               }
-            } else {
-              c.out(" Move not possible: There is another object at this position")
-            }
-          } else {
-            c.out(" Move not possible: not a tile on the field")
+            )
+            c.out(" move successful")
+            true
           }
-        }else{
-          c.out(str + " already moved")
+          case Failure(exception) => c.out(exception.getMessage); false
         }
-      }else {
-        c.out(str + " is not a member of the Team that has the control")
       }
-    } else {
-      c.out(str + " is not a valid Hero")
+      case None =>  c.out(str + " is not a valid Hero") ; false
     }
-    false
   }
 
   override def aim(str1: String, str2: String): Boolean = {
     val hero1 = c.isHero(str1)
     val hero2 = c.isHero(str2)
-    if(hero1._1 && hero2._1){
-      if(PlayerStatus.turn(c.PlayerState) == hero1._2.side ){
-        if(c.turnS.shootable(hero1._2.displayname)){
-          if(hero1._2.side != hero2._2.side){
-            val percentage = c.shootpercentage(hero1._2, hero2._2)
-            c.attack = AttackScenario(hero1._2, hero2._2, percentage)
-            c.out(("The chance to hit " + hero2._2.name + " (" + hero2._2.displayname+ ") with "
-              + hero1._2.name + " (" + hero1._2.displayname + ") is: " + percentage
-              + "%. If you want to shoot, enter 'Yes' otherwise enter 'No'"))
-            c.context.state = new ShootState(c)
-            return true
-          }else{
-            c.out("Heros are on the same team")
+    hero1 match {
+      case Some(valueH1) =>{
+        hero2 match {
+          case Some(valueH2) =>{
+            val allowed = Try(
+                 c.checkSide(valueH1.side)
+              && c.turnS.shootable(valueH1.displayname)
+              && c.opponent(valueH1,valueH2)
+            )
+            allowed match {
+              case Success(bool) =>{
+                val percentage = c.shootpercentage(valueH1, valueH2)
+                c.attack = AttackScenario(valueH1, valueH2, percentage)
+                c.seed = scala.util.Random.nextInt()
+                c.out(("The chance to hit " + valueH2.name + " (" + valueH2.displayname+ ") with "
+                  + valueH1.name + " (" + valueH1.displayname + ") is: " + percentage
+                  + "%. If you want to shoot, enter 'Yes' otherwise enter 'No'"))
+                c.context.state = new ShootState(c)
+                true
+              }
+              case Failure(exception) => c.out(exception.getMessage); false
+            }
           }
-        }else{
-          c.out(str1 + " already shot")
+          case None =>  c.out(str2 + " is not a valid Hero"); false
         }
-      }else {
-        c.out(str1 + " is not a member of the Team that has the control")
       }
-    }else{
-      c.out("Please enter 2 valid heros")
+      case None => c.out(str1 + " is not a valid Hero"); false
     }
-    false
   }
 }
 
 class ShootState(c : Controller) extends GameState(c){
-  override def shoot(approval: Boolean): Boolean = {
+  override def shoot(approval: Boolean,seed: Int): Boolean = {
     if(approval){
       c.turnS.shootHero(c.attack.attHero.displayname)
-      val random = scala.util.Random
+      val random = new scala.util.Random(seed)
       val randInt = random.nextInt(101)
       if (randInt <= c.attack.probability){
         val result = c.fire(c.attack.attHero, c.attack.defHero)

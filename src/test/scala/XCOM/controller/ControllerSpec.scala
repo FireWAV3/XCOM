@@ -1,7 +1,7 @@
 
 package XCOM.controller
-import XCOM.controller.PlayerStatus._
 import XCOM.model.FieldStructure._
+import XCOM.model.PlayerStatus._
 import XCOM.model.{AttackScenario, Cell, Character, Field}
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
@@ -25,13 +25,14 @@ class ControllerSpec extends  WordSpec{
 
     "have a methode info" in{
       c.context.state = new SuiState(c)
-      c.info("AA") should be(false)
+      c.info(Some("AA")) should be(false)
       c.output should be("AA is not a Hero")
-      c.info("C1") should be(true)
+      c.info(Some("C1")) should be(true)
       c.output should include("C1")
       c.context.state = new MenuState(c)
-      c.info("C1") should be(false)
+      c.info(Some("C1")) should be(false)
       c.output should include("You are not allowed to use that command right now")
+      c.info(None) should be(false)
     }
     "have a methode loadScenario" in{
       val cC = new Controller()
@@ -47,49 +48,53 @@ class ControllerSpec extends  WordSpec{
       cMove.output should be("You are not allowed to use that command right now")
       cMove.context.state = new SuiState(cMove)
       cMove.move("C3",5,6) should be(false)
-      cMove.output should include("is not a member of the Team")
+      cMove.output should include("Not a member of the Team that has the control")
       cMove.move("AA",5,7) should be(false)
       cMove.output should include("is not a valid Hero")
       cMove.move("C1",6,6) should be(false)
       cMove.output should include("Move not possible: not a tile on the field")
       cMove.move("C1",5,6) should be(false)
-      cMove.output should include("Move not possible: There is another object at this position")
+      cMove.output should include("Move not possible: There is another Hero at this position")
       cMove.move("C1",4,4) should be(false)
-      cMove.output should include("Move not possible: There is another object at this position")
+      cMove.output should include("Move not possible: There is a Rock at this position")
       cMove.move("C1",1,10) should be(false)
       cMove.output should include("Move not possible: Hero can't move this far")
       cMove.move("C1",5,7) should be(true)
       cMove.field.character should be(Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(4, 6, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(4, 5, C)),Character("SniperRED", 5, 10, 70, 40, 1,"C3", Cell(4, 3, C))))
       cMove.move("C1",4,7) should be(false)
-      cMove.output should include("already moved")
+      cMove.output should include("Already moved")
       cMove.context.state = new ShootState(cMove)
       cMove.attack = AttackScenario(cMove.field.character(0),cMove.field.character(1),0)
       cMove.shoot(true)
       cMove.move("C1",5,7) should be(false)
-      cMove.output should include("already moved")
+      cMove.output should include("Already shot")
+
+      cMove.contextTravel.travelState = new TravelStrategy(cMove)
+      intercept[Exception] {cMove.contextTravel.travelState.movePossible(cMove.field.character(1),5,4)}
 
       cMove.contextTravel.travelState = new AStar(cMove)
-      cMove.contextTravel.travelState.movePossible(cMove.field.character(1),5,4) should be(false)
-      cMove.output should include("not implemented")
+      intercept[Exception] {cMove.contextTravel.travelState.movePossible(cMove.field.character(1),5,4)}
+
     }
     "have a methode aim" in{
       var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),
         Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C)),Character("Assassin", 5, 10, 50, 90, 1,"C3", Cell(6, 6, C))))
       var cShoot = Controller(shootingRange ,new AttackScenario())
       cShoot.turnS.load(0,shootingRange)
-      cShoot.aim("C1","C2") should be(false)
+      cShoot.aim(Some("C1"),Some("C2")) should be(true)
       cShoot.output should be("You are not allowed to use that command right now")
       cShoot.context.state = new SuiState(cShoot)
-      cShoot.aim("C3","C2") should be(false)
-      cShoot.output should include("is not a member of the Team")
-      cShoot.aim("AA","C2") should be(false)
-      cShoot.output should include("Please enter 2 valid heros")
-      cShoot.aim("C1","C2") should be(false)
+      cShoot.aim(Some("C3"),Some("C2")) should be(true)
+      cShoot.output should include("Not a member of the Team that has the control")
+      cShoot.aim(Some("AA"),Some("C2")) should be(true)
+      cShoot.output should include("AA is not a valid Hero")
+      cShoot.aim(Some("C1"),Some("C2")) should be(true)
       cShoot.output should include("Heros are on the same team")
-      cShoot.aim("C1","C3") should be(true)
+      cShoot.aim(Some("C1"),Some("C3")) should be(true)
       cShoot.shoot(true)
-      cShoot.aim("C1","C3") should be(false)
-      cShoot.output should include("already shot")
+      cShoot.aim(Some("C1"),Some("C3")) should be(true)
+      cShoot.output should include("Already shot")
+      cShoot.aim(Some("C1"),None) should be(false)
     }
     "have a methode shoot" in{
       var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C)),Character("TankR", 5, 10, 50, 90, 1,"C3", Cell(5, 6, C))))
@@ -107,6 +112,13 @@ class ControllerSpec extends  WordSpec{
       cShoot.context.state = new ShootState(cShoot)
       cShoot.attack = AttackScenario(cShoot.field.character(0),cShoot.field.character(1),100)
       cShoot.shoot(true) should be(true)
+
+      cShoot.context.state = new ShootState(cShoot)
+      cShoot.attack = AttackScenario(cShoot.field.character(0),cShoot.field.character(2),100)
+      cShoot.shoot(true) should be(true)
+      cShoot.context.state = new ShootState(cShoot)
+      cShoot.attack = AttackScenario(cShoot.field.character(0),cShoot.field.character(2),100)
+      intercept[Exception] {cShoot.shoot(true) should be(true)}
     }
     "have a methode fire" in{
       var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
@@ -132,50 +144,51 @@ class ControllerSpec extends  WordSpec{
 
     }
     "have a methode boundsX" in{
-      c.boundsX(0) should be(false)
+      intercept[Exception]{c.boundsX(0)}
       c.boundsX(5) should be(true)
-      c.boundsX(6) should be(false)
+      intercept[Exception] {c.boundsX(6)}
     }
     "have a methode boundsY" in{
-      c.boundsY(0) should be(false)
+      intercept[Exception] {c.boundsY(0)}
       c.boundsY(10) should be(true)
-      c.boundsY(11) should be(false)
+      intercept[Exception] {c.boundsY(11)}
     }
     "have a methode testRock" in{
-      c.testRock(5,5) should be(true)
-      c.testRock(5,6) should be(false)
+      c.testRock(5,6) should be(true)
+      intercept[Exception]{c.testRock(5,5)}
     }
     "have a methode testHero" in{
-      c.testHero(6,6) should be(true)
-      c.testHero(6,5) should be(false)
+      c.testHero(6,5) should be(true)
+      intercept[Exception]{c.testHero(6,6)}
     }
     "have a methode isHero" in{
-      c.isHero("C1")._1 should be(true)
-      c.isHero("C2")._1 should be(false)
+      c.isHero("C1")shouldBe a [Some[Character]]
+      c.isHero("C2")should be(None)
     }
     "have a methode aStarMove" in{
-      c.aStarMove(0,0,0,0) should be(false)
+      intercept[Exception] {c.aStarMove(0,0,0,0)}
     }
     "have a methode movePossible" in{
       //down
       c.movePossible(testField.character(0),6,11) should be(true)
-      c.movePossible(testField.character(0),6,12) should be(false)
+      intercept[Exception]{c.movePossible(testField.character(0),6,12)}
+
       //up
       c.movePossible(testField.character(0),6,1) should be(true)
-      c.movePossible(testField.character(0),6,0) should be(false)
+      intercept[Exception] {c.movePossible(testField.character(0),6,0)}
       //right
       c.movePossible(testField.character(0),11,6) should be(true)
-      c.movePossible(testField.character(0),12,6) should be(false)
+      intercept[Exception] {c.movePossible(testField.character(0),12,6)}
       //left
       c.movePossible(testField.character(0),1,6) should be(true)
-      c.movePossible(testField.character(0),0,6) should be(false)
+      intercept[Exception] {c.movePossible(testField.character(0),0,6)}
       //diagonal left up
       c.movePossible(testField.character(0),4,4) should be(true)
       c.movePossible(testField.character(0),3,4) should be(true)
       c.movePossible(testField.character(0),4,3) should be(true)
-      c.movePossible(testField.character(0),3,2) should be(false)
-      c.movePossible(testField.character(0),2,3) should be(false)
-      c.movePossible(testField.character(0),3,3) should be(false)
+      intercept[Exception] {c.movePossible(testField.character(0),3,2)}
+      intercept[Exception] {c.movePossible(testField.character(0),2,3)}
+      intercept[Exception] {c.movePossible(testField.character(0), 3, 3)}
     }
     "have a methode shootpercentage" in{
       var shootingRange = new Field(Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(1, 1, C)),
@@ -204,7 +217,7 @@ class ControllerSpec extends  WordSpec{
       c.fieldToString should not include("11")
     }
     "have a methode scenarioAmmount" in{
-      c.scenarioAmmount should be(1)
+      c.scenarioAmmount should be(2)
     }
     "have a methode splitFlatString" in{
       c.splitFlatString("a,b,c")(0) should be("a")

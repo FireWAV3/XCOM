@@ -12,5 +12,4 @@ case class Character(name: String, mrange: Int, srange: Int, damage: Int, hp: In
       + this.side + ") can move over " + this.mrange + " and shoot over " + this.srange
       + " tiles with a damage of " + this.damage + ". He has " + this.hp + " health points left.")
   }
-
 }
