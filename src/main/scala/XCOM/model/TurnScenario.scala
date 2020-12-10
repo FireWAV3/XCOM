@@ -1,4 +1,5 @@
 package XCOM.model
+import scala.util.{Failure, Success, Try}
 
 case class TurnScenario() {
   def deepCoppy(): TurnScenario = {
@@ -21,8 +22,10 @@ case class TurnScenario() {
   }
 
   def movable(hero: String) : Boolean ={
-    //map(hero) match { case true => true ; case false => throw new Exception("Already moved or shot with this Character")}
-    if(map(hero)) true else throw new Exception("Already moved or shot with this Character")
+    Try(map(hero)) match {
+      case Success(s) => if(s) s else throw new Exception("Already moved with this Character")
+      case Failure(exception) => throw new Exception("Already shot with this Character")
+    }
   }
 
   def shootable(hero: String) : Boolean = {

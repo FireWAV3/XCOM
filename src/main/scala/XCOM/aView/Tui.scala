@@ -48,6 +48,7 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
           uManager.doStep(c)
           if(!move(comInput.lift(1), comInput.lift(2), comInput.lift(3))){
             c.wrongInput(input)
+            uManager.undoClear(c)
           }
         }
         case "YES" | "Y"  => {
@@ -83,6 +84,7 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
         if(c.testABC(str1.get)) {
           Try(c.move(str.get, c.abcToInt(str1.get), str2.get.toInt)) match {
             case Success(value) => return true
+            case Failure(exception) => return false
           }
         }
         false
@@ -96,6 +98,5 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
   override def update: Unit = {
     println(this.c.fieldToString)
     println(this.c.output)
-
   }
 }

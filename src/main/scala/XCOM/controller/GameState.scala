@@ -40,7 +40,7 @@ class GameState(c:Controller) extends GameStateTrait{
 
   override def exit(str:String): Unit = {
     c.out(str + "\nThanks for playing!\nGoodbye!\n")
-    sys.exit()
+    throw new Exception("EXIT")
   }
 
   override def info(str: String): Boolean = {

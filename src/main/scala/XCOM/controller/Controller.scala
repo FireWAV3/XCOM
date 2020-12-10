@@ -21,10 +21,6 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
     this(new Field(0,0),new AttackScenario())
   }
 
-  def this (c: Controller){
-    this(c.field,c.attack)
-  }
-
   def deepCopy():Controller = {
     var Cout = Controller(this.field,this.attack)
     Cout.context = this.context.deepCoppy()
@@ -66,6 +62,7 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
     str2 match {
       case Some(s) => {
         context.state.aim(str1.get, str2.get)
+        true
       }
       case None => false
     }
@@ -247,6 +244,4 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
   def checkSide(side: Int): Boolean = {
     if(PlayerStatus.turn(PlayerState) == side) true else throw new Exception("Not a member of the Team that has the control")
   }
-
-
 }

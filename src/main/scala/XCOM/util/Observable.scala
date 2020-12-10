@@ -2,7 +2,7 @@ package XCOM.util
 
 
 trait Observer{
-  def update : Unit = println("not implemented")
+  def update : Unit = throw new Exception("wtf how?")
 }
 
 class Observable {
@@ -11,8 +11,6 @@ class Observable {
   def add(s: Observer): Unit = subscribers = subscribers :+ s
 
   def remove(s: Observer): Unit = subscribers = subscribers.filterNot(o => o == s)
-
-  def removeAll(): Unit = subscribers = Vector()
 
   def notifyObservers: Unit = subscribers.foreach(o => o.update)
 }

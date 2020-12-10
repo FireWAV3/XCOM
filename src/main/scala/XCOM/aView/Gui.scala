@@ -6,13 +6,10 @@ case class Gui(var c : Controller) extends Observer with UiTrait {
   c.add(this)
 
   def run(input:String): Unit = {
-    println("GUI not implemented")
-
-    sys.exit
+    throw new Exception("GUI not implemented")
   }
 
   override def update: Unit = {
-    println("GUI not implemented")
-    sys.exit
+    throw new Exception("GUI not implemented")
   }
 }

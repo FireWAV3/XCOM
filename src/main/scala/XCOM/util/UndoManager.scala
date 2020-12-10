@@ -3,8 +3,6 @@ package XCOM.util
 import XCOM.controller.Controller
 
 case class UndoManager() {
-
-
   private var undoStack : List[Controller]= Nil
   private var redoStack : List[Controller]= Nil
   def doStep(c: Controller) ={
@@ -13,7 +11,6 @@ case class UndoManager() {
     undoStack = newC::undoStack
   }
   def undoStep(c: Controller) : Controller ={
-
     undoStack match {
       case  Nil => c
       case head::stack => {
@@ -24,8 +21,19 @@ case class UndoManager() {
         oldhead
       }
     }
-
   }
+
+  def undoClear(c: Controller) : Controller ={
+    undoStack match {
+      case  Nil => c
+      case head::stack => {
+        val oldhead = head
+        undoStack = stack
+        oldhead
+      }
+    }
+  }
+
   def redoStep(c: Controller) : Controller ={
     redoStack match {
       case Nil => c
@@ -37,14 +45,5 @@ case class UndoManager() {
         oldhead
       }
     }
-  }
-  override def toString : String={
-    redoStack.toString()
-  }
-  def sizeUNDO : String={
-    undoStack.size.toString
-  }
-  def sizeREDO : String={
-    redoStack.size.toString
   }
 }
