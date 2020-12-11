@@ -2,7 +2,7 @@ package XCOM.util
 
 
 trait Observer{
-  def update : Unit
+  def update : Unit = throw new Exception("wtf how?")
 }
 
 class Observable {
