@@ -2,23 +2,24 @@ package XCOM.aView
 import XCOM.controller._
 import XCOM.util.{Observer, UndoManager}
 
+import scala.swing.Reactor
 import scala.util.{Failure, Success, Try}
 //import scala.util.{Try, Success, Failure}
 
-case class Tui(var c : Controller) extends Observer with UiTrait{
+case class Tui(var c : Controller) extends Reactor with UiTrait {
 
-  c.add(this)
+  listenTo(c)
   val uManager = UndoManager()
   println("Welcome to Xcom!\nFor more information enter Help\n")
   println("If you want to start, enter 'Load,Number' to choose a scenario with Number  between 1 and " + c.scenarioAmmount)
 
 
-  def run(input:String): Unit = {
-    val comInput =  this.c.splitFlatString(input)
-    if(comInput.length > 0){
+  def run(input: String): Unit = {
+    val comInput = this.c.splitFlatString(input)
+    if (comInput.length > 0) {
       comInput(0) match {
         case "EXIT" => c.exit
-        case "HELP" | "H" =>  c.help
+        case "HELP" | "H" => c.help
         case "NEXT" => {
           uManager.doStep(c)
           c.next
@@ -30,28 +31,28 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
           c.redo(uManager)
         }
         case "LOAD" | "L" => {
-          if(!load(comInput.lift(1))){
+          if (!load(comInput.lift(1))) {
             c.wrongInput(input)
           }
         }
         case "INFO" | "I" => {
-          if(!c.info(comInput.lift(1))){
+          if (!c.info(comInput.lift(1))) {
             c.wrongInput(input)
           }
         }
         case "SHOOT" | "S" => {
-          if(!c.aim(comInput.lift(1), comInput.lift(2))){
+          if (!c.aim(comInput.lift(1), comInput.lift(2))) {
             c.wrongInput(input)
           }
         }
-        case "MOVE"  | "M" => {
+        case "MOVE" | "M" => {
           uManager.doStep(c)
-          if(!move(comInput.lift(1), comInput.lift(2), comInput.lift(3))){
+          if (!move(comInput.lift(1), comInput.lift(2), comInput.lift(3))) {
             c.wrongInput(input)
             uManager.undoClear(c)
           }
         }
-        case "YES" | "Y"  => {
+        case "YES" | "Y" => {
           uManager.doStep(c)
           c.shoot(true)
         }
@@ -63,13 +64,13 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
     }
   }
 
-  def load(input: Option[String]): Boolean ={
+  def load(input: Option[String]): Boolean = {
     input match {
       case Some(s) => {
         val isValid = c.scenarioAmmountTest(Try(s.toInt))
-        isValid match{
+        isValid match {
           case Success(value) => {
-            if(value) c.loadScenario(s.toInt) else false
+            if (value) c.loadScenario(s.toInt) else false
           }
           case Failure(exception) => false
         }
@@ -81,7 +82,7 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
   def move(str: Option[String], str1: Option[String], str2: Option[String]): Boolean = {
     str2 match {
       case Some(s) => {
-        if(c.testABC(str1.get)) {
+        if (c.testABC(str1.get)) {
           Try(c.move(str.get, c.abcToInt(str1.get), str2.get.toInt)) match {
             case Success(value) => return true
             case Failure(exception) => return false
@@ -90,13 +91,30 @@ case class Tui(var c : Controller) extends Observer with UiTrait{
         false
       }
       case None => {
-       false
+        false
       }
     }
   }
 
-  override def update: Unit = {
-    println(this.c.fieldToString)
-    println(this.c.output)
+  reactions += {
+    case event: UpdateField => printField
+    case event: UpdateText => printOut
+    case event: UpdateInfo => printOut
+    case event: UpdateHelp => printHelp
   }
+
+  def printField: Unit = {
+    println(c.fieldToString)
+    println(c.output)
+  }
+
+  def printOut: Unit = println(c.output)
+
+  def printHelp: Unit = println("\nHELP" +
+    "\nExit:\t\t\tExits the game" +
+    "\nMove C,X,Y :\tMove Character(C) to X, Y" +
+    "\nInfo C:\t\t\tCurrent status of Character(C)" +
+    "\nShoot C,T:\t\tCharacter(C) attacks Target(T)\n"+
+    "\nUndo:\t\tmove you back in Time to the last step you made\n"+
+    "\nRedo:\t\treverts the Undo Time travel\n")
 }

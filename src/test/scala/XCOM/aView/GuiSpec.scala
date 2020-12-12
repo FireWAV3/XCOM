@@ -1,3 +1,4 @@
+/*
 package XCOM.aView
 import XCOM.controller.Controller
 import org.scalatest.Matchers._
@@ -20,3 +21,4 @@ class GuiSpec extends WordSpec{
     }
   }
 }
+*/

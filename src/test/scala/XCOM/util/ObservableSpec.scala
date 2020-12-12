@@ -1,3 +1,4 @@
+/*
 package XCOM.util
 import XCOM.aView.Tui
 import XCOM.controller.Controller
@@ -21,3 +22,4 @@ class ObservableSpec extends WordSpec{
     }
   }
 }
+*/

@@ -4,11 +4,11 @@ import XCOM.model.PlayerStatus._
 import XCOM.model.{AttackScenario, Character, Field, PlayerStatus, Scenario, TurnScenario}
 import XCOM.util.{Observable, UndoManager}
 
-
+import scala.swing.Publisher
 import scala.util.Try
 
 
-case class Controller(var field: Field, var attack : AttackScenario) extends Observable{
+case class Controller(var field: Field, var attack : AttackScenario) extends Publisher{
 
   var context = new Context(this)
   var contextTravel = new ContextTravel(this)
@@ -29,7 +29,6 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
     Cout.output =  this.output
     Cout.seed =  this.seed
     Cout.PlayerState = this.PlayerState
-    Cout.subscribers =  this.subscribers
     Cout
   }
 
@@ -86,7 +85,7 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
     output = "step was undone \n "
     seed =  newC.seed
     PlayerState = newC.PlayerState
-    notifyObservers
+    publish(new UpdateField)
   }
   def redo(uManager: UndoManager) = {
     val newC = uManager.redoStep(this)
@@ -98,7 +97,7 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
     output = "step was redone \n "
     seed =  newC.seed
     PlayerState = newC.PlayerState
-    notifyObservers
+    publish(new UpdateField)
   }
 
   def fire(attHero: model.Character, defHero: model.Character): (Int,Int) ={
@@ -123,7 +122,8 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
     if(turnS.testEnd()){
       PlayerState = nextPlayerState(PlayerState)
       turnS.load( PlayerStatus.turn(PlayerState),field)
-      out("Turn of the " + PlayerState+" Team started")
+      output = "Turn of the " + PlayerState+" Team started"
+      publish(new UpdateField)
       return true
     }
     false
@@ -194,7 +194,7 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
 
   def out(str:String):Unit ={
     output = str
-    notifyObservers
+    publish(new UpdateText)
   }
 
 
@@ -244,4 +244,8 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Obs
   def checkSide(side: Int): Boolean = {
     if(PlayerStatus.turn(PlayerState) == side) true else throw new Exception("Not a member of the Team that has the control")
   }
+
+  def helpOut = publish(new UpdateHelp)
+
+  def infoOut = publish(new UpdateInfo)
 }
