@@ -2,7 +2,7 @@ package XCOM.controller
 import XCOM.model
 import XCOM.model.PlayerStatus._
 import XCOM.model.{AttackScenario, Character, Field, PlayerStatus, Scenario, TurnScenario}
-import XCOM.util.{Observable, UndoManager}
+import XCOM.util.UndoManager
 
 import scala.swing.Publisher
 import scala.util.Try
@@ -152,6 +152,11 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Pub
   def testHero(pX: Int, pY: Int): Boolean = {
     for(e <- field.character if e.cell.x == pX-1 && e.cell.y == pY-1) throw new Exception("Move not possible: There is another Hero at this position")
     true
+  }
+
+  def getHero(pX: Int, pY: Int): Character = {
+    for(e <- field.character if e.cell.x == pX-1 && e.cell.y == pY-1) return e
+    throw new Exception()
   }
 
   def isHero(input : String): Option[Character]= {

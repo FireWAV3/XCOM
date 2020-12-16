@@ -1,52 +1,91 @@
 package XCOM.aView.gui
-import XCOM.controller.{Controller, UpdateField}
+import XCOM.controller.Controller
 import javax.swing.ImageIcon
 
-import scala.swing._
+import scala.swing.Swing.LineBorder
 import scala.swing.event.MouseClicked
+import scala.swing.{Label, _}
+import scala.util.Try
 
 class SwingGUI(c: Controller) extends Frame {
   listenTo(c)
-  title = "Xcom"
-  var menu = new BoxPanel(Orientation.Vertical){
+  title = "Xcom Menu"
+
+
+  var logo = new BoxPanel(Orientation.Horizontal){
+
     contents += new Label(){
-      icon = new ImageIcon("/img/xcom_menu_icon.png")
+      icon = new ImageIcon("/XCOM/aView/gui/img/xcom_menu_icon.png")
     }
+    contents += new Label(){
+      text = "XCOM"
+    }
+  }
+
+
+  var menu = new BoxPanel(Orientation.Vertical){
+
     contents += new Label(){
       text = "Welcome to XCOM!"
     }
+
     contents += new BoxPanel(Orientation.Horizontal){
+      background = java.awt.Color.GRAY
       contents += new Label(){
-        text = "Please enter a Number between 1 and " + c.scenarioAmmount
+        text = "Chose Level   "
       }
-      contents += new TextField(){
+      contents += new ComboBox(List("1","2")){
+        background = java.awt.Color.GRAY
+        maximumSize = new Dimension(30, 30)
       }
     }
+
     contents += new Label(){
       text = "Go!"
       listenTo(mouse.clicks)
       reactions +={
-        case MouseClicked(scr,pt,mod,clicks,pops) => c.loadScenario(1)
+        case MouseClicked(scr,pt,mod,clicks,pops) => {
+          c.loadScenario(1)
+          new GameField(c).main.visible = true
+          invisible
+        }
       }
     }
+
+    contents += new Label(){
+      text = "Exit"
+      listenTo(mouse.clicks)
+      reactions +={
+        case MouseClicked(scr,pt,mod,clicks,pops) => {
+          Try(c.exit)
+          System.exit(0)
+        }
+      }
+    }
+    val s = new Dimension(100, 100)
+    minimumSize = s
+    maximumSize = s
+    preferredSize = s
+    border = LineBorder(java.awt.Color.YELLOW, 2)
+    background = java.awt.Color.GRAY
   }
 
-  val label = new Label(){
-    text = "Welcome to XCOM!"
+
+
+
+  contents = new BorderPanel {
+    add(logo,BorderPanel.Position.North)
+    add(menu,BorderPanel.Position.Center)
+    background = java.awt.Color.BLACK
   }
-  var bp = new BoxPanel(Orientation.Vertical){
-    contents += label
-    listenTo(mouse.clicks)
-    reactions +={
-      case MouseClicked(scr,pt,mod,clicks,pops) => c.info(Some("C1"))
-    }
-  }
-  contents = bp
-  contents = menu
-  maximize()
-  resizable = false
+
+  background = java.awt.Color.BLACK
+  size = new Dimension(700,700)
+  //resizable = false
   open()
-  reactions += {
-    case event: UpdateField => label.text = c.output; repaint()
-  }
+
+  def invisible = visible = false
+
 }
+
+
