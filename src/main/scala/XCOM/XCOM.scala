@@ -16,7 +16,7 @@ object XCOM {
       val input = StdIn.readLine().toUpperCase()
       Try(ui.run(input)) match {
         case Success(value) =>
-        case Failure(exception) => System.exit(0)
+        case Failure(exception) => print(exception)
       }
     }
   }
