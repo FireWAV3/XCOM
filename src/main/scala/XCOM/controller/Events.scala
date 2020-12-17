@@ -6,4 +6,6 @@ class UpdateField extends Event
 class UpdateText extends Event
 class UpdateInfo extends Event
 
+class UpdateMenu extends Event
 class UpdateHelp extends Event
+

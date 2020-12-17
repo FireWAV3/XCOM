@@ -1,5 +1,5 @@
 package XCOM.aView.gui
-import XCOM.controller.Controller
+import XCOM.controller.{Controller, UpdateField, UpdateMenu}
 import javax.swing.ImageIcon
 
 import scala.swing.Swing.LineBorder
@@ -44,10 +44,8 @@ class SwingGUI(c: Controller) extends Frame {
       text = "Go!"
       listenTo(mouse.clicks)
       reactions +={
-        case MouseClicked(scr,pt,mod,clicks,pops) => {
+        case MouseClicked(src,pt,mod,clicks,pops) => {
           c.loadScenario(1)
-          new GameField(c).main.visible = true
-          invisible
         }
       }
     }
@@ -77,6 +75,13 @@ class SwingGUI(c: Controller) extends Frame {
     add(logo,BorderPanel.Position.North)
     add(menu,BorderPanel.Position.Center)
     background = java.awt.Color.BLACK
+  }
+
+  reactions += {
+    case field: UpdateMenu => {
+      new GameField(c).main.visible = true
+      invisible
+    }
   }
 
   background = java.awt.Color.BLACK

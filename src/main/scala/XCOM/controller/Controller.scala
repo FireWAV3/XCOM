@@ -4,6 +4,7 @@ import XCOM.model.PlayerStatus._
 import XCOM.model.{AttackScenario, Character, Field, PlayerStatus, Scenario, TurnScenario}
 import XCOM.util.UndoManager
 
+import scala.collection.mutable.{ArrayBuffer, ListBuffer}
 import scala.swing.Publisher
 import scala.util.Try
 
@@ -211,6 +212,18 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Pub
   def wrongGameState() = out("You are not allowed to use that command right now")
 
   def fieldToString:String = field.toString
+
+  def getCharacters: Vector[(String,Int,Int)] = {
+    var temp = new ListBuffer[(String,Int,Int)]()
+    for (x <- field.character) {temp.append((x.displayname,x.cell.x,x.cell.y))}
+    temp.toVector
+  }
+
+  def getRocks: Vector[(Int,Int)] = {
+    var temp = new ListBuffer[(Int,Int)]()
+    for (x <- field.rocks) {temp.append((x.x,x.y))}
+    temp.toVector
+  }
 
   def scenarioAmmount:Int ={
     val scenario = Scenario()

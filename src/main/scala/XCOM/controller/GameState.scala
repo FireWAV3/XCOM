@@ -39,7 +39,7 @@ class GameState(c:Controller) extends GameStateTrait{
 
   override def info(str: String): Boolean = {
     c.isHero(str) match {
-      case Some(value) => c.output = value.toString; c.infoOut; true
+      case Some(value) => c.output = value.toString.replaceAll("Team:          0", "Team: Blue").replaceAll("Team:          1", "Team: Red"); c.infoOut; true
       case None =>  c.out(str +" is not a Hero") ; false
     }
   }
@@ -76,7 +76,7 @@ class MenuState(c : Controller) extends GameState(c){
       + "\nMove C,X,Y :\tMove Character(C) to X, Y"
       + "\nInfo C:\t\t\tCurrent status of Character(C)"
       + "\nshoot C,T:\t\tCharacter(C) attacks Target(T)\n")
-    c.publish(new UpdateField)
+    c.publish(new UpdateMenu)
     c.context.state = new SuiState(c)
     c.turnS.load(PlayerStatus.turn(c.PlayerState),c.field)
     true
