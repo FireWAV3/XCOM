@@ -49,103 +49,34 @@ class GameField(c: Controller) extends Frame{
       var cells = Array.ofDim[IdLabel](c.field.sizeX+1,c.field.sizeY+1)
       for( y <- 1 to c.field.sizeY+1){
         for( x <- 1 to c.field.sizeX+1){
-          Try(c.testRock(x,y)) match {
-            case Success(value) =>{
-              Try(c.getHero(x,y)) match {
-                case Success(value) =>{
-                  val heroLabel = new IdLabel(value.displayname){
-                    recolor(this)
-                    listenTo(mouse.clicks)
-                    reactions +={
-                      case MouseClicked(scr,pt,mod,clicks,pops) => {
-                        mod match {
-                          case 0 => {
-                            if(id.contains("C")){
-                              highlightedCell(0) = highlightedCell(1)
-                              highlightedCell(1) = this
-                              c.info(Some(id))
-                            }
-                          }
-                          case 256 => { //right Mousebutton
-                            val cell = highlightedCell(1)
-                            val place = findCell(this)
-                            c.move(cell.id,place._1+1,place._2+1)
-                          }
-                          case _ => { //middle Mousebutton
-                            val cell = highlightedCell(1)
-                            c.aim(Some(cell.id),Some(this.id))
-                          }
-                        }
-                      }
+          val heroLabel = new IdLabel(""){
+            recolor(this)
+            listenTo(mouse.clicks)
+            reactions +={
+              case MouseClicked(scr,pt,mod,clicks,pops) => {
+                mod match {
+                  case 0 => {
+                    if(id.contains("C")){
+                      highlightedCell(0) = highlightedCell(1)
+                      highlightedCell(1) = this
+                      c.info(Some(id))
                     }
                   }
-                  cells(x-1)(y-1) = heroLabel
-                  contents += heroLabel
-                }
-                case Failure(exception) =>{
-                  val emptyLabel = new IdLabel("X"){
-                    recolor(this)
-                    listenTo(mouse.clicks)
-                    reactions +={
-                      case MouseClicked(scr,pt,mod,clicks,pops) => {
-                        mod match {
-                          case 0 => {
-                            if(id.contains("C")) {
-                              highlightedCell(0) = highlightedCell(1)
-                              highlightedCell(1) = this
-                              c.info(Some(id))
-                            }
-                          }
-                          case 256 => { //right Mousebutton
-                            val cell = highlightedCell(1)
-                            val place = findCell(this)
-                            c.move(cell.id,place._1+1,place._2+1)
-                          }
-                          case _ => { //middle Mousebutton
-                            val cell = highlightedCell(1)
-                            c.aim(Some(cell.id),Some(this.id))
-                          }
-                        }
-                      }
-                    }
+                  case 256 => { //right Mousebutton
+                    val cell = highlightedCell(1)
+                    val place = findCell(this)
+                    c.move(cell.id,place._1+1,place._2+1)
                   }
-                  cells(x-1)(y-1) = emptyLabel
-                  contents += emptyLabel
-                }
-              }
-            }
-            case Failure(exception) =>{
-              val rockLabel = new IdLabel("R"){
-                recolor(this)
-                listenTo(mouse.clicks)
-                reactions +={
-                  case MouseClicked(scr,pt,mod,clicks,pops) => {
-                    mod match {
-                      case 0 => {
-                        if(id.contains("C")){
-                          highlightedCell(0) = highlightedCell(1)
-                          highlightedCell(1) = this
-                          c.info(Some(id))
-                        }
-                      }
-                      case 256 => { //right Mousebutton
-                        val cell = highlightedCell(1)
-                        val place = findCell(this)
-                        c.move(cell.id,place._1+1,place._2+1)
-                      }
-                      case _ => { //middle Mousebutton
-                        val cell = highlightedCell(1)
-                        c.aim(Some(cell.id),Some(this.id))
-                      }
-                    }
+                  case _ => { //middle Mousebutton
+                    val cell = highlightedCell(1)
+                    c.aim(Some(cell.id),Some(this.id))
                   }
                 }
               }
-              cells(x-1)(y-1) = rockLabel
-              contents += rockLabel
             }
           }
-
+          cells(x-1)(y-1) = heroLabel
+          contents += heroLabel
         }
       }
     }
@@ -195,7 +126,6 @@ class GameField(c: Controller) extends Frame{
     def shootupdate() = {
       //TODO
       val res = Dialog.showConfirmation(_,c.output,"Shoot?",Dialog.Options.YesNo,_,_)
-
       if(res == Dialog.Result.Yes){
         c.shoot(true)
       }else{

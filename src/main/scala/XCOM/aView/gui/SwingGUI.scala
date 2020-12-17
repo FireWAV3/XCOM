@@ -79,8 +79,10 @@ class SwingGUI(c: Controller) extends Frame {
 
   reactions += {
     case event: UpdateMenu => {
-      new GameField(c).main.visible = true
+      var game = new GameField(c)
+      game.main.visible = true
       invisible
+      c.requestRepaint
     }
   }
 

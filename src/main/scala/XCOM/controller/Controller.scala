@@ -266,4 +266,6 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Pub
   def helpOut = publish(new UpdateHelp)
 
   def infoOut = publish(new UpdateInfo)
+
+  def requestRepaint = publish(new UpdateField)
 }
