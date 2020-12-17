@@ -140,10 +140,11 @@ class SuiState(c : Controller) extends GameState(c) {
                 val percentage = c.shootpercentage(valueH1, valueH2)
                 c.attack = AttackScenario(valueH1, valueH2, percentage)
                 c.seed = scala.util.Random.nextInt()
-                c.out("The chance to hit " + valueH2.name + " (" + valueH2.displayname+ ") with "
+                c.output =("The chance to hit " + valueH2.name + " (" + valueH2.displayname+ ") with "
                   + valueH1.name + " (" + valueH1.displayname + ") is: " + percentage
-                  + "%. If you want to shoot, enter 'Yes' otherwise enter 'No'")
+                  + "%.")
                 c.context.state = new ShootState(c)
+                c.publish(new UpdateShoot)
                 true
               }
               case Failure(exception) => c.out(exception.getMessage); false

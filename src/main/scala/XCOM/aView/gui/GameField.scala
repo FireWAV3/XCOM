@@ -1,15 +1,13 @@
 package XCOM.aView.gui
 
-import XCOM.controller.{Controller, UpdateField, UpdateInfo, UpdateText}
+import XCOM.controller.{Controller, UpdateField, UpdateInfo, UpdateShoot, UpdateText}
 import XCOM.model.PlayerStatus._
-import javax.swing.GroupLayout.Alignment
 import javax.swing.Icon
-import javax.swing.border.Border
 
-import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import scala.collection.mutable.ListBuffer
 import scala.swing.Swing.{EmptyIcon, LineBorder}
 import scala.swing.event.MouseClicked
-import scala.swing.{Alignment, BorderPanel, BoxPanel, Component, Dimension, Frame, GridPanel, Label, MainFrame, Orientation}
+import scala.swing.{BorderPanel, BoxPanel, Dialog, Dimension, Frame, GridPanel, Label, MainFrame, Orientation}
 import scala.util.{Failure, Success, Try}
 
 class GameField(c: Controller) extends Frame{
@@ -62,9 +60,11 @@ class GameField(c: Controller) extends Frame{
                       case MouseClicked(scr,pt,mod,clicks,pops) => {
                         mod match {
                           case 0 => {
-                            highlightedCell(0) = highlightedCell(1)
-                            highlightedCell(1) = this
-                            c.info(Some(id))
+                            if(id.contains("C")){
+                              highlightedCell(0) = highlightedCell(1)
+                              highlightedCell(1) = this
+                              c.info(Some(id))
+                            }
                           }
                           case 256 => { //right Mousebutton
                             val cell = highlightedCell(1)
@@ -90,9 +90,11 @@ class GameField(c: Controller) extends Frame{
                       case MouseClicked(scr,pt,mod,clicks,pops) => {
                         mod match {
                           case 0 => {
-                            highlightedCell(0) = highlightedCell(1)
-                            highlightedCell(1) = this
-                            c.info(Some(id))
+                            if(id.contains("C")) {
+                              highlightedCell(0) = highlightedCell(1)
+                              highlightedCell(1) = this
+                              c.info(Some(id))
+                            }
                           }
                           case 256 => { //right Mousebutton
                             val cell = highlightedCell(1)
@@ -120,9 +122,11 @@ class GameField(c: Controller) extends Frame{
                   case MouseClicked(scr,pt,mod,clicks,pops) => {
                     mod match {
                       case 0 => {
-                        highlightedCell(0) = highlightedCell(1)
-                        highlightedCell(1) = this
-                        c.info(Some(id))
+                        if(id.contains("C")){
+                          highlightedCell(0) = highlightedCell(1)
+                          highlightedCell(1) = this
+                          c.info(Some(id))
+                        }
                       }
                       case 256 => { //right Mousebutton
                         val cell = highlightedCell(1)
@@ -144,12 +148,7 @@ class GameField(c: Controller) extends Frame{
 
         }
       }
-
-
-
-
     }
-
 
     def infoupdate(): Unit = {
       val output = "<html>" + c.output.replaceAll("\n","<br/>") + "</html>"
@@ -191,6 +190,19 @@ class GameField(c: Controller) extends Frame{
         }
       }
     }
+
+
+    def shootupdate() = {
+      //TODO
+      val res = Dialog.showConfirmation(_,c.output,"Shoot?",Dialog.Options.YesNo,_,_)
+
+      if(res == Dialog.Result.Yes){
+        c.shoot(true)
+      }else{
+        c.shoot(false)
+      }
+    }
+
 
     def fieldupdate() = {
       for(a <- 0 to field.cells.length-1){
@@ -259,7 +271,8 @@ class GameField(c: Controller) extends Frame{
     reactions += {
       case event: UpdateInfo => infoupdate()
       case event: UpdateText => chatupdate()
-      case field: UpdateField => fieldupdate()
+      case event: UpdateField => fieldupdate()
+      case event: UpdateShoot => shootupdate()
     }
 
     contents = new BorderPanel{

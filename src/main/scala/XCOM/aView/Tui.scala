@@ -1,6 +1,6 @@
 package XCOM.aView
 import XCOM.controller._
-import XCOM.util.{Observer, UndoManager}
+import XCOM.util.UndoManager
 
 import scala.swing.Reactor
 import scala.util.{Failure, Success, Try}
@@ -101,7 +101,9 @@ case class Tui(var c : Controller) extends Reactor with UiTrait {
     case event: UpdateText => printOut
     case event: UpdateInfo => printOut
     case event: UpdateHelp => printHelp
-    case menu: UpdateMenu => printField
+    case event: UpdateMenu => printField
+    case event: UpdateShoot => printAim
+
   }
 
   def printField: Unit = {
@@ -110,6 +112,8 @@ case class Tui(var c : Controller) extends Reactor with UiTrait {
   }
 
   def printOut: Unit = println(c.output)
+
+  def printAim: Unit = println(c.output + " If you want to shoot enter 'Yes' otherwise 'No'")
 
   def printHelp: Unit = println("\nHELP" +
     "\nExit:\t\t\tExits the game" +

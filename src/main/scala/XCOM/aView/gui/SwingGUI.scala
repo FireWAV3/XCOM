@@ -1,5 +1,5 @@
 package XCOM.aView.gui
-import XCOM.controller.{Controller, UpdateField, UpdateMenu}
+import XCOM.controller.{Controller, UpdateMenu}
 import javax.swing.ImageIcon
 
 import scala.swing.Swing.LineBorder
@@ -78,7 +78,7 @@ class SwingGUI(c: Controller) extends Frame {
   }
 
   reactions += {
-    case field: UpdateMenu => {
+    case event: UpdateMenu => {
       new GameField(c).main.visible = true
       invisible
     }
