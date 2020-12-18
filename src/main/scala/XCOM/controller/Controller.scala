@@ -4,7 +4,7 @@ import XCOM.model.PlayerStatus._
 import XCOM.model.{AttackScenario, Character, Field, PlayerStatus, Scenario, TurnScenario}
 import XCOM.util.UndoManager
 
-import scala.collection.mutable.{ArrayBuffer, ListBuffer}
+import scala.collection.mutable.ListBuffer
 import scala.swing.Publisher
 import scala.util.Try
 
@@ -217,6 +217,11 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Pub
     var temp = new ListBuffer[(String,Int,Int)]()
     for (x <- field.character) {temp.append((x.displayname,x.cell.x,x.cell.y))}
     temp.toVector
+  }
+
+  def getCharactersSide(hero:String): Int = {
+    for (x <- field.character) {if(x.displayname == hero) return x.side}
+    -1
   }
 
   def getRocks: Vector[(Int,Int)] = {
