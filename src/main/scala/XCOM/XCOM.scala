@@ -6,7 +6,7 @@ import scala.util.{Failure, Success, Try}
 import scala.io._
 
 object XCOM {
-  val c = new Controller()
+  var c = new Controller()
   val uiType = "TUI"
   val ui = UiTrait(uiType, c)
   val gui = new SwingGUI(c)
@@ -16,7 +16,7 @@ object XCOM {
       val input = StdIn.readLine().toUpperCase()
       Try(ui.run(input)) match {
         case Success(value) =>
-        case Failure(exception) => print(exception)
+        case Failure(exception) => System.exit(0)
       }
     }
   }

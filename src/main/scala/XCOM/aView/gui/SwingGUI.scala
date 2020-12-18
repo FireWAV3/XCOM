@@ -13,31 +13,23 @@ class SwingGUI(c: Controller) extends Frame {
 
 
   var logo = new BoxPanel(Orientation.Horizontal){
+    contents += new Label(){
+      icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/xcom_menu_icon.png")
+    }
+  }
 
-    contents += new Label(){
-      icon = new ImageIcon("/XCOM/aView/gui/img/xcom_menu_icon.png")
-    }
-    contents += new Label(){
-      text = "XCOM"
-    }
+  val comboBox = new ComboBox(List("1","2")){
+    maximumSize = new Dimension(30, 30)
   }
 
 
   var menu = new BoxPanel(Orientation.Vertical){
-
-    contents += new Label(){
-      text = "Welcome to XCOM!"
-    }
-
     contents += new BoxPanel(Orientation.Horizontal){
-      background = java.awt.Color.GRAY
       contents += new Label(){
         text = "Chose Level   "
       }
-      contents += new ComboBox(List("1","2")){
-        background = java.awt.Color.GRAY
-        maximumSize = new Dimension(30, 30)
-      }
+
+      contents += comboBox
     }
 
     contents += new Label(){
@@ -45,7 +37,7 @@ class SwingGUI(c: Controller) extends Frame {
       listenTo(mouse.clicks)
       reactions +={
         case MouseClicked(src,pt,mod,clicks,pops) => {
-          c.loadScenario(1)
+          c.loadScenario(comboBox.selection.index+1)
         }
       }
     }
@@ -64,18 +56,23 @@ class SwingGUI(c: Controller) extends Frame {
     minimumSize = s
     maximumSize = s
     preferredSize = s
-    border = LineBorder(java.awt.Color.YELLOW, 2)
-    background = java.awt.Color.GRAY
+  }
+
+  val gridtext = new GridPanel(2,1){
+    contents += new Label(){
+      text = "Welcome to XCOM!"
+    }
+    contents += menu
+  }
+
+  contents = new GridPanel(2,1){
+    contents += logo
+    contents += gridtext
+    border = LineBorder(java.awt.Color.BLACK, 2)
   }
 
 
 
-
-  contents = new BorderPanel {
-    add(logo,BorderPanel.Position.North)
-    add(menu,BorderPanel.Position.Center)
-    background = java.awt.Color.BLACK
-  }
 
   reactions += {
     case event: UpdateMenu => {
@@ -87,9 +84,10 @@ class SwingGUI(c: Controller) extends Frame {
   }
 
   background = java.awt.Color.BLACK
-  size = new Dimension(700,700)
+  size = new Dimension(374,400)
   //resizable = false
   open()
+  centerOnScreen()
 
   def invisible = visible = false
 

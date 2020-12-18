@@ -1,15 +1,14 @@
 package XCOM.aView.gui
 
-import XCOM.controller.{Controller, UpdateField, UpdateInfo, UpdateShoot, UpdateText}
+import XCOM.controller._
 import XCOM.model.PlayerStatus._
-import javax.swing.Icon
+import javax.swing.{Icon, ImageIcon}
 
 import scala.collection.mutable.ListBuffer
 import scala.swing.Swing.{EmptyIcon, LineBorder}
 import scala.swing.event.MouseClicked
-import scala.swing.{BorderPanel, BoxPanel, Dialog, Dimension, Frame, GridPanel, Label, MainFrame, Orientation}
-import scala.util.{Failure, Success, Try}
-
+import scala.swing.{BorderPanel, BoxPanel, Dimension, Frame, GridPanel, Label, MainFrame, Orientation}
+import scala.util.Try
 class GameField(c: Controller) extends Frame{
 
 
@@ -17,13 +16,34 @@ class GameField(c: Controller) extends Frame{
     title = "XCOM"
     listenTo(c)
 
-    var info = new BoxPanel(Orientation.Horizontal){
+    var info = new GridPanel(1,2){
+
+      minimumSize = new Dimension(1000, 150)
+      preferredSize = new Dimension(1000, 150)
       var infoLabel =  new Label("Info"){
-        minimumSize = new Dimension(1000, 150)
-        preferredSize = new Dimension(1000, 150)
+      }
+
+     var next = new GridPanel(1,2){
+        contents += new Label("next"){
+            listenTo(mouse.clicks)
+            reactions += {
+              case MouseClicked(scr,pt,mod,clicks,pops) => c.next()
+            }
+        }
+       contents += new Label(){
+         text = "Exit"
+         listenTo(mouse.clicks)
+         reactions +={
+           case MouseClicked(scr,pt,mod,clicks,pops) => {
+             Try(c.exit)
+             System.exit(0)
+           }
+         }
+       }
       }
 
       contents += infoLabel
+      contents += next
     }
 
     var chat = new BoxPanel(Orientation.Vertical){
@@ -84,7 +104,7 @@ class GameField(c: Controller) extends Frame{
     def infoupdate(): Unit = {
       val output = "<html>" + c.output.replaceAll("\n","<br/>") + "</html>"
       info.infoLabel.text = output
-      highlightedCell(0).border = LineBorder(java.awt.Color.YELLOW, 3)
+      recolor(highlightedCell(0))
       highlightedCell(1).border = LineBorder(java.awt.Color.GREEN, 3)
       repaint()
     }
@@ -122,17 +142,9 @@ class GameField(c: Controller) extends Frame{
       }
     }
 
-
     def shootupdate() = {
-      //TODO
-      val res = Dialog.showConfirmation(_,c.output,"Shoot?",Dialog.Options.YesNo,_,_)
-      if(res == Dialog.Result.Yes){
-        c.shoot(true)
-      }else{
-        c.shoot(false)
-      }
+        new DecisionPanel(c,c.output)
     }
-
 
     def fieldupdate() = {
       for(a <- 0 to field.cells.length-1){
@@ -145,6 +157,7 @@ class GameField(c: Controller) extends Frame{
       highlightedCell(1) = new IdLabel("")
       info.infoLabel.text = ""
       repaint()
+      chatupdate()
     }
 
     def rotateArray(array: ListBuffer[String], string: String): ListBuffer[String] = {
@@ -181,19 +194,25 @@ class GameField(c: Controller) extends Frame{
     def recolor(cell: IdLabel): Unit ={
       cell.id match {
         case "X" => {
+          cell.icon = EmptyIcon
           cell.text = ""
           cell.background = java.awt.Color.BLACK
           cell.border = LineBorder(java.awt.Color.BLACK, 1)
         }
         case "R" => {
-          cell.text = cell.id
+          cell.icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/rock.png")
+          //cell.text = cell.id
           cell.background = java.awt.Color.GRAY
           cell.border = LineBorder(java.awt.Color.GRAY, 3)
         }
         case _ => {
+          cell.icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/player.png")
           cell.text = cell.id
-          cell.background = java.awt.Color.YELLOW
-          cell.border = LineBorder(java.awt.Color.YELLOW, 3)
+         c.getCharactersSide(cell.id) match {
+           case 0 => cell.border = LineBorder(java.awt.Color.BLUE, 3)
+           case 1 => cell.border = LineBorder(java.awt.Color.RED, 3)
+           case _ => cell.border = LineBorder(java.awt.Color.YELLOW, 3)
+         }
         }
       }
     }
@@ -226,4 +245,58 @@ class IdLabel(var id: String, string0: String, icon0: Icon) extends Label{
   }
 
   override def toString(): String = "id: " + id + "\ttext: " + text
+}
+
+
+class WinFrame(c:Controller) extends MainFrame {
+  listenTo(c)
+  title = "Congratulation"
+
+  contents = new Label(){
+    text = c.output
+  }
+
+  size = new Dimension(400,150)
+  resizable = false
+  visible = true
+  centerOnScreen()
+}
+
+class DecisionPanel(c:Controller,output:String) extends MainFrame {
+    listenTo(c)
+    title = "Conformation"
+    val question = new GridPanel(1,2){
+      var yes = new Label("Yes"){
+        listenTo(mouse.clicks)
+        reactions += {
+          case MouseClicked(scr,pt,mod,clicks,pops) =>
+            Try(c.shoot(true))
+
+        }
+      }
+      var no = new Label("No"){
+        listenTo(mouse.clicks)
+        reactions += {
+          case MouseClicked(scr,pt,mod,clicks,pops) =>  c.shoot(false)
+            dispose()
+        }
+      }
+      contents += yes
+      contents += no
+    }
+
+    contents = new GridPanel(2,1){
+      contents += new Label(output)
+      contents += question
+    }
+    size = new Dimension(400,150)
+    resizable = false
+    visible = true
+    centerOnScreen()
+
+  reactions += {
+    case event: UpdateField => dispose()
+    case event: UpdateText => dispose()
+  }
+
 }
