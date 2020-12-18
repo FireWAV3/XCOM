@@ -101,7 +101,6 @@ case class Tui(var c : Controller) extends Reactor with UiTrait {
     case event: UpdateText => printOut
     case event: UpdateInfo => printOut
     case event: UpdateHelp => printHelp
-    case event: UpdateMenu => printField
     case event: UpdateShoot => printAim
 
   }
