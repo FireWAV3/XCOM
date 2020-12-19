@@ -266,7 +266,7 @@ class WinFrame(c:Controller) extends MainFrame {
 
 class DecisionPanel(c:Controller,output:String, uManager: UndoManager) extends MainFrame {
     listenTo(c)
-    title = "Conformation"
+    title = "Affirmation needed"
     val question = new GridPanel(1,2){
       var yes = new Label("Yes"){
         listenTo(mouse.clicks)
