@@ -4,16 +4,18 @@ package XCOM.aView
 import XCOM.controller._
 import XCOM.model.PlayerStatus._
 import XCOM.model.AttackScenario
+import XCOM.util.UndoManager
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
 
 class TuiSpec extends WordSpec{
   val c = new Controller()
-  val tui = Tui(c)
+  val uManager = UndoManager()
+  val tui = Tui(c, uManager)
   "A Tui" should{
     "have a Constructor" in{
       val c = new Controller()
-      val ui = UiTrait("TUI", c)
+      val ui = UiTrait("TUI", c, uManager)
       ui shouldBe a [Tui]
     }
     "have a methode run" in{
@@ -103,7 +105,8 @@ class TuiSpec extends WordSpec{
     }
     "have a methode load" in{
       val c = new Controller()
-      val tui = Tui(c)
+      val uManager = new UndoManager
+      val tui = Tui(c, uManager)
       tui.run("LOAD -1")
       c.output should be("Wrong input: [LOAD -1]")
       tui.run("LOAD 0")

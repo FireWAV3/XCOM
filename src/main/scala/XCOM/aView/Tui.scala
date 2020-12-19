@@ -6,10 +6,9 @@ import scala.swing.Reactor
 import scala.util.{Failure, Success, Try}
 //import scala.util.{Try, Success, Failure}
 
-case class Tui(var c : Controller) extends Reactor with UiTrait {
+case class Tui(var c : Controller, uManager: UndoManager) extends Reactor with UiTrait {
 
   listenTo(c)
-  val uManager = UndoManager()
   println("Welcome to Xcom!\nFor more information enter Help\n")
   println("If you want to start, enter 'Load,Number' to choose a scenario with Number  between 1 and " + c.scenarioAmmount)
 
@@ -102,7 +101,7 @@ case class Tui(var c : Controller) extends Reactor with UiTrait {
     case event: UpdateInfo => printOut
     case event: UpdateHelp => printHelp
     case event: UpdateShoot => printAim
-
+    //case event: UpdateMenu => printField
   }
 
   def printField: Unit = {
@@ -119,6 +118,6 @@ case class Tui(var c : Controller) extends Reactor with UiTrait {
     "\nMove C,X,Y :\tMove Character(C) to X, Y" +
     "\nInfo C:\t\t\tCurrent status of Character(C)" +
     "\nShoot C,T:\t\tCharacter(C) attacks Target(T)\n"+
-    "\nUndo:\t\tmove you back in Time to the last step you made\n"+
+    "\nUndo:\t\tMoves you back in Time to the last step you made\n"+
     "\nRedo:\t\treverts the Undo Time travel\n")
 }

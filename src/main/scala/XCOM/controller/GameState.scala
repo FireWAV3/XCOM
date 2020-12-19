@@ -18,7 +18,7 @@ trait GameStateTrait{
 
 class Context(c : Controller){
 
-  def deepCoppy(): Context = {
+  def deepCopy(): Context = {
     var Cout = new Context(this.c)
     Cout.state = this.state
     Cout
@@ -40,7 +40,7 @@ class GameState(c:Controller) extends GameStateTrait{
   override def info(str: String): Boolean = {
     c.isHero(str) match {
       case Some(value) => c.output = value.toString.replaceAll("Team:          0", "Team: Blue").replaceAll("Team:          1", "Team: Red"); c.infoOut; true
-      case None =>  c.out(str +" is not a Hero") ; false
+      case None =>  c.out("Who do you mean? We don't know " + str) ; false
     }
   }
 
@@ -56,7 +56,7 @@ class GameState(c:Controller) extends GameStateTrait{
     c.PlayerState = c.nextPlayerState(c.PlayerState)
     c.attack = new AttackScenario()
     c.turnS.load( PlayerStatus.turn(c.PlayerState),c.field)
-    c.output = "Turn of the " + c.PlayerState+" Team started"
+    c.output = "Let's go " + c.PlayerState +". Time to kick some ass!"
     c.publish(new UpdateField)
     true
   }
@@ -71,11 +71,7 @@ class MenuState(c : Controller) extends GameState(c){
   override def loadScenario(index: Int): Boolean = {
     val scenario = Scenario()
     c.field = scenario.loadScenario(index)
-    c.output = ("Successfully loaded scenario "+ index +"\n"
-      + "You can now enter"
-      + "\nMove C,X,Y :\tMove Character(C) to X, Y"
-      + "\nInfo C:\t\t\tCurrent status of Character(C)"
-      + "\nshoot C,T:\t\tCharacter(C) attacks Target(T)\n")
+    c.output = ("Successfully loaded scenario "+ index +"\n")
     c.publish(new UpdateMenu)
     c.context.state = new SuiState(c)
     c.turnS.load(PlayerStatus.turn(c.PlayerState),c.field)
@@ -112,14 +108,14 @@ class SuiState(c : Controller) extends GameState(c) {
                 }
               }
             )
-            c.output = "move successful"
+            c.output = "Finally got there. This was exhausting"
             c.publish(new UpdateField)
             true
           }
           case Failure(exception) => c.out(exception.getMessage); false
         }
       }
-      case None =>  c.out(str + " is not a valid Hero") ; false
+      case None =>  c.out("Who do you mean? We don't know " + str) ; false
     }
   }
 
@@ -140,9 +136,7 @@ class SuiState(c : Controller) extends GameState(c) {
                 val percentage = c.shootpercentage(valueH1, valueH2)
                 c.attack = AttackScenario(valueH1, valueH2, percentage)
                 c.seed = scala.util.Random.nextInt()
-                c.output =("The chance to hit " + valueH2.name + " (" + valueH2.displayname+ ") with "
-                  + valueH1.name + " (" + valueH1.displayname + ") is: " + percentage
-                  + "%.")
+                c.output =("Guess I can hit " + valueH2.displayname + " with a chance of like " + percentage + "%.")
                 c.context.state = new ShootState(c)
                 c.publish(new UpdateShoot)
                 true
@@ -150,10 +144,10 @@ class SuiState(c : Controller) extends GameState(c) {
               case Failure(exception) => c.out(exception.getMessage); false
             }
           }
-          case None =>  c.out(str2 + " is not a valid Hero"); false
+          case None =>  c.out("Who do you mean? I don't know " + str2); false
         }
       }
-      case None => c.out(str1 + " is not a valid Hero"); false
+      case None => c.out("Who do you mean? We don't know " + str1); false
     }
   }
 }
@@ -166,9 +160,7 @@ class ShootState(c : Controller) extends GameState(c){
       val randInt = random.nextInt(101)
       if (randInt <= c.attack.probability){
         val result = c.fire(c.attack.attHero, c.attack.defHero)
-        c.output = (c.attack.attHero.name + " (" + c.attack.attHero.displayname + ") dealt "
-          + result._1 + " damage to " + c.attack.defHero.name + " (" + c.attack.defHero.displayname
-          + ")(" + result._2 + " hp left)")
+        c.output = ("Yes, got him. I took about " + result._1 + " hp, so he should have "  + result._2 + " hp left. What a great shot!")
         c.publish(new UpdateField)
         c.context.state = new SuiState(c)
         c.attack = new AttackScenario()
@@ -182,13 +174,13 @@ class ShootState(c : Controller) extends GameState(c){
         c.checkTurn()
         return true
       }else{
-        c.out(("Shot missed by " + (randInt - c.attack.probability) + " cm"))
+        c.out(("Damnit I missed him. Would have taken only " + (randInt - c.attack.probability) + " cm"))
         c.context.state = new SuiState(c)
         c.attack = new AttackScenario()
       }
       c.checkTurn()
     }else{
-      c.out("Shot canceled")
+      c.out("Affirmative. Target unlocked, safety back on")
       c.context.state = new SuiState(c)
       c.attack = new AttackScenario()
     }

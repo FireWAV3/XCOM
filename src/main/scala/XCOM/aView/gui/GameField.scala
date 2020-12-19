@@ -2,6 +2,7 @@ package XCOM.aView.gui
 
 import XCOM.controller._
 import XCOM.model.PlayerStatus._
+import XCOM.util.UndoManager
 import javax.swing.{Icon, ImageIcon}
 
 import scala.collection.mutable.ListBuffer
@@ -9,7 +10,7 @@ import scala.swing.Swing.{EmptyIcon, LineBorder}
 import scala.swing.event.MouseClicked
 import scala.swing.{BorderPanel, BoxPanel, Dimension, Frame, GridPanel, Label, MainFrame, Orientation}
 import scala.util.Try
-class GameField(c: Controller) extends Frame{
+class GameField(c: Controller, uManager: UndoManager) extends Frame{
 
 
   def main = new MainFrame{
@@ -27,7 +28,7 @@ class GameField(c: Controller) extends Frame{
         contents += new Label("next"){
             listenTo(mouse.clicks)
             reactions += {
-              case MouseClicked(scr,pt,mod,clicks,pops) => c.next()
+              case MouseClicked(scr,pt,mod,clicks,pops) => uManager.doStep(c); c.next()
             }
         }
        contents += new Label(){
@@ -85,7 +86,8 @@ class GameField(c: Controller) extends Frame{
                   case 256 => { //right Mousebutton
                     val cell = highlightedCell(1)
                     val place = findCell(this)
-                    c.move(cell.id,place._1+1,place._2+1)
+                    uManager.doStep(c)
+                    if(!c.move(cell.id,place._1+1,place._2+1)) uManager.undoClear(c)
                   }
                   case _ => { //middle Mousebutton
                     val cell = highlightedCell(1)
@@ -143,7 +145,7 @@ class GameField(c: Controller) extends Frame{
     }
 
     def shootupdate() = {
-        new DecisionPanel(c,c.output)
+        new DecisionPanel(c,c.output, uManager)
     }
 
     def fieldupdate() = {
@@ -262,7 +264,7 @@ class WinFrame(c:Controller) extends MainFrame {
   centerOnScreen()
 }
 
-class DecisionPanel(c:Controller,output:String) extends MainFrame {
+class DecisionPanel(c:Controller,output:String, uManager: UndoManager) extends MainFrame {
     listenTo(c)
     title = "Conformation"
     val question = new GridPanel(1,2){
@@ -270,6 +272,7 @@ class DecisionPanel(c:Controller,output:String) extends MainFrame {
         listenTo(mouse.clicks)
         reactions += {
           case MouseClicked(scr,pt,mod,clicks,pops) =>
+            uManager.doStep(c)
             Try(c.shoot(true))
 
         }

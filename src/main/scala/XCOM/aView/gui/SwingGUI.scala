@@ -1,5 +1,6 @@
 package XCOM.aView.gui
 import XCOM.controller.{Controller, UpdateMenu}
+import XCOM.util.UndoManager
 import javax.swing.ImageIcon
 
 import scala.swing.Swing.LineBorder
@@ -7,7 +8,7 @@ import scala.swing.event.MouseClicked
 import scala.swing.{Label, _}
 import scala.util.Try
 
-class SwingGUI(c: Controller) extends Frame {
+class SwingGUI(c: Controller, uManager: UndoManager) extends Frame {
   listenTo(c)
   title = "Xcom Menu"
 
@@ -76,7 +77,7 @@ class SwingGUI(c: Controller) extends Frame {
 
   reactions += {
     case event: UpdateMenu => {
-      var game = new GameField(c)
+      var game = new GameField(c, uManager)
       game.main.visible = true
       invisible
       c.requestRepaint

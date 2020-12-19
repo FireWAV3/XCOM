@@ -6,7 +6,7 @@ trait TravelStrategyTrait{
 }
 
 class ContextTravel(c:Controller){
-  def deepCoppy(): ContextTravel = {
+  def deepCopy(): ContextTravel = {
     var CTout = new ContextTravel(this.c)
     CTout.travelState = this.travelState
     CTout
@@ -30,7 +30,7 @@ class Manhattan(c:Controller)extends TravelStrategy(c){
     val xDistance = Math.abs(pX - 1 - hero.cell.x)
     val yDistance = Math.abs(pY - 1 - hero.cell.y)
     val distance =  xDistance + yDistance
-    if(hero.mrange >= distance) true else throw new Exception("Move not possible: Hero can't move this far")
+    if(hero.mrange >= distance) true else throw new Exception("That's way too far away. I would never get there")
   }
 }
 

@@ -23,13 +23,13 @@ case class TurnScenario() {
 
   def movable(hero: String) : Boolean ={
     Try(map(hero)) match {
-      case Success(s) => if(s) s else throw new Exception("Already moved with this Character")
-      case Failure(exception) => throw new Exception("Already shot with this Character")
+      case Success(s) => if(s) s else throw new Exception("Man, I'm to exhausted to go anywhere right now")
+      case Failure(exception) => throw new Exception("Need some time to reload first")
     }
   }
 
   def shootable(hero: String) : Boolean = {
-    if (map.contains(hero)) true else throw new Exception("Already shot with this Character")
+    if (map.contains(hero)) true else throw new Exception("Need some time to reload first")
   }
 
   def movedHero(hero: String): Unit ={

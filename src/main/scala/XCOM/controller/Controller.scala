@@ -24,8 +24,8 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Pub
 
   def deepCopy():Controller = {
     var Cout = Controller(this.field,this.attack)
-    Cout.context = this.context.deepCoppy()
-    Cout.contextTravel=  this.contextTravel.deepCoppy()
+    Cout.context = this.context.deepCopy()
+    Cout.contextTravel=  this.contextTravel.deepCopy()
     Cout.turnS = this.turnS.deepCoppy()
     Cout.output =  this.output
     Cout.seed =  this.seed
@@ -83,7 +83,7 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Pub
     turnS = newC.turnS
     context = newC.context
     contextTravel=  newC.contextTravel
-    output = "step was undone \n "
+    output = "Wow, did we just travel back in time?\n "
     seed =  newC.seed
     PlayerState = newC.PlayerState
     publish(new UpdateField)
@@ -95,7 +95,7 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Pub
     turnS = newC.turnS
     context = newC.context
     contextTravel=  newC.contextTravel
-    output = "step was redone \n "
+    output = "And we're back in the future\n"
     seed =  newC.seed
     PlayerState = newC.PlayerState
     publish(new UpdateField)
@@ -123,7 +123,7 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Pub
     if(turnS.testEnd()){
       PlayerState = nextPlayerState(PlayerState)
       turnS.load( PlayerStatus.turn(PlayerState),field)
-      output = "Turn of the " + PlayerState+" Team started"
+      output = "Let's go " + PlayerState+". Time to kick some ass!"
       publish(new UpdateField)
       return true
     }
@@ -138,20 +138,20 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Pub
   }
 
   def boundsX(x:Int): Boolean ={
-    if(field.sizeX >= x-1 && x-1 >= 0)true else throw new Exception("Move not possible: not a tile on the field")
+    if(field.sizeX >= x-1 && x-1 >= 0)true else throw new Exception("What is this place you're talking of?")
   }
 
   def boundsY(y:Int): Boolean ={
-    if(field.sizeY >= y-1 && y-1 >= 0) true else throw new Exception("Move not possible: not a tile on the field")
+    if(field.sizeY >= y-1 && y-1 >= 0) true else throw new Exception("What is this place you're talking of?")
   }
 
   def testRock( pX: Int, pY: Int): Boolean = {
-    for(e <- field.rocks if e.x == (pX-1)  if e.y == (pY-1) )  throw new Exception("Move not possible: There is a Rock at this position")
+    for(e <- field.rocks if e.x == (pX-1)  if e.y == (pY-1) )  throw new Exception("This rock's to high to climb it")
     true
   }
 
   def testHero(pX: Int, pY: Int): Boolean = {
-    for(e <- field.character if e.cell.x == pX-1 && e.cell.y == pY-1) throw new Exception("Move not possible: There is another Hero at this position")
+    for(e <- field.character if e.cell.x == pX-1 && e.cell.y == pY-1) throw new Exception("I can't stand on his head, can I?")
     true
   }
 
@@ -206,10 +206,10 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Pub
 
 
   def wrongInput(input : String):Unit={
-    out("Wrong input: [" + input +"]")
+    out("What are you trying to say with [" + input +"]?")
   }
 
-  def wrongGameState() = out("You are not allowed to use that command right now")
+  def wrongGameState() = out("We should focus on other problems first")
 
   def fieldToString:String = field.toString
 
@@ -259,13 +259,13 @@ case class Controller(var field: Field, var attack : AttackScenario) extends Pub
   }
 
   def opponent(hero1: Character, hero2: Character): Boolean = {
-    if(hero1.side == hero2.side) throw new Exception("Heros are on the same team") else true
+    if(hero1.side == hero2.side) throw new Exception("Are you blind? Why should I shoot my mate?") else true
   }
 
   def scenarioAmmountTest(input: Try[Int]):Try[Boolean] = Try(input.get >= 0 && input.get <= scenarioAmmount)
 
   def checkSide(side: Int): Boolean = {
-    if(PlayerStatus.turn(PlayerState) == side) true else throw new Exception("Not a member of the Team that has the control")
+    if(PlayerStatus.turn(PlayerState) == side) true else throw new Exception("Why would I listen to you? You're my enemy")
   }
 
   def helpOut = publish(new UpdateHelp)
