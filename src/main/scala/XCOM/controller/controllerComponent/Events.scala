@@ -1,4 +1,4 @@
-package XCOM.controller
+package XCOM.controller.controllerComponent
 
 import scala.swing.event.Event
 

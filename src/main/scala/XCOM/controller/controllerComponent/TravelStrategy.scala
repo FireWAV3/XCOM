@@ -1,11 +1,12 @@
-package XCOM.controller
+package XCOM.controller.controllerComponent
+
 import XCOM.model
 
 trait TravelStrategyTrait{
   def movePossible(hero:model.Character, pX:Int, pY:Int):Boolean
 }
 
-class ContextTravel(c:Controller){
+class ContextTravel(c:ControllerInterface){
   def deepCopy(): ContextTravel = {
     var CTout = new ContextTravel(this.c)
     CTout.travelState = this.travelState
@@ -15,17 +16,17 @@ class ContextTravel(c:Controller){
   var travelState:TravelStrategyTrait = new Manhattan(c)
 }
 
-class TravelStrategy (c:Controller) extends TravelStrategyTrait {
+class TravelStrategy (c:ControllerInterface) extends TravelStrategyTrait {
   override def movePossible(hero: model.Character, pX: Int, pY: Int): Boolean = throw new Exception("wtf how?")
 }
 
-class AStar(c:Controller)extends TravelStrategy(c){
+class AStar(c:ControllerInterface)extends TravelStrategy(c){
   override def movePossible(hero: model.Character, pX: Int, pY: Int): Boolean = {
     c.aStarMove(hero.cell.x,hero.cell.y,pX,pY)
   }
 }
 
-class Manhattan(c:Controller)extends TravelStrategy(c){
+class Manhattan(c:ControllerInterface)extends TravelStrategy(c){
   override def movePossible(hero: model.Character, pX: Int, pY: Int): Boolean = {
     val xDistance = Math.abs(pX - 1 - hero.cell.x)
     val yDistance = Math.abs(pY - 1 - hero.cell.y)

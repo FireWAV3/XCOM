@@ -1,8 +1,8 @@
 package XCOM
 import aView.UiTrait
-import controller.Controller
 import aView.gui._
 import util.UndoManager
+import controller.controllerComponent.controllerBaseImpl.Controller
 
 import scala.util.{Failure, Success, Try}
 import scala.io._
