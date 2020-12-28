@@ -1,4 +1,5 @@
-package XCOM.controller
+package XCOM.controller.controllerComponent
+
 import XCOM.model.FieldStructure._
 import XCOM.model._
 
@@ -16,7 +17,7 @@ trait GameStateTrait{
   def next(): Boolean
 }
 
-class Context(c : Controller){
+class Context(c : ControllerInterface){
 
   def deepCopy(): Context = {
     var Cout = new Context(this.c)
@@ -27,7 +28,7 @@ class Context(c : Controller){
   var state:GameStateTrait = new MenuState(c)
 }
 
-class GameState(c:Controller) extends GameStateTrait{
+class GameState(c:ControllerInterface) extends GameStateTrait{
   override def help:Unit = {
     c.helpOut
   }
@@ -62,7 +63,7 @@ class GameState(c:Controller) extends GameStateTrait{
   }
 }
 
-class MenuState(c : Controller) extends GameState(c){
+class MenuState(c : ControllerInterface) extends GameState(c){
 
   override def info(str: String): Boolean ={c.wrongGameState(); false}
 
@@ -80,7 +81,7 @@ class MenuState(c : Controller) extends GameState(c){
 
 }
 
-class SuiState(c : Controller) extends GameState(c) {
+class SuiState(c : ControllerInterface) extends GameState(c) {
 
   override def move(str: String, pX: Int, pY: Int): Boolean = {
     val hero = c.isHero(str)
@@ -152,7 +153,7 @@ class SuiState(c : Controller) extends GameState(c) {
   }
 }
 
-class ShootState(c : Controller) extends GameState(c){
+class ShootState(c : ControllerInterface) extends GameState(c){
   override def shoot(approval: Boolean,seed: Int): Boolean = {
     if(approval){
       c.turnS.shootHero(c.attack.attHero.displayname)

@@ -1,5 +1,7 @@
 
 package XCOM.controller
+import XCOM.controller.controllerComponent.controllerBaseImpl.Controller
+import XCOM.controller.controllerComponent.{AStar, MenuState, ShootState, SuiState, TravelStrategy, controllerBaseImpl}
 import XCOM.model.FieldStructure._
 import XCOM.model.PlayerStatus._
 import XCOM.model.{AttackScenario, Cell, Character, Field}
@@ -11,7 +13,7 @@ class ControllerSpec extends  WordSpec{
     var testField = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C1", Cell(5, 6, C))))
     var c = Controller(testField ,new AttackScenario())
     "have a standard Constructor "in{
-      Controller(testField ,new AttackScenario()).context.state shouldBe a [MenuState]
+      controllerBaseImpl.Controller(testField ,new AttackScenario()).context.state shouldBe a [MenuState]
      }
     "have a default Constructor" in {
       val cC = new Controller()
@@ -42,7 +44,7 @@ class ControllerSpec extends  WordSpec{
     }
     "have a methode move" in{
       var movementRange = new Field(5,10,Vector[Cell](Cell(3,3,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(4, 4, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(4, 5, C)),Character("SniperRED", 5, 10, 70, 40, 1,"C3", Cell(4, 3, C))))
-      var cMove = Controller(movementRange ,new AttackScenario())
+      var cMove = controllerBaseImpl.Controller(movementRange ,new AttackScenario())
       cMove.turnS.load(0,movementRange)
       cMove.move("C1",5,7) should be(false)
       cMove.output should be("You are not allowed to use that command right now")
@@ -79,7 +81,7 @@ class ControllerSpec extends  WordSpec{
     "have a methode aim" in{
       var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),
         Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C)),Character("Assassin", 5, 10, 50, 90, 1,"C3", Cell(6, 6, C))))
-      var cShoot = Controller(shootingRange ,new AttackScenario())
+      var cShoot = controllerBaseImpl.Controller(shootingRange ,new AttackScenario())
       cShoot.turnS.load(0,shootingRange)
       cShoot.aim(Some("C1"),Some("C2")) should be(true)
       cShoot.output should be("You are not allowed to use that command right now")
@@ -98,7 +100,7 @@ class ControllerSpec extends  WordSpec{
     }
     "have a methode shoot" in{
       var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C)),Character("TankR", 5, 10, 50, 90, 1,"C3", Cell(5, 6, C))))
-      var cShoot = Controller(shootingRange ,new AttackScenario())
+      var cShoot = controllerBaseImpl.Controller(shootingRange ,new AttackScenario())
       cShoot.turnS.load(0,shootingRange)
       cShoot.shoot(true) should be(false)
       cShoot.output should be("You are not allowed to use that command right now")
@@ -122,7 +124,7 @@ class ControllerSpec extends  WordSpec{
     }
     "have a methode fire" in{
       var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
-      var cShoot = Controller(shootingRange ,new AttackScenario())
+      var cShoot = controllerBaseImpl.Controller(shootingRange ,new AttackScenario())
       val attack1 = cShoot.fire(shootingRange.character(0),shootingRange.character(1))
       val attack2 = cShoot.fire(shootingRange.character(1),shootingRange.character(0))
       attack1._1 should be(70)
@@ -133,7 +135,7 @@ class ControllerSpec extends  WordSpec{
     }
     "have a methode next" in{
       var sleepingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
-      var cSleep = Controller( sleepingRange ,new AttackScenario())
+      var cSleep = controllerBaseImpl.Controller( sleepingRange ,new AttackScenario())
       cSleep.next should be(false)
       cSleep.output should be("You are not allowed to use that command right now")
       cSleep.context.state = new SuiState(cSleep)

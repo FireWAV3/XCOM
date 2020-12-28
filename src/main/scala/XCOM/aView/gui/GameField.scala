@@ -1,6 +1,6 @@
 package XCOM.aView.gui
 
-import XCOM.controller._
+import XCOM.controller.controllerComponent._
 import XCOM.model.PlayerStatus._
 import XCOM.util.UndoManager
 import javax.swing.{Icon, ImageIcon}
@@ -10,7 +10,7 @@ import scala.swing.Swing.{EmptyIcon, LineBorder}
 import scala.swing.event.MouseClicked
 import scala.swing.{BorderPanel, BoxPanel, Dimension, Frame, GridPanel, Label, MainFrame, Orientation}
 import scala.util.Try
-class GameField(c: Controller, uManager: UndoManager) extends Frame{
+class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
 
 
   def main = new MainFrame{
@@ -250,7 +250,7 @@ class IdLabel(var id: String, string0: String, icon0: Icon) extends Label{
 }
 
 
-class WinFrame(c:Controller) extends MainFrame {
+class WinFrame(c:ControllerInterface) extends MainFrame {
   listenTo(c)
   title = "Congratulation"
 
@@ -264,7 +264,7 @@ class WinFrame(c:Controller) extends MainFrame {
   centerOnScreen()
 }
 
-class DecisionPanel(c:Controller,output:String, uManager: UndoManager) extends MainFrame {
+class DecisionPanel(c:ControllerInterface,output:String, uManager: UndoManager) extends MainFrame {
     listenTo(c)
     title = "Affirmation needed"
     val question = new GridPanel(1,2){

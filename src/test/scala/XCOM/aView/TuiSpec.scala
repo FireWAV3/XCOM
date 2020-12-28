@@ -2,6 +2,8 @@
 package XCOM.aView
 
 import XCOM.controller._
+import XCOM.controller.controllerComponent.controllerBaseImpl.Controller
+import XCOM.controller.controllerComponent.{MenuState, ShootState, SuiState}
 import XCOM.model.PlayerStatus._
 import XCOM.model.AttackScenario
 import XCOM.util.UndoManager

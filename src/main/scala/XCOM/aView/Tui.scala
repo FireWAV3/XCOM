@@ -1,12 +1,13 @@
 package XCOM.aView
 import XCOM.controller._
+import XCOM.controller.controllerComponent._
 import XCOM.util.UndoManager
 
 import scala.swing.Reactor
 import scala.util.{Failure, Success, Try}
 //import scala.util.{Try, Success, Failure}
 
-case class Tui(var c : Controller, uManager: UndoManager) extends Reactor with UiTrait {
+case class Tui(var c : ControllerInterface, uManager: UndoManager) extends Reactor with UiTrait {
 
   listenTo(c)
   println("Welcome to Xcom!\nFor more information enter Help\n")

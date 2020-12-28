@@ -1,5 +1,5 @@
 package XCOM.aView.gui
-import XCOM.controller.{Controller, UpdateMenu}
+import XCOM.controller.controllerComponent._
 import XCOM.util.UndoManager
 import javax.swing.ImageIcon
 
@@ -8,7 +8,7 @@ import scala.swing.event.MouseClicked
 import scala.swing.{Label, _}
 import scala.util.Try
 
-class SwingGUI(c: Controller, uManager: UndoManager) extends Frame {
+class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
   listenTo(c)
   title = "Xcom Menu"
 
