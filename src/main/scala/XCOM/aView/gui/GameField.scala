@@ -13,9 +13,12 @@ import scala.util.Try
 class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
 
 
+
+
   def main = new MainFrame{
     title = "XCOM"
     listenTo(c)
+    val localFile = System.getProperty("user.dir")
 
     var info = new GridPanel(1,2){
 
@@ -25,14 +28,19 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
       }
 
      var next = new GridPanel(1,2){
-        contents += new Label("next"){
+        contents += new Label(){
+            text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/next_button.png\" width = 100 height= 50> </html>"
+
+
+
             listenTo(mouse.clicks)
             reactions += {
               case MouseClicked(scr,pt,mod,clicks,pops) => uManager.doStep(c); c.next()
             }
         }
        contents += new Label(){
-         text = "Exit"
+         text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/exit_button.png\" width = 100 height= 50> </html>"
+
          listenTo(mouse.clicks)
          reactions +={
            case MouseClicked(scr,pt,mod,clicks,pops) => {
@@ -208,11 +216,18 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
           cell.border = LineBorder(java.awt.Color.GRAY, 3)
         }
         case _ => {
-          cell.icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/player.png")
-          cell.text = cell.id
+
+          //cell.text = cell.id
          c.getCharactersSide(cell.id) match {
-           case 0 => cell.border = LineBorder(java.awt.Color.BLUE, 3)
-           case 1 => cell.border = LineBorder(java.awt.Color.RED, 3)
+           case 0 => {
+             cell.border = LineBorder(java.awt.Color.BLUE, 3)
+             //cell.icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/rifle_blue.png")
+             cell.text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/sniper_blue.png\" width = "+cell.size.height+" height= "+cell.size.height +"> </html>"
+           }
+           case 1 => {
+             cell.border = LineBorder(java.awt.Color.RED, 3)
+             cell.text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/tank_red.png\" width = "+cell.size.height+" height= "+cell.size.height +"> </html>"
+           }
            case _ => cell.border = LineBorder(java.awt.Color.YELLOW, 3)
          }
         }

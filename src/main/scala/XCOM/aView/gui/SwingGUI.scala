@@ -1,7 +1,6 @@
 package XCOM.aView.gui
 import XCOM.controller.controllerComponent._
 import XCOM.util.UndoManager
-import javax.swing.ImageIcon
 
 import scala.swing.Swing.LineBorder
 import scala.swing.event.MouseClicked
@@ -11,11 +10,14 @@ import scala.util.Try
 class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
   listenTo(c)
   title = "Xcom Menu"
+  val localFile = System.getProperty("user.dir")
 
 
   var logo = new BoxPanel(Orientation.Horizontal){
+    background = java.awt.Color.BLUE.darker().darker().darker()
     contents += new Label(){
-      icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/xcom_menu_icon.png")
+      background = java.awt.Color.BLUE.darker().darker().darker()
+      text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/xcom_menu_icon.png\" width = 400 height= 200> </html>"
     }
   }
 
@@ -25,16 +27,23 @@ class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
 
 
   var menu = new BoxPanel(Orientation.Vertical){
-    contents += new BoxPanel(Orientation.Horizontal){
-      contents += new Label(){
-        text = "Chose Level   "
-      }
+    background = java.awt.Color.BLUE.darker().darker().darker()
 
+    contents += new BoxPanel(Orientation.Horizontal){
+      background = java.awt.Color.BLUE.darker().darker().darker()
+      contents += new Label(){
+        background = java.awt.Color.BLUE.darker().darker().darker()
+        text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/level.png\" width = 200 height= 50> </html>"
+      }
       contents += comboBox
     }
 
     contents += new Label(){
-      text = "Go!"
+      background = java.awt.Color.BLUE.darker().darker().darker()
+     // text = "Go!"
+      //icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/start_button.png")
+      text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/start_button.png\" width = 100 height= 50> </html>"
+
       listenTo(mouse.clicks)
       reactions +={
         case MouseClicked(src,pt,mod,clicks,pops) => {
@@ -44,7 +53,10 @@ class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
     }
 
     contents += new Label(){
-      text = "Exit"
+      background = java.awt.Color.BLUE.darker().darker().darker()
+      //text = "Exit"
+      //icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/exit_button.png")
+      text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/exit_button.png\" width = 100 height= 50> </html>"
       listenTo(mouse.clicks)
       reactions +={
         case MouseClicked(scr,pt,mod,clicks,pops) => {
@@ -60,13 +72,17 @@ class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
   }
 
   val gridtext = new GridPanel(2,1){
+    background = java.awt.Color.BLUE.darker().darker().darker()
     contents += new Label(){
-      text = "Welcome to XCOM!"
+     // text = "Welcome to XCOM!"
+     // icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/welcome_to_xcom.png")
+      text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/welcome_to_xcom.png\" width = 300 height= 100> </html>"
     }
     contents += menu
   }
 
   contents = new GridPanel(2,1){
+    background = java.awt.Color.BLUE.darker().darker().darker()
     contents += logo
     contents += gridtext
     border = LineBorder(java.awt.Color.BLACK, 2)
@@ -84,8 +100,8 @@ class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
     }
   }
 
-  background = java.awt.Color.BLACK
-  size = new Dimension(374,400)
+  background = java.awt.Color.BLUE.darker().darker().darker()
+  size = new Dimension(500,700)
   //resizable = false
   open()
   centerOnScreen()
