@@ -8,6 +8,7 @@ import XCOM.util.UndoManager
 
 import scala.collection.mutable.ListBuffer
 import scala.util.Try
+import scala.util.control.Breaks.break
 
 case class Controller(var field: Field, var attack: AttackScenario) extends ControllerInterface {
 
@@ -181,10 +182,54 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
   }
 
   def shootpercentage(attHero: model.Character, defHero: model.Character): Int = {
-    val xDistance = Math.abs(attHero.cell.x - defHero.cell.x)
-    val yDistance = Math.abs(attHero.cell.y - defHero.cell.y)
-    val distance = xDistance + yDistance
-    if (distance > attHero.srange) {
+    val directionVector = ((defHero.cell.x - attHero.cell.x),(defHero.cell.y - attHero.cell.y))
+
+    //calculating the distance
+    var distance = 0
+    if(Math.abs(directionVector._1) == Math.abs(directionVector._2)){
+      distance = Math.abs(directionVector._1)
+    } else {
+      distance = Math.abs(directionVector._1) + Math.abs(directionVector._2)
+    }
+
+    val m = directionVector._2 / directionVector._1 //m and c of formula y=m*x+c
+    val c = attHero.cell.y - m * attHero.cell.x
+
+    for (r <- field.rocks) { //test if a rock is in the way
+      val allX:Vector[Double] = Vector(r.x.toDouble - 0.5, r.x.toDouble + 0.5)
+      val allY:Vector[Double] = Vector(r.y.toDouble - 0.5, r.y.toDouble + 0.5)
+
+      for (x <- allX) {
+        val y = m * x + c
+        if (y >= allY(0) && y <= allY(1)) distance = -1
+      }
+      for (y <- allY) {
+        val x = (y-c)/m
+        if (x >= allX(0) && x <= allX(1)) distance = -1
+      }
+    }
+    for (h <- field.character){// test if a character is in the way
+      val allX:Vector[Double] = Vector(h.cell.x.toDouble - 0.5, h.cell.x.toDouble + 0.5)
+      val allY:Vector[Double] = Vector(h.cell.y.toDouble - 0.5, h.cell.y.toDouble + 0.5)
+
+      for (x <- allX) {
+        val y = m * x + c
+        if (y >= allY(0) && y <= allY(1)) distance = -1
+      }
+      for (y <- allY) {
+        val x = (y-c)/m
+        if (x >= allX(0) && x <= allX(1)) distance = -1
+      }
+    }
+
+
+
+
+    //val blindDistance = Math.abs(directionVector._1) + Math.abs(directionVector._2)//old algorithm
+
+
+    //special cases
+    if (distance > attHero.srange || distance <= 0) {
       return 0
     }
     val minPercentage = 20
