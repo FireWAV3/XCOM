@@ -22,20 +22,29 @@ class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
   }
 
   val comboBox = new ComboBox(List("1","2")){
-    maximumSize = new Dimension(30, 30)
+    maximumSize = new Dimension(28, 28)
+    background = java.awt.Color.BLUE.darker().darker().darker()
   }
 
 
-  var menu = new BoxPanel(Orientation.Vertical){
+  var menu = new GridPanel(3,1){
+
     background = java.awt.Color.BLUE.darker().darker().darker()
 
-    contents += new BoxPanel(Orientation.Horizontal){
+    contents += new GridPanel(1,3){
       background = java.awt.Color.BLUE.darker().darker().darker()
+
       contents += new Label(){
         background = java.awt.Color.BLUE.darker().darker().darker()
         text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/level.png\" width = 200 height= 50> </html>"
       }
-      contents += comboBox
+
+      contents += new GridPanel(1,2){
+        background = java.awt.Color.BLUE.darker().darker().darker()
+        contents += comboBox
+        contents += new Label()
+      }
+
     }
 
     contents += new Label(){
@@ -88,9 +97,6 @@ class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
     border = LineBorder(java.awt.Color.BLACK, 2)
   }
 
-
-
-
   reactions += {
     case event: UpdateMenu => {
       var game = new GameField(c, uManager)
@@ -105,7 +111,6 @@ class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
   //resizable = false
   open()
   centerOnScreen()
-
   def invisible = visible = false
 
 }

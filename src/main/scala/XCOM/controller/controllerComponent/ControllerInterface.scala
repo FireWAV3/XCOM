@@ -46,6 +46,7 @@ trait ControllerInterface extends Publisher{
   def fieldToString: String
   def getCharacters: Vector[(String, Int, Int)]
   def getCharactersSide(hero: String): Int
+  def getCharactersTypeIcon(hero: String): String
   def getRocks: Vector[(Int, Int)]
   def scenarioAmmount: Int
   def splitFlatString(input: String): Array[String]

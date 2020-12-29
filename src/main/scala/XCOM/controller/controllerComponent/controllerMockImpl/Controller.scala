@@ -48,6 +48,7 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
   def fieldToString: String = ""
   def getCharacters: Vector[(String, Int, Int)] = new ListBuffer[(String,Int,Int)]().toVector
   def getCharactersSide(hero: String): Int = 1
+  def getCharactersTypeIcon(hero: String): String = "rifle"
   def getRocks: Vector[(Int, Int)] = new ListBuffer[(Int,Int)]().toVector
   def scenarioAmmount: Int = 1
   def splitFlatString(input: String): Array[String] = new Array[String](0)

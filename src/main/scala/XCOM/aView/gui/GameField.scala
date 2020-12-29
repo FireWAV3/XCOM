@@ -8,7 +8,7 @@ import javax.swing.{Icon, ImageIcon}
 import scala.collection.mutable.ListBuffer
 import scala.swing.Swing.{EmptyIcon, LineBorder}
 import scala.swing.event.MouseClicked
-import scala.swing.{BorderPanel, BoxPanel, Dimension, Frame, GridPanel, Label, MainFrame, Orientation}
+import scala.swing.{BorderPanel, Dimension, Frame, GridPanel, Label, MainFrame}
 import scala.util.Try
 class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
 
@@ -22,17 +22,18 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
 
     var info = new GridPanel(1,2){
 
+      background = java.awt.Color.BLUE.darker().darker().darker()
+
       minimumSize = new Dimension(1000, 150)
       preferredSize = new Dimension(1000, 150)
       var infoLabel =  new Label("Info"){
       }
 
      var next = new GridPanel(1,2){
+       background = java.awt.Color.BLUE.darker().darker().darker()
+
         contents += new Label(){
             text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/next_button.png\" width = 100 height= 50> </html>"
-
-
-
             listenTo(mouse.clicks)
             reactions += {
               case MouseClicked(scr,pt,mod,clicks,pops) => uManager.doStep(c); c.next()
@@ -55,13 +56,18 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
       contents += next
     }
 
-    var chat = new BoxPanel(Orientation.Vertical){
+    var chat = new GridPanel(2,1){
+      background = java.awt.Color.BLUE.darker().darker().darker()
       var chatREDLabel =  new Label("CHAT RED"){
+        text = "<html><div style=\"background-color:be0000; padding: 10px;color:black\">RED Chat</div> <div style=\"padding: 10px; background-color:557786; border-width: 7px; padding-right:20px ;color:#ffd900;  border-style:solid ;border-color:#be0000;\">" +"      " + "</div> </html>"
+
         var messages = ListBuffer[String]()
         minimumSize = new Dimension(200, 380)
         preferredSize = new Dimension(200, 380)
       }
       var chatBLUELabel =  new Label("CHAT BLUE"){
+        text = "<html><div style=\"background-color:be0000; padding: 10px;color:black\">RED Chat</div> <div style=\"padding: 10px; background-color:557786; border-width: 7px; padding-right:20px ;color:#ffd900;  border-style:solid ;border-color:#be0000;\">" + "      " + "</div> </html>"
+
         var messages = ListBuffer[String]()
         minimumSize = new Dimension(200, 380)
         preferredSize = new Dimension(200, 380)
@@ -79,6 +85,7 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
       for( y <- 1 to c.field.sizeY+1){
         for( x <- 1 to c.field.sizeX+1){
           val heroLabel = new IdLabel(""){
+
             recolor(this)
             listenTo(mouse.clicks)
             reactions +={
@@ -112,7 +119,20 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
     }
 
     def infoupdate(): Unit = {
-      val output = "<html>" + c.output.replaceAll("\n","<br/>") + "</html>"
+      val output = "<html> <div style=\"padding: 10px; background-color:557786; padding-right:20px ;color:#ffd900;  border-style:solid ;border-color:#ffd900;\">" + c.output.replaceAll("\n","<br/>") + "</div> </html>"
+      //<img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/info_area.png\" width = 300 height= 150>
+      //c.output.replaceAll("\n","<br/>")
+     /* val output = ("<html> <div style=\"position: relativ; width=100%; height = 100% \">" +
+          " <div style=\"position: absolute; z-index: 1 ;top: 0px;  left: 10px;\"  " +
+
+             " <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/info_area.png\" height= 150> </div>" +
+
+               "<div style=\" position: absolute; z-index: 2 ;top: 10px;  left: 10px;\">"+ c.output.replaceAll("\n","<br/>") +"</div>"+
+        "</div> </html>")*/
+
+
+
+
       info.infoLabel.text = output
       recolor(highlightedCell(0))
       highlightedCell(1).border = LineBorder(java.awt.Color.GREEN, 3)
@@ -132,7 +152,12 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
             chatMessage = chatMessage + x
             chatMessage += "\n"
           }
-          this.chat.chatBLUELabel.text = "<html>" + chatMessage.replaceAll("\n","<br/>") + "</html>"
+          this.chat.chatBLUELabel.text = "<html> <div style=\"background-color:0014db; padding: 10px; color:black\">BLUE Chat</div> <div style=\"padding: 10px; background-color:557786; border-width: 7px; padding-right:20px ;color:#ffd900;  border-style:solid ;border-color:#0014db;\">" + chatMessage.replaceAll("\n","<br/>") + "</div> </html>"
+          /*this.chat.chatBLUELabel.text = ("<html> <table> <tr> <td></td>" +
+                                          "<td rowspan=2><img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/chat_blue.png\" width = 180 height= 270> </td> " +
+                                          "<td colspan=2>"+
+                                          chatMessage.replaceAll("\n","<br/>") +
+                                          "</td> </tr> </table> </html>")*/
           repaint()
         }
         case RED => {
@@ -146,7 +171,12 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
             chatMessage += x
             chatMessage += "\n"
           }
-          this.chat.chatREDLabel.text = "<html>" + chatMessage.replaceAll("\n","<br/>") + "</html>"
+          this.chat.chatREDLabel.text = "<html><div style=\"background-color:be0000; padding: 10px;color:black\">RED Chat</div> <div style=\"padding: 10px; background-color:557786; border-width: 7px; padding-right:20px ;color:#ffd900;  border-style:solid ;border-color:#be0000;\">" + chatMessage.replaceAll("\n","<br/>") + "</div> </html>"
+          /*this.chat.chatREDLabel.text = ("<html> <table> <tr> " +
+                                          "<td rowspan=1><img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/chat_red.png\" width = 180 height= 270> </td> " +
+                                          "<td rowspan=1>"+
+                                         chatMessage.replaceAll("\n","<br/>") +
+                                          "</td> </tr> </table> </html>")*/
           repaint()
         }
       }
@@ -206,10 +236,13 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
         case "X" => {
           cell.icon = EmptyIcon
           cell.text = ""
-          cell.background = java.awt.Color.BLACK
+          cell.background = java.awt.Color.YELLOW
+          cell.text = "<html> <div style=\"background-color:ffc400; color:ffc400; padding: 1000px; width=100%; height=100%\"> placeHoler</div> </html>"
+          cell.icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/back.png")
           cell.border = LineBorder(java.awt.Color.BLACK, 1)
         }
         case "R" => {
+          cell.text = "<html> <div style=\"background-color:313131; color:313131; padding: 1000px; width=100%; height=100%\"> placeHoler</div> </html>"
           cell.icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/rock.png")
           //cell.text = cell.id
           cell.background = java.awt.Color.GRAY
@@ -221,12 +254,13 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
          c.getCharactersSide(cell.id) match {
            case 0 => {
              cell.border = LineBorder(java.awt.Color.BLUE, 3)
-             //cell.icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/rifle_blue.png")
-             cell.text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/sniper_blue.png\" width = "+cell.size.height+" height= "+cell.size.height +"> </html>"
+             cell.text = "<html> <div style=\"background-color:ffc400; color:ffc400;  padding: 100;\"> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/"+c.getCharactersTypeIcon(cell.id)+"_blue.png\" width = "+cell.size.height+" height= "+cell.size.height +"></div>" +
+               " </html>"
            }
            case 1 => {
              cell.border = LineBorder(java.awt.Color.RED, 3)
-             cell.text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/tank_red.png\" width = "+cell.size.height+" height= "+cell.size.height +"> </html>"
+             cell.text = "<html> <div style=\"background-color:ffc400; color:ffc400;  padding: 100; \"> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/"+c.getCharactersTypeIcon(cell.id)+"_red.png\" width = "+cell.size.height+" height= "+cell.size.height +"></div>" +
+               " </html>"
            }
            case _ => cell.border = LineBorder(java.awt.Color.YELLOW, 3)
          }
@@ -281,10 +315,15 @@ class WinFrame(c:ControllerInterface) extends MainFrame {
 
 class DecisionPanel(c:ControllerInterface,output:String, uManager: UndoManager) extends MainFrame {
     listenTo(c)
+    val localFile = System.getProperty("user.dir")
+    background = java.awt.Color.BLUE.darker().darker().darker()
     title = "Affirmation needed"
     val question = new GridPanel(1,2){
-      var yes = new Label("Yes"){
+      background = java.awt.Color.BLUE.darker().darker().darker()
+      var yes = new Label(){
+        background = java.awt.Color.BLUE.darker().darker().darker()
         listenTo(mouse.clicks)
+        text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/yes_button.png\"  width = 80 height= 50 ></html>"
         reactions += {
           case MouseClicked(scr,pt,mod,clicks,pops) =>
             uManager.doStep(c)
@@ -292,7 +331,9 @@ class DecisionPanel(c:ControllerInterface,output:String, uManager: UndoManager) 
 
         }
       }
-      var no = new Label("No"){
+      var no = new Label(){
+        background = java.awt.Color.BLUE.darker().darker().darker()
+        text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/no_button.png\" width = 80 height= 50></html>"
         listenTo(mouse.clicks)
         reactions += {
           case MouseClicked(scr,pt,mod,clicks,pops) =>  c.shoot(false)
@@ -304,7 +345,8 @@ class DecisionPanel(c:ControllerInterface,output:String, uManager: UndoManager) 
     }
 
     contents = new GridPanel(2,1){
-      contents += new Label(output)
+      background = java.awt.Color.BLUE.darker().darker().darker()
+      contents += new Label("<html> <div style=\"padding: 10px; background-color:557786; padding-right:20px ;color:#ffd900;  border-style:solid ;border-color:#ffd900;\">" + output.replaceAll("\n","<br/>") + "</div> </html>")
       contents += question
     }
     size = new Dimension(400,150)

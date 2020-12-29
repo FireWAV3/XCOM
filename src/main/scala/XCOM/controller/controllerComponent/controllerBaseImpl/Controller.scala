@@ -7,7 +7,6 @@ import XCOM.model.{AttackScenario, Character, Field, PlayerStatus, Scenario, Tur
 import XCOM.util.UndoManager
 
 import scala.collection.mutable.ListBuffer
-import scala.swing.Publisher
 import scala.util.Try
 
 case class Controller(var field: Field, var attack: AttackScenario) extends ControllerInterface {
@@ -227,6 +226,21 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
       if (x.displayname == hero) return x.side
     }
     -1
+  }
+
+  def getCharactersTypeIcon(hero: String): String = {
+    for (x <- field.character) {
+      if (x.displayname == hero) {
+        x.name match {
+          case "Sniper" => return "sniper"
+          case "Tank" => return "tank"
+          case "Assassin" => return "shotgun"
+          case "Assassin Nr.2" => return "knife"
+          case _ => return "rifle"
+        }
+      }
+    }
+    ""
   }
 
   def getRocks: Vector[(Int, Int)] = {
