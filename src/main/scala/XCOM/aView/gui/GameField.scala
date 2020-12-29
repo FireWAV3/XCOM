@@ -242,11 +242,11 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
           cell.border = LineBorder(java.awt.Color.BLACK, 1)
         }
         case "R" => {
-          cell.text = "<html> <div style=\"background-color:313131; color:313131; padding: 1000px; width=100%; height=100%\"> placeHoler</div> </html>"
+          //cell.text = "<html> <div style=\"background-color:313131; color:313131; padding: 1000px; width=100%; height=100%\"> placeHoler</div> </html>"
           cell.icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/rock.png")
           //cell.text = cell.id
           cell.background = java.awt.Color.GRAY
-          cell.border = LineBorder(java.awt.Color.GRAY, 3)
+          cell.border = LineBorder(java.awt.Color.BLACK, 1)
         }
         case _ => {
 
@@ -254,11 +254,13 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
          c.getCharactersSide(cell.id) match {
            case 0 => {
              cell.border = LineBorder(java.awt.Color.BLUE, 3)
+             cell.icon = new ImageIcon("")
              cell.text = "<html> <div style=\"background-color:ffc400; color:ffc400;  padding: 100;\"> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/"+c.getCharactersTypeIcon(cell.id)+"_blue.png\" width = "+cell.size.height+" height= "+cell.size.height +"></div>" +
                " </html>"
            }
            case 1 => {
              cell.border = LineBorder(java.awt.Color.RED, 3)
+             cell.icon = new ImageIcon("")
              cell.text = "<html> <div style=\"background-color:ffc400; color:ffc400;  padding: 100; \"> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/"+c.getCharactersTypeIcon(cell.id)+"_red.png\" width = "+cell.size.height+" height= "+cell.size.height +"></div>" +
                " </html>"
            }
