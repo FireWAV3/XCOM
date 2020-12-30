@@ -7,7 +7,7 @@ import XCOM.model.{AttackScenario, Character, Field, PlayerStatus, Scenario, Tur
 import XCOM.util.UndoManager
 
 import scala.collection.mutable.ListBuffer
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 import scala.util.control.Breaks.break
 
 case class Controller(var field: Field, var attack: AttackScenario) extends ControllerInterface {
@@ -183,65 +183,76 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
 
   def shootpercentage(attHero: model.Character, defHero: model.Character): Int = {
     val globalDirectionVector = ((defHero.cell.x - attHero.cell.x),(defHero.cell.y - attHero.cell.y))
+    var attackingField = Vector[(Int,Int)]((attHero.cell.x,attHero.cell.y))
+    if (Math.abs(globalDirectionVector._1) > Math.abs(globalDirectionVector._2)){
+      Try(testRock(attHero.cell.x + globalDirectionVector._1/Math.abs(globalDirectionVector._1) + 1,attHero.cell.y + 1)) match {
+        case Success(value) =>
+        case Failure(exception) => attackingField = Vector[(Int,Int)]((attHero.cell.x,attHero.cell.y),(attHero.cell.x,attHero.cell.y-1),(attHero.cell.x,attHero.cell.y+1))
+      }
+    }else if (Math.abs(globalDirectionVector._2) > Math.abs(globalDirectionVector._1)){
+      Try(testRock(attHero.cell.x + 1,attHero.cell.y + globalDirectionVector._2/Math.abs(globalDirectionVector._2) + 1)) match {
+        case Success(value) =>
+        case Failure(exception) => attackingField = Vector[(Int,Int)]((attHero.cell.x,attHero.cell.y),(attHero.cell.x-1,attHero.cell.y),(attHero.cell.x+1,attHero.cell.y))
+      }
+    }
 
     var minDistance = attHero.srange+1
 
-    val attackBox:Vector[(Double,Double)] = Vector((attHero.cell.x - 0.5, attHero.cell.y - 0.5),// center and edges of attacker
-      (attHero.cell.x - 0.5, attHero.cell.y + 0.5),(attHero.cell.x, attHero.cell.y),
-      (attHero.cell.x + 0.5, attHero.cell.y - 0.5),(attHero.cell.x + 0.5, attHero.cell.y + 0.5))
-    val defBox:Vector[(Double,Double)] = Vector((defHero.cell.x - 0.5, defHero.cell.y - 0.5), // center and edges of defender
-      (defHero.cell.x - 0.5, defHero.cell.y + 0.5),(defHero.cell.x, defHero.cell.y),
-      (defHero.cell.x + 0.5, defHero.cell.y - 0.5),(defHero.cell.x + 0.5, defHero.cell.y + 0.5))
+    for (attField <- attackingField if(Try(testRock(attField._1+1,attField._2+1)) != Failure)) {
+      val attackBox: Vector[(Double, Double)] = Vector((attField._1 - 0.5, attField._2 - 0.5), // center and edges of attacker
+        (attField._1 - 0.5, attField._2 + 0.5), (attField._1, attField._2),
+        (attField._1 + 0.5, attField._2 - 0.5), (attField._1 + 0.5, attField._2 + 0.5))
+      val defBox: Vector[(Double, Double)] = Vector((defHero.cell.x - 0.5, defHero.cell.y - 0.5), // center and edges of defender
+        (defHero.cell.x - 0.5, defHero.cell.y + 0.5), (defHero.cell.x, defHero.cell.y),
+        (defHero.cell.x + 0.5, defHero.cell.y - 0.5), (defHero.cell.x + 0.5, defHero.cell.y + 0.5))
 
-    for (attPoint <- attackBox; //aim from every attackPoint
-         defPoint <- defBox) {  //aim to every defensePoint
+      for (attPoint <- attackBox; //aim from every attackPoint
+           defPoint <- defBox) { //aim to every defensePoint
 
-      val directionVector = (defPoint._1 - attPoint._1, defPoint._2 - attPoint._2)
-      //calculating the distance
-      var distance = 0.0
-      if (Math.abs(directionVector._1) == Math.abs(directionVector._2)) {
-        distance = Math.abs(directionVector._1)
-      } else {
-        distance = Math.abs(directionVector._1) + Math.abs(directionVector._2)
+        val directionVector = (defPoint._1 - attPoint._1, defPoint._2 - attPoint._2)
+        //calculating the distance
+        var distance = 0.0
+        if (Math.abs(directionVector._1) == Math.abs(directionVector._2)) {
+          distance = Math.abs(directionVector._1)
+        } else {
+          distance = Math.abs(directionVector._1) + Math.abs(directionVector._2)
+        }
+
+        val m = directionVector._2 / directionVector._1 //m and c of formula y=m*x+c
+        val c = attPoint._2 - m * attPoint._1
+
+        for (r <- field.rocks) { //test if a rock is in the way
+          val allX: Vector[Double] = Vector(r.x.toDouble - 0.5, r.x.toDouble + 0.5)
+          val allY: Vector[Double] = Vector(r.y.toDouble - 0.5, r.y.toDouble + 0.5)
+
+          for (x <- allX) {
+            val y = m * x + c
+            if (y >= allY(0) && y <= allY(1)) distance = -1
+          }
+          for (y <- allY) {
+            val x = (y - c) / m
+            if (x >= allX(0) && x <= allX(1)) distance = -1
+          }
+        }
+        for (h <- field.character if(h != attHero && h != defHero)) { // test if a character is in the way
+          val allX: Vector[Double] = Vector(h.cell.x.toDouble - 0.5, h.cell.x.toDouble + 0.5)
+          val allY: Vector[Double] = Vector(h.cell.y.toDouble - 0.5, h.cell.y.toDouble + 0.5)
+          for (x <- allX) {
+            val y = m * x + c
+            if (y >= allY(0) && y <= allY(1)) distance = -1
+          }
+          for (y <- allY) {
+            val x = (y - c) / m
+            if (x >= allX(0) && x <= allX(1)) distance = -1
+          }
+        }
+        if (distance > 0 && distance < minDistance) minDistance = distance.toInt //lowest hitting distance
       }
-
-      val m = directionVector._2 / directionVector._1 //m and c of formula y=m*x+c
-      val c = attPoint._2 - m * attPoint._1
-
-      for (r <- field.rocks) { //test if a rock is in the way
-        val allX: Vector[Double] = Vector(r.x.toDouble - 0.5, r.x.toDouble + 0.5)
-        val allY: Vector[Double] = Vector(r.y.toDouble - 0.5, r.y.toDouble + 0.5)
-
-        for (x <- allX) {
-          val y = m * x + c
-          if (y >= allY(0) && y <= allY(1)) distance = -1
-        }
-        for (y <- allY) {
-          val x = (y - c) / m
-          if (x >= allX(0) && x <= allX(1)) distance = -1
-        }
-      }
-      for (h <- field.character) { // test if a character is in the way
-        val allX: Vector[Double] = Vector(h.cell.x.toDouble - 0.5, h.cell.x.toDouble + 0.5)
-        val allY: Vector[Double] = Vector(h.cell.y.toDouble - 0.5, h.cell.y.toDouble + 0.5)
-
-        for (x <- allX) {
-          val y = m * x + c
-          if (y >= allY(0) && y <= allY(1)) distance = -1
-        }
-        for (y <- allY) {
-          val x = (y - c) / m
-          if (x >= allX(0) && x <= allX(1)) distance = -1
-        }
-      }
-      if (distance > 0 && distance < minDistance) minDistance = distance.toInt //lowest hitting distance
     }
 
 
 
-
     //val blindDistance = Math.abs(directionVector._1) + Math.abs(directionVector._2)//old algorithm
-
 
     //special cases
     if (minDistance > attHero.srange) {
@@ -252,6 +263,8 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
     if (attHero.srange == 1) {
       return 95
     }
+
+    //calculating percentage
     val hitChance = maxPercentage - (((maxPercentage - minPercentage) / (attHero.srange - 1)) * minDistance)
     if (hitChance < 20) {
       return 20
