@@ -182,44 +182,59 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
   }
 
   def shootpercentage(attHero: model.Character, defHero: model.Character): Int = {
-    val directionVector = ((defHero.cell.x - attHero.cell.x),(defHero.cell.y - attHero.cell.y))
+    val globalDirectionVector = ((defHero.cell.x - attHero.cell.x),(defHero.cell.y - attHero.cell.y))
 
-    //calculating the distance
-    var distance = 0
-    if(Math.abs(directionVector._1) == Math.abs(directionVector._2)){
-      distance = Math.abs(directionVector._1)
-    } else {
-      distance = Math.abs(directionVector._1) + Math.abs(directionVector._2)
-    }
+    var minDistance = attHero.srange+1
 
-    val m = directionVector._2 / directionVector._1 //m and c of formula y=m*x+c
-    val c = attHero.cell.y - m * attHero.cell.x
+    val attackBox:Vector[(Double,Double)] = Vector((attHero.cell.x - 0.5, attHero.cell.y - 0.5),// center and edges of attacker
+      (attHero.cell.x - 0.5, attHero.cell.y + 0.5),(attHero.cell.x, attHero.cell.y),
+      (attHero.cell.x + 0.5, attHero.cell.y - 0.5),(attHero.cell.x + 0.5, attHero.cell.y + 0.5))
+    val defBox:Vector[(Double,Double)] = Vector((defHero.cell.x - 0.5, defHero.cell.y - 0.5), // center and edges of defender
+      (defHero.cell.x - 0.5, defHero.cell.y + 0.5),(defHero.cell.x, defHero.cell.y),
+      (defHero.cell.x + 0.5, defHero.cell.y - 0.5),(defHero.cell.x + 0.5, defHero.cell.y + 0.5))
 
-    for (r <- field.rocks) { //test if a rock is in the way
-      val allX:Vector[Double] = Vector(r.x.toDouble - 0.5, r.x.toDouble + 0.5)
-      val allY:Vector[Double] = Vector(r.y.toDouble - 0.5, r.y.toDouble + 0.5)
+    for (attPoint <- attackBox; //aim from every attackPoint
+         defPoint <- defBox) {  //aim to every defensePoint
 
-      for (x <- allX) {
-        val y = m * x + c
-        if (y >= allY(0) && y <= allY(1)) distance = -1
+      val directionVector = (defPoint._1 - attPoint._1, defPoint._2 - attPoint._2)
+      //calculating the distance
+      var distance = 0.0
+      if (Math.abs(directionVector._1) == Math.abs(directionVector._2)) {
+        distance = Math.abs(directionVector._1)
+      } else {
+        distance = Math.abs(directionVector._1) + Math.abs(directionVector._2)
       }
-      for (y <- allY) {
-        val x = (y-c)/m
-        if (x >= allX(0) && x <= allX(1)) distance = -1
-      }
-    }
-    for (h <- field.character){// test if a character is in the way
-      val allX:Vector[Double] = Vector(h.cell.x.toDouble - 0.5, h.cell.x.toDouble + 0.5)
-      val allY:Vector[Double] = Vector(h.cell.y.toDouble - 0.5, h.cell.y.toDouble + 0.5)
 
-      for (x <- allX) {
-        val y = m * x + c
-        if (y >= allY(0) && y <= allY(1)) distance = -1
+      val m = directionVector._2 / directionVector._1 //m and c of formula y=m*x+c
+      val c = attPoint._2 - m * attPoint._1
+
+      for (r <- field.rocks) { //test if a rock is in the way
+        val allX: Vector[Double] = Vector(r.x.toDouble - 0.5, r.x.toDouble + 0.5)
+        val allY: Vector[Double] = Vector(r.y.toDouble - 0.5, r.y.toDouble + 0.5)
+
+        for (x <- allX) {
+          val y = m * x + c
+          if (y >= allY(0) && y <= allY(1)) distance = -1
+        }
+        for (y <- allY) {
+          val x = (y - c) / m
+          if (x >= allX(0) && x <= allX(1)) distance = -1
+        }
       }
-      for (y <- allY) {
-        val x = (y-c)/m
-        if (x >= allX(0) && x <= allX(1)) distance = -1
+      for (h <- field.character) { // test if a character is in the way
+        val allX: Vector[Double] = Vector(h.cell.x.toDouble - 0.5, h.cell.x.toDouble + 0.5)
+        val allY: Vector[Double] = Vector(h.cell.y.toDouble - 0.5, h.cell.y.toDouble + 0.5)
+
+        for (x <- allX) {
+          val y = m * x + c
+          if (y >= allY(0) && y <= allY(1)) distance = -1
+        }
+        for (y <- allY) {
+          val x = (y - c) / m
+          if (x >= allX(0) && x <= allX(1)) distance = -1
+        }
       }
+      if (distance > 0 && distance < minDistance) minDistance = distance.toInt //lowest hitting distance
     }
 
 
@@ -229,7 +244,7 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
 
 
     //special cases
-    if (distance > attHero.srange || distance <= 0) {
+    if (minDistance > attHero.srange) {
       return 0
     }
     val minPercentage = 20
@@ -237,7 +252,7 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
     if (attHero.srange == 1) {
       return 95
     }
-    val hitChance = maxPercentage - (((maxPercentage - minPercentage) / (attHero.srange - 1)) * distance)
+    val hitChance = maxPercentage - (((maxPercentage - minPercentage) / (attHero.srange - 1)) * minDistance)
     if (hitChance < 20) {
       return 20
     }
