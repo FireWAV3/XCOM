@@ -86,8 +86,14 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
         for( x <- 1 to c.field.sizeX+1){
           val heroLabel = new IdLabel(""){
 
+            val tempSize = size.height
+            minimumSize = new Dimension(tempSize, tempSize)
+            preferredSize = new Dimension(tempSize, tempSize)
+            maximumSize = new Dimension(tempSize, tempSize)
+
             recolor(this)
             listenTo(mouse.clicks)
+            size.width = size.height
             reactions +={
               case MouseClicked(scr,pt,mod,clicks,pops) => {
                 mod match {
@@ -120,19 +126,6 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
 
     def infoupdate(): Unit = {
       val output = "<html> <div style=\"padding: 10px; background-color:557786; padding-right:20px ;color:#ffd900;  border-style:solid ;border-color:#ffd900;\">" + c.output.replaceAll("\n","<br/>") + "</div> </html>"
-      //<img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/info_area.png\" width = 300 height= 150>
-      //c.output.replaceAll("\n","<br/>")
-     /* val output = ("<html> <div style=\"position: relativ; width=100%; height = 100% \">" +
-          " <div style=\"position: absolute; z-index: 1 ;top: 0px;  left: 10px;\"  " +
-
-             " <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/info_area.png\" height= 150> </div>" +
-
-               "<div style=\" position: absolute; z-index: 2 ;top: 10px;  left: 10px;\">"+ c.output.replaceAll("\n","<br/>") +"</div>"+
-        "</div> </html>")*/
-
-
-
-
       info.infoLabel.text = output
       recolor(highlightedCell(0))
       highlightedCell(1).border = LineBorder(java.awt.Color.GREEN, 3)
@@ -153,11 +146,6 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
             chatMessage += "\n"
           }
           this.chat.chatBLUELabel.text = "<html> <div style=\"background-color:0014db; padding: 10px; color:black\">BLUE Chat</div> <div style=\"padding: 10px; background-color:557786; border-width: 7px; padding-right:20px ;color:#ffd900;  border-style:solid ;border-color:#0014db;\">" + chatMessage.replaceAll("\n","<br/>") + "</div> </html>"
-          /*this.chat.chatBLUELabel.text = ("<html> <table> <tr> <td></td>" +
-                                          "<td rowspan=2><img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/chat_blue.png\" width = 180 height= 270> </td> " +
-                                          "<td colspan=2>"+
-                                          chatMessage.replaceAll("\n","<br/>") +
-                                          "</td> </tr> </table> </html>")*/
           repaint()
         }
         case RED => {
@@ -172,11 +160,6 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
             chatMessage += "\n"
           }
           this.chat.chatREDLabel.text = "<html><div style=\"background-color:be0000; padding: 10px;color:black\">RED Chat</div> <div style=\"padding: 10px; background-color:557786; border-width: 7px; padding-right:20px ;color:#ffd900;  border-style:solid ;border-color:#be0000;\">" + chatMessage.replaceAll("\n","<br/>") + "</div> </html>"
-          /*this.chat.chatREDLabel.text = ("<html> <table> <tr> " +
-                                          "<td rowspan=1><img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/chat_red.png\" width = 180 height= 270> </td> " +
-                                          "<td rowspan=1>"+
-                                         chatMessage.replaceAll("\n","<br/>") +
-                                          "</td> </tr> </table> </html>")*/
           repaint()
         }
       }
@@ -242,9 +225,7 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
           cell.border = LineBorder(java.awt.Color.BLACK, 1)
         }
         case "R" => {
-          //cell.text = "<html> <div style=\"background-color:313131; color:313131; padding: 1000px; width=100%; height=100%\"> placeHoler</div> </html>"
           cell.icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/rock.png")
-          //cell.text = cell.id
           cell.background = java.awt.Color.GRAY
           cell.border = LineBorder(java.awt.Color.BLACK, 1)
         }
@@ -268,6 +249,7 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
          }
         }
       }
+      cell.size.width = cell.size.height
     }
 
     reactions += {
