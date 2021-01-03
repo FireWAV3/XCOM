@@ -22,11 +22,9 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
     listenTo(c)
     val localFile = System.getProperty("user.dir")
 
-    var defaultSize = Toolkit.getDefaultToolkit.getScreenSize.height - 160
-    println(defaultSize)
+    var defaultSize = Toolkit.getDefaultToolkit.getScreenSize.height - 180
 
     var info = new GridPanel(1,2){
-
       background = java.awt.Color.BLUE.darker().darker().darker()
 
       minimumSize = new Dimension(1000, 150)
@@ -86,6 +84,7 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
 
 
     var field = new GridPanel(c.field.sizeY+1,c.field.sizeX+1){
+      background = java.awt.Color.decode("#ffc400")
       val prefUnit = defaultSize / c.field.sizeY
       val newX = prefUnit * c.field.sizeX
       val newY = prefUnit * c.field.sizeY
@@ -246,14 +245,16 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
          c.getCharactersSide(cell.id) match {
            case 0 => {
              cell.border = LineBorder(java.awt.Color.BLUE, 3)
+             cell.background = java.awt.Color.YELLOW
              cell.icon = new ImageIcon("")
-             cell.text = "<html> <div style=\"background-color:ffc400; color:ffc400;  padding: 100;\"> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/"+c.getCharactersTypeIcon(cell.id)+"_blue.png\" width = "+cell.size.height+" height= "+cell.size.height +"></div>" +
+             cell.text = "<html> <div style=\"background-color:ffc400; color:ffc400;  \"> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/"+c.getCharactersTypeIcon(cell.id)+"_blue.png\" width = "+ (cell.size.height- cell.size.height/6) +" height= "+ (cell.size.height- cell.size.height/6) +"></div>" +
                " </html>"
            }
            case 1 => {
              cell.border = LineBorder(java.awt.Color.RED, 3)
+             cell.background = java.awt.Color.YELLOW
              cell.icon = new ImageIcon("")
-             cell.text = "<html> <div style=\"background-color:ffc400; color:ffc400;  padding: 100; \"> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/"+c.getCharactersTypeIcon(cell.id)+"_red.png\" width = "+cell.size.height+" height= "+cell.size.height +"></div>" +
+             cell.text = "<html> <div style=\"background-color:ffc400; color:ffc400;   \"> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/"+c.getCharactersTypeIcon(cell.id)+"_red.png\" width = "+ (cell.size.height- cell.size.height/6) +" height= "+ (cell.size.height- cell.size.height/6) +"></div>" +
                " </html>"
            }
            case _ => cell.border = LineBorder(java.awt.Color.YELLOW, 3)
@@ -274,19 +275,21 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
       contents += field
       background = java.awt.Color.BLUE.darker().darker()
     }
-
+    background = java.awt.Color.BLUE.darker().darker().darker()
     contents = new BorderPanel{
+      background = java.awt.Color.BLUE.darker().darker().darker()
       add(outerField,BorderPanel.Position.Center)
       add(info,BorderPanel.Position.South)
       add(chat,BorderPanel.Position.East)
     }
 
-    //size = new Dimension(1500,800)
     maximize()
     resizable = false
 
   }
 }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class IdLabel(var id: String, string0: String, icon0: Icon) extends Label{
   text = string0
