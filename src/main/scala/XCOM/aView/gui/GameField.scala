@@ -1,5 +1,7 @@
 package XCOM.aView.gui
 
+import java.awt.Toolkit
+
 import XCOM.controller.controllerComponent._
 import XCOM.model.PlayerStatus._
 import XCOM.util.UndoManager
@@ -8,7 +10,7 @@ import javax.swing.{Icon, ImageIcon}
 import scala.collection.mutable.ListBuffer
 import scala.swing.Swing.{EmptyIcon, LineBorder}
 import scala.swing.event.MouseClicked
-import scala.swing.{BorderPanel, Dimension, Frame, GridPanel, Label, MainFrame}
+import scala.swing.{BorderPanel, Dimension, FlowPanel, Frame, GridPanel, Label, MainFrame}
 import scala.util.Try
 class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
 
@@ -19,6 +21,9 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
     title = "XCOM"
     listenTo(c)
     val localFile = System.getProperty("user.dir")
+
+    var defaultSize = Toolkit.getDefaultToolkit.getScreenSize.height - 160
+    println(defaultSize)
 
     var info = new GridPanel(1,2){
 
@@ -81,6 +86,12 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
 
 
     var field = new GridPanel(c.field.sizeY+1,c.field.sizeX+1){
+      val prefUnit = defaultSize / c.field.sizeY
+      val newX = prefUnit * c.field.sizeX
+      val newY = prefUnit * c.field.sizeY
+      minimumSize = new Dimension(newX, newY)
+      preferredSize = new Dimension(newX, newY)
+      maximumSize = new Dimension(newX, newY)
       var cells = Array.ofDim[IdLabel](c.field.sizeX+1,c.field.sizeY+1)
       for( y <- 1 to c.field.sizeY+1){
         for( x <- 1 to c.field.sizeX+1){
@@ -140,7 +151,7 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
           } else {
             this.chat.chatBLUELabel.messages += c.output
           }
-          var chatMessage = "CHAT BLUE\n\n"
+          var chatMessage = ""  //"CHAT BLUE\n\n"
           for (x <- this.chat.chatBLUELabel.messages) {
             chatMessage = chatMessage + x
             chatMessage += "\n"
@@ -154,7 +165,7 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
           } else {
             this.chat.chatREDLabel.messages += c.output
           }
-          var chatMessage = "CHAT RED\n\n"
+          var chatMessage =  "" //"CHAT RED\n\n"
           for (x <- this.chat.chatREDLabel.messages) {
             chatMessage += x
             chatMessage += "\n"
@@ -259,13 +270,18 @@ class GameField(c: ControllerInterface, uManager: UndoManager) extends Frame{
       case event: UpdateShoot => shootupdate()
     }
 
+    var outerField = new FlowPanel{
+      contents += field
+      background = java.awt.Color.BLUE.darker().darker()
+    }
+
     contents = new BorderPanel{
-      add(field,BorderPanel.Position.Center)
+      add(outerField,BorderPanel.Position.Center)
       add(info,BorderPanel.Position.South)
       add(chat,BorderPanel.Position.East)
     }
 
-    size = new Dimension(1500,800)
+    //size = new Dimension(1500,800)
     maximize()
     resizable = false
 
@@ -285,7 +301,7 @@ class IdLabel(var id: String, string0: String, icon0: Icon) extends Label{
 
 class WinFrame(c:ControllerInterface) extends MainFrame {
   listenTo(c)
-  title = "Congratulation"
+  title = "Congratulations"
 
   contents = new Label(){
     text = c.output
