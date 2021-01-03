@@ -184,12 +184,12 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
   def shootpercentage(attHero: model.Character, defHero: model.Character): Int = {
     val globalDirectionVector = ((defHero.cell.x - attHero.cell.x),(defHero.cell.y - attHero.cell.y))
     var attackingField = Vector[(Int,Int)]((attHero.cell.x,attHero.cell.y))
-    if (Math.abs(globalDirectionVector._1) > Math.abs(globalDirectionVector._2)){
+    if (Math.abs(globalDirectionVector._1) > Math.abs(globalDirectionVector._2)){// shooting in x direction
       Try(testRock(attHero.cell.x + globalDirectionVector._1/Math.abs(globalDirectionVector._1) + 1,attHero.cell.y + 1)) match {
         case Success(value) =>
         case Failure(exception) => attackingField = Vector[(Int,Int)]((attHero.cell.x,attHero.cell.y),(attHero.cell.x,attHero.cell.y-1),(attHero.cell.x,attHero.cell.y+1))
       }
-    }else if (Math.abs(globalDirectionVector._2) > Math.abs(globalDirectionVector._1)){
+    }else if (Math.abs(globalDirectionVector._2) > Math.abs(globalDirectionVector._1)){// shooting in y direction
       Try(testRock(attHero.cell.x + 1,attHero.cell.y + globalDirectionVector._2/Math.abs(globalDirectionVector._2) + 1)) match {
         case Success(value) =>
         case Failure(exception) => attackingField = Vector[(Int,Int)]((attHero.cell.x,attHero.cell.y),(attHero.cell.x-1,attHero.cell.y),(attHero.cell.x+1,attHero.cell.y))
@@ -208,7 +208,6 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
 
       for (attPoint <- attackBox; //aim from every attackPoint
            defPoint <- defBox) { //aim to every defensePoint
-
         val directionVector = (defPoint._1 - attPoint._1, defPoint._2 - attPoint._2)
         //calculating the distance
         var distance = 0.0
@@ -218,20 +217,29 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
           distance = Math.abs(directionVector._1) + Math.abs(directionVector._2)
         }
 
-        val m = directionVector._2 / directionVector._1 //m and c of formula y=m*x+c
-        val c = attPoint._2 - m * attPoint._1
+        val m :Double = directionVector._2 / directionVector._1 //m and c of formula y=m*x+c
+        val c :Double = attPoint._2 - m * attPoint._1
 
         for (r <- field.rocks) { //test if a rock is in the way
           val allX: Vector[Double] = Vector(r.x.toDouble - 0.5, r.x.toDouble + 0.5)
           val allY: Vector[Double] = Vector(r.y.toDouble - 0.5, r.y.toDouble + 0.5)
 
+
+
           for (x <- allX) {
-            val y = m * x + c
+            val y :Double = m * x + c
             if (y >= allY(0) && y <= allY(1)) distance = -1
           }
           for (y <- allY) {
-            val x = (y - c) / m
-            if (x >= allX(0) && x <= allX(1)) distance = -1
+            val x :Double = (y - c) / m
+            if (x.isNaN){
+              if((allX(0) == attPoint._1 || allX(1) == attPoint._1 || r.x == attPoint._1)
+                && (Math.signum(r.y - attPoint._2) == Math.signum(defPoint._2 - attPoint._2)
+                && Math.abs(r.y - attPoint._2) < Math.abs(defPoint._2 - attPoint._2))){
+                distance = -1;
+              }
+            }
+            if (x >= allX(0) && x <= allX(1))distance = -1
           }
         }
         for (h <- field.character if(h != attHero && h != defHero)) { // test if a character is in the way
@@ -243,10 +251,17 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
           }
           for (y <- allY) {
             val x = (y - c) / m
+            if (x.isNaN){
+              if((allX(0) == attPoint._1 || allX(1) == attPoint._1 || h.cell.x == attPoint._1)
+                && (Math.signum(h.cell.y - attPoint._2) == Math.signum(defPoint._2 - attPoint._2)
+                && Math.abs(h.cell.y - attPoint._2) < Math.abs(defPoint._2 - attPoint._2))){
+                distance = -1;
+              }
+            }
             if (x >= allX(0) && x <= allX(1)) distance = -1
           }
         }
-        if (distance > 0 && distance < minDistance) minDistance = distance.toInt //lowest hitting distance
+        if (distance > 0 && distance < minDistance) minDistance = distance.toInt//lowest hitting distance
       }
     }
 
