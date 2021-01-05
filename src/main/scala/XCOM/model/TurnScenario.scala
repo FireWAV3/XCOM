@@ -2,7 +2,7 @@ package XCOM.model
 import scala.util.{Failure, Success, Try}
 
 case class TurnScenario() {
-  def deepCoppy(): TurnScenario = {
+  def deepCopy(): TurnScenario = {
     var TSout = new TurnScenario
     TSout.map = this.map
     TSout

@@ -27,7 +27,7 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
     var Cout = Controller(this.field, this.attack)
     Cout.context = this.context.deepCopy()
     Cout.contextTravel = this.contextTravel.deepCopy()
-    Cout.turnS = this.turnS.deepCoppy()
+    Cout.turnS = this.turnS.deepCopy()
     Cout.output = this.output
     Cout.seed = this.seed
     Cout.PlayerState = this.PlayerState
@@ -214,7 +214,7 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
         if (Math.abs(directionVector._1) == Math.abs(directionVector._2)) {
           distance = Math.abs(directionVector._1)
         } else {
-          distance = Math.abs(directionVector._1) + Math.abs(directionVector._2)
+            distance = Math.abs(directionVector._1) + Math.abs(directionVector._2)
         }
 
         val m :Double = directionVector._2 / directionVector._1 //m and c of formula y=m*x+c
@@ -261,7 +261,7 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
             if (x >= allX(0) && x <= allX(1)) distance = -1
           }
         }
-        if (distance > 0 && distance < minDistance) minDistance = distance.toInt//lowest hitting distance
+        if (distance > 0 && math.ceil(distance) < minDistance) minDistance = math.ceil(distance).toInt//lowest hitting distance
       }
     }
 
@@ -276,7 +276,9 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
     val minPercentage = 20
     val maxPercentage = 99
     if (attHero.srange == 1) {
-      return 95
+      if (globalDirectionVector._1 == 0 || globalDirectionVector._2 == 0
+        || globalDirectionVector._1 == globalDirectionVector._2) return 95
+      return 0
     }
 
     //calculating percentage

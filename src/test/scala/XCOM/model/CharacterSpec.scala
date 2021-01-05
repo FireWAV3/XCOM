@@ -43,9 +43,8 @@ class CharacterSpec extends WordSpec{
       Hero.name should be("Test")
     }
     "have a toString methode" in{
-      testCharacter.toString should be("The Character '" + testCharacter.name + "'(" + testCharacter.displayname + ", Team "
-        + testCharacter.side + ") can move over " + testCharacter.mrange + " and shoot over " + testCharacter.srange
-        + " tiles with a damage of " + testCharacter.damage + ". He has " + testCharacter.hp + " health points left.")
+      testCharacter.toString should be("Classname:     Tank\nName:          C2\nTeam:          0\nMovementrange: 5"
+        + "\nShootingrange: 10\nDamage:        70\nHP:            40")
     }
   }
 }

@@ -13,7 +13,7 @@ class CellSpec extends WordSpec{
       new Cell(2,5).y should be(5)
     }
     "have a type" in {
-      new Cell(2,5,X).otype should be(X)
+      Cell(2,5,X).otype should be(X)
     }
     "have a default X position" in {
       new Cell().x should be(-10)

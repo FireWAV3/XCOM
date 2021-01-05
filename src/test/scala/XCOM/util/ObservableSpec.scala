@@ -1,25 +1,29 @@
-/*
+//deprecated because of gui
 package XCOM.util
-import XCOM.aView.Tui
-import XCOM.controller.Controller
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
 
 class ObservableSpec extends WordSpec{
-  "A Observable" should{
+  "An Observable" should{
+    case class Observertest() extends Observer
+    case class Observabletest() extends Observable
 
-    "have a remove methode" in {
-      val c = new Controller()
-      val tui = new Tui(c)
-      c.add(tui)
-      c.remove(tui)
-      c.subscribers should be (Nil)
+    val observer = Observertest()
+    val observable = Observabletest()
 
-      class ObTest extends Observer
-      val testOB = new ObTest
-      c.add(testOB)
-      intercept[Exception] {c.notifyObservers}
+    "have a methode add" in {
+      observable.add(observer)
+      observable.subscribers should be(Vector(observer))
+    }
+
+    "have a methode update" in {
+      intercept[Exception] {observable.notifyObservers}
+    }
+
+    "have a methode remove" in {
+      observable.remove(observer)
+      observable.subscribers should be(Vector())
     }
   }
 }
-*/
+
