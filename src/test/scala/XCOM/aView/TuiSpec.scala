@@ -1,19 +1,20 @@
-
 package XCOM.aView
-
-import XCOM.controller._
+import XCOM.controller.controllerComponent.controllerBaseImpl.Controller
+import XCOM.controller.controllerComponent.{MenuState, ShootState, SuiState}
 import XCOM.model.PlayerStatus._
 import XCOM.model.AttackScenario
+import XCOM.util.UndoManager
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
 
 class TuiSpec extends WordSpec{
   val c = new Controller()
-  val tui = Tui(c)
+  val uManager = UndoManager()
+  val tui = Tui(c, uManager)
   "A Tui" should{
     "have a Constructor" in{
       val c = new Controller()
-      val ui = UiTrait("TUI", c)
+      val ui = UiTrait("TUI", c, uManager)
       ui shouldBe a [Tui]
     }
     "have a methode run" in{
@@ -26,22 +27,22 @@ class TuiSpec extends WordSpec{
       c.context.state shouldBe a [MenuState]
       //
       tui.run("LOAD")
-      c.output should be("Wrong input: [LOAD]")
+      c.output should be("What are you trying to say with [LOAD]?")
       tui.run("LOAD A")
-      c.output should be("Wrong input: [LOAD A]")
+      c.output should be("What are you trying to say with [LOAD A]?")
       tui.run("LOAD -1")
-      c.output should be("Wrong input: [LOAD -1]")
+      c.output should be("What are you trying to say with [LOAD -1]?")
       c.context.state shouldBe a [MenuState]
       tui.run("LOAD 0")
       c.context.state shouldBe a [SuiState]
       //
       tui.run("HELP")
-      c.output should include("HELP")
+      c.context.state shouldBe a [SuiState]
       //
       tui.run("INFO C1")
       c.output should include("C1")
       tui.run("INFO XX")
-      c.output should include("Wrong input")
+      c.output should be("What are you trying to say with [INFO XX]?")
       //
       tui.run("NEXT")
       c.PlayerState should be (RED)
@@ -53,12 +54,14 @@ class TuiSpec extends WordSpec{
       c.field.character(0).cell.x should be (4)
       c.field.character(0).cell.y should be (0)
       //
-      tui.run("MOVE C1")
-      c.output should be("Wrong input: [MOVE C1]")
+      tui.run("")
+      c.output should be("What are you trying to say with []?")
+      tui.run("MOVE C1 E")
+      c.output should be("What are you trying to say with [MOVE C1 E]?")
       tui.run("MOVE C1 5 5")
-      c.output should be("Wrong input: [MOVE C1 5 5]")
+      c.output should be("What are you trying to say with [MOVE C1 5 5]?")
       tui.run("MOVE C1 E Z")
-      c.output should be("Wrong input: [MOVE C1 E Z]")
+      c.output should be("What are you trying to say with [MOVE C1 E Z]?")
       //
       tui.run("UNDO")
       c.context.state shouldBe a [SuiState]
@@ -71,10 +74,10 @@ class TuiSpec extends WordSpec{
       c.field.character(0).cell.y should be (0)
       //
       tui.run("SHOOT C1")
-      c.output should be("Wrong input: [SHOOT C1]")
+      c.output should be("What are you trying to say with [SHOOT C1]?")
 
       tui.run("SHOOT C1 C9")
-      c.output should be("C9 is not a valid Hero")
+      c.output should be("Who do you mean? I don't know C9")
 
       tui.run("SHOOT C1 C3")
       c.context.state shouldBe a [ShootState]
@@ -97,15 +100,16 @@ class TuiSpec extends WordSpec{
 
       //
       tui.run("GABAGUL")
-      c.output should be("Wrong input: [GABAGUL]")
+      c.output should be("What are you trying to say with [GABAGUL]?")
       //
       //tui.run("EXIT")
     }
     "have a methode load" in{
       val c = new Controller()
-      val tui = Tui(c)
+      val uManager = new UndoManager
+      val tui = Tui(c, uManager)
       tui.run("LOAD -1")
-      c.output should be("Wrong input: [LOAD -1]")
+      c.output should be("What are you trying to say with [LOAD -1]?")
       tui.run("LOAD 0")
       c.context.state shouldBe a [SuiState]
     }

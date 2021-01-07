@@ -1,5 +1,6 @@
 package XCOM.aView
-import XCOM.controller.Controller
+import XCOM.controller.controllerComponent.controllerBaseImpl.Controller
+import XCOM.util.UndoManager
 import org.scalatest.Matchers._
 import org.scalatest.WordSpec
 
@@ -8,7 +9,8 @@ class GuiSpec extends WordSpec{
   val gui = Gui(c)
   "A Gui" should{
     val c = new Controller()
-    val ui = UiTrait("GUI", c)
+    val u = UndoManager()
+    val ui = UiTrait("GUI", c, u)
     "have a Constructor"in{
       ui shouldBe a [Gui]
     }
@@ -16,7 +18,9 @@ class GuiSpec extends WordSpec{
       intercept[Exception] {ui.run("")}
     }
     "have a methode update"in{
-      intercept[Exception] {ui.update}
+      val gui = Gui(c)
+      intercept[Exception] {gui.update}
     }
   }
 }
+
