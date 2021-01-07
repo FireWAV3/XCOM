@@ -1,16 +1,16 @@
 package XCOM.util
 
-import XCOM.controller.Controller
+import XCOM.controller.controllerComponent._
 
 case class UndoManager() {
-  private var undoStack : List[Controller]= Nil
-  private var redoStack : List[Controller]= Nil
-  def doStep(c: Controller) ={
+  private var undoStack : List[ControllerInterface]= Nil
+  private var redoStack : List[ControllerInterface]= Nil
+  def doStep(c: ControllerInterface) ={
     val newC = c.deepCopy()
     redoStack = Nil
     undoStack = newC::undoStack
   }
-  def undoStep(c: Controller) : Controller ={
+  def undoStep(c: ControllerInterface) : ControllerInterface ={
     undoStack match {
       case  Nil => c
       case head::stack => {
@@ -23,7 +23,7 @@ case class UndoManager() {
     }
   }
 
-  def undoClear(c: Controller) : Controller ={
+  def undoClear(c: ControllerInterface) : ControllerInterface ={
     undoStack match {
       case  Nil => c
       case head::stack => {
@@ -34,7 +34,7 @@ case class UndoManager() {
     }
   }
 
-  def redoStep(c: Controller) : Controller ={
+  def redoStep(c: ControllerInterface) : ControllerInterface ={
     redoStack match {
       case Nil => c
       case head::stack =>{
