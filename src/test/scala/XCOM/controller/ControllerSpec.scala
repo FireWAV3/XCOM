@@ -206,16 +206,19 @@ class ControllerSpec extends  WordSpec{
         Character("Tank", 5, 1, 70, 40, 0,"C2", Cell(2, 1, C)),Character("Assassin", 5, 3, 70, 40, 0,"C3", Cell(1, 3, C)),
         Character("Gunner", 5, 10, 70, 40, 0,"C4", Cell(2, 2, C)),Character("Longrange", 5, 80, 70, 40, 0,"C5", Cell(2, 81, C)),
         Character("Target", 5, 10, 70, 40, 0,"C6", Cell(5, 81, C)),Character("Victim", 5, 10, 70, 40, 0,"C7", Cell(5, 78, C)),
-        Character("Meelee", 5, 2, 70, 40, 0,"C8", Cell(1, 5, C))))
-      c.shootpercentage(shootingRange.character(1),shootingRange.character(0)) should be(95)
-      c.shootpercentage(shootingRange.character(2),shootingRange.character(1)) should be(60)
-      c.shootpercentage(shootingRange.character(1),shootingRange.character(2)) should be(0)
-      c.shootpercentage(shootingRange.character(2),shootingRange.character(0)) should be(60)
-      c.shootpercentage(shootingRange.character(0),shootingRange.character(3)) should be(91)
-      c.shootpercentage(shootingRange.character(7),shootingRange.character(2)) should be(20)
-      c.shootpercentage(shootingRange.character(4),shootingRange.character(5)) should be(97)
-      c.shootpercentage(shootingRange.character(4),shootingRange.character(3)) should be(21)
-      c.shootpercentage(shootingRange.character(5),shootingRange.character(6)) should be(83)
+        Character("Meelee", 5, 2, 70, 40, 0,"C8", Cell(1, 5, C)),Character("Blob", 5, 1, 70, 40, 0,"C9", Cell(50, 50, C)),
+        Character("Blub", 5, 2, 70, 40, 0,"C8", Cell(51, 52, C))))
+      var cShoot = Controller(shootingRange,new AttackScenario())
+      cShoot.shootpercentage(shootingRange.character(1),shootingRange.character(0)) should be(95)
+      cShoot.shootpercentage(shootingRange.character(8),shootingRange.character(9)) should be(0)
+      cShoot.shootpercentage(shootingRange.character(2),shootingRange.character(1)) should be(0)
+      cShoot.shootpercentage(shootingRange.character(1),shootingRange.character(2)) should be(0)
+      cShoot.shootpercentage(shootingRange.character(2),shootingRange.character(0)) should be(60)
+      cShoot.shootpercentage(shootingRange.character(0),shootingRange.character(3)) should be(91)
+      cShoot.shootpercentage(shootingRange.character(7),shootingRange.character(2)) should be(20)
+      cShoot.shootpercentage(shootingRange.character(4),shootingRange.character(5)) should be(96)
+      cShoot.shootpercentage(shootingRange.character(4),shootingRange.character(3)) should be(20)
+      cShoot.shootpercentage(shootingRange.character(5),shootingRange.character(6)) should be(83)
     }
     "have a methode out" in{
       c.out("Test")
