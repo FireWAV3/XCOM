@@ -327,6 +327,7 @@ class ControllerSpec extends  WordSpec{
       mock.testHero(0,0) should be(false)
       mock.getHero(0,0) shouldBe a[Character]
       mock.isHero("") shouldBe a[Some[Character]]
+      mock.getFieldasArray() should be(Array.ofDim[Int](1,1))
       mock.aStarMove(new Character(),0,0) should be(false)
       mock.movePossible(new Character(),0,0) should be(false)
       mock.shootpercentage(new Character(), new Character()) should be(1)
