@@ -8,7 +8,6 @@ import XCOM.util.UndoManager
 
 import scala.collection.mutable.ListBuffer
 import scala.util.{Failure, Success, Try}
-import scala.util.control.Breaks.break
 
 case class Controller(var field: Field, var attack: AttackScenario) extends ControllerInterface {
 
@@ -167,13 +166,47 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
     None
   }
 
-  def aStarMove(startX: Int, startY: Int, goalX: Int, goalY: Int): Boolean = {
-    //TODO A*
-    throw new Exception("not implemented yet")
+  def getFieldasArray() = { //TODO interdace
+    val matrix = Array.ofDim[Int](field.sizeY+1,field.sizeX+1)
+    for (e <- field.character) matrix(e.cell.y)(e.cell.x) = 1
+    for (e <- field.rocks ) matrix(e.y)(e.x) = 1
+    matrix
+  }
+
+  def aStarMove(hero:model.Character, goalX: Int, goalY: Int): Boolean = {
+    val fieldArray = getFieldasArray();
+    //for(e <- fieldArray) {for(z <- e) print(z); println("")}
+    val x = Vector[Int](0,0,1,-1)
+    val y = Vector[Int](1,-1,0,0)
+    var q = new ListBuffer[(Int,Int)]()
+    q.append((hero.cell.y,hero.cell.x))
+    val n = fieldArray.length     //N   Y
+    val m = fieldArray(0).length  //M   X
+    var dist =  Array.ofDim[Int](n,m)
+    for(a:Int <- 0 to n-1) {
+      for (b:Int <- 0 to m-1) {
+        dist(a)(b) = -1
+      }
+    }
+    dist(hero.cell.y)(hero.cell.x) = 0
+    while(!q.isEmpty){
+      val p = q.remove(0)
+      for(i <- 0 until 4){
+        val b = p._1 + x(i)
+        val a = p._2 + y(i)
+        if((a >= 0) && (b >= 0) && (a < m) && (b < n) && (dist(b)(a) == -1) && (fieldArray(b)(a) == 0) ){
+          dist(b)(a) = 1 + dist(p._1)(p._2)
+          q.append((b,a))
+        }
+      }
+    }
+    //for(e <- dist) {for(z <- e) print(z+" |"); println("\n--------------------------")}
+    if(dist(goalY-1)(goalX-1) > hero.mrange)throw new Exception("That's way too far away. I would never get there")
+    true
   }
 
   def movePossible(hero: model.Character, pX: Int, pY: Int): Boolean = {
-    if (hero.side >= 0 /*hero.ability >= 10*/ ) { //TODO implement ability
+    if (!(hero.side >= 0) /*hero.ability >= 10*/ ) { //TODO implement ability
       contextTravel.travelState = new Manhattan(this)
     } else {
       contextTravel.travelState = new AStar(this)

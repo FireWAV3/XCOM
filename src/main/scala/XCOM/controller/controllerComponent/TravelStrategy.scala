@@ -22,7 +22,7 @@ class TravelStrategy (c:ControllerInterface) extends TravelStrategyTrait {
 
 class AStar(c:ControllerInterface)extends TravelStrategy(c){
   override def movePossible(hero: model.Character, pX: Int, pY: Int): Boolean = {
-    c.aStarMove(hero.cell.x,hero.cell.y,pX,pY)
+    c.aStarMove(hero,pX,pY)
   }
 }
 

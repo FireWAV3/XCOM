@@ -22,5 +22,6 @@ object XCOM {
         case Failure(exception) => System.exit(0)
       }
     }
+
   }
 }
