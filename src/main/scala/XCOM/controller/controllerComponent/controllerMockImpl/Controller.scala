@@ -39,7 +39,8 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
   def testHero(pX: Int, pY: Int): Boolean = false
   def getHero(pX: Int, pY: Int): XCOM.model.Character = new model.Character()
   def isHero(input: String): Option[XCOM.model.Character] = Some(new model.Character())
-  def aStarMove(startX: Int, startY: Int, goalX: Int, goalY: Int): Boolean = false
+  override def getFieldasArray(): Array[Array[Int]] = Array.ofDim[Int](1,1)
+  def aStarMove(hero:model.Character, goalX: Int, goalY: Int): Boolean = false
   def movePossible(hero: XCOM.model.Character, pX: Int, pY: Int): Boolean = false
   def shootpercentage(attHero: XCOM.model.Character, defHero: XCOM.model.Character): Int = 1
   def out(str: String): Unit = {}

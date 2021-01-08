@@ -28,7 +28,7 @@ case class Scenario() {
         val assassinT = Character("Assassin Nr.2", 8, 1, 150, 10, 1, "C4", Cell(5, 5, C))
         val allCharacter = Vector[Character](sniper, tank, assassin,assassinT)
         val field = Field(6 + 1, 10 + 1, Vector[Cell](
-          Cell(5, 0, R), Cell(2, 2, R), Cell(3, 2, R), Cell(3, 6, R), Cell(3, 7, R)),
+          Cell(5, 0, R), Cell(2, 2, R), Cell(3, 2, R), Cell(3, 6, R), Cell(3, 7, R),Cell(3, 8, R),Cell(3, 9, R),Cell(3, 10, R)),
           allCharacter)
 
         field
