@@ -166,8 +166,10 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
     None
   }
 
-  def getFieldasArray() = { //TODO interdace
+  def getFieldasArray(): Array[Array[Int]] = { //TODO interdace
     val matrix = Array.ofDim[Int](field.sizeY+1,field.sizeX+1)
+    println(field.sizeY)
+    println(field.sizeX)
     for (e <- field.character) matrix(e.cell.y)(e.cell.x) = 1
     for (e <- field.rocks ) matrix(e.y)(e.x) = 1
     matrix

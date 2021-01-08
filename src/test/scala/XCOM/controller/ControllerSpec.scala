@@ -76,10 +76,6 @@ class ControllerSpec extends  WordSpec{
 
       cMove.contextTravel.travelState = new TravelStrategy(cMove)
       intercept[Exception] {cMove.contextTravel.travelState.movePossible(cMove.field.character(1),5,4)}
-
-      cMove.contextTravel.travelState = new AStar(cMove)
-      intercept[Exception] {cMove.contextTravel.travelState.movePossible(cMove.field.character(1),5,4)}
-
     }
     "have a methode aim" in{
       var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),
@@ -178,28 +174,44 @@ class ControllerSpec extends  WordSpec{
       //intercept[Exception] {c.aStarMove(0,0,0,0)}
     }
     "have a methode movePossible" in{
+      var moveField = Field(15,20,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, -1,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
+      var cMove = Controller(moveField ,new AttackScenario())
+
+
       //down
-      c.movePossible(testField.character(0),6,11) should be(true)
-      intercept[Exception]{c.movePossible(testField.character(0),6,12)}
+      cMove.movePossible(moveField.character(0),6,11) should be(true)
+      intercept[Exception]{cMove.movePossible(moveField.character(0),6,12)}
+      cMove.movePossible(moveField.character(1),6,12) should be(true)
+      intercept[Exception]{cMove.movePossible(moveField.character(1),6,13)}
 
       //up
-      c.movePossible(testField.character(0),6,1) should be(true)
-      intercept[Exception] {c.movePossible(testField.character(0),6,0)}
+      cMove.movePossible(moveField.character(0),6,1) should be(true)
+      intercept[Exception] {cMove.movePossible(moveField.character(0),6,0)}
+      cMove.movePossible(moveField.character(1),6,4) should be(true)
+      intercept[Exception] {cMove.movePossible(moveField.character(1),6,3)}
       //right
-      c.movePossible(testField.character(0),11,6) should be(true)
-      intercept[Exception] {c.movePossible(testField.character(0),12,6)}
+      cMove.movePossible(moveField.character(0),11,6) should be(true)
+      intercept[Exception] {cMove.movePossible(moveField.character(0),12,6)}
+      cMove.movePossible(moveField.character(1),11,7) should be(true)
+      intercept[Exception] {cMove.movePossible(moveField.character(1),12,7)}
       //left
-      c.movePossible(testField.character(0),1,6) should be(true)
-      intercept[Exception] {c.movePossible(testField.character(0),0,6)}
+      cMove.movePossible(moveField.character(0),1,6) should be(true)
+      intercept[Exception] {cMove.movePossible(moveField.character(0),0,6)}
+      cMove.movePossible(moveField.character(1),1,7) should be(true)
+      intercept[Exception] {cMove.movePossible(moveField.character(1),0,7)}
       //diagonal left up
-      c.movePossible(testField.character(0),4,4) should be(true)
-      c.movePossible(testField.character(0),3,4) should be(true)
-      c.movePossible(testField.character(0),4,3) should be(true)
-      intercept[Exception] {c.movePossible(testField.character(0),3,2)}
-      intercept[Exception] {c.movePossible(testField.character(0),2,3)}
-      intercept[Exception] {c.movePossible(testField.character(0), 3, 3)}
-
-      intercept[Exception] {c.movePossible(new Character("Nix_Name",0,0,0,1,-1,"Banane",new Cell()), 3, 3)}
+      cMove.movePossible(moveField.character(0),4,4) should be(true)
+      cMove.movePossible(moveField.character(0),3,4) should be(true)
+      cMove.movePossible(moveField.character(0),4,3) should be(true)
+      intercept[Exception] {cMove.movePossible(moveField.character(0),3,2)}
+      intercept[Exception] {cMove.movePossible(moveField.character(0),2,3)}
+      intercept[Exception] {cMove.movePossible(moveField.character(0), 3, 3)}
+      cMove.movePossible(moveField.character(1),4,5) should be(true)
+      cMove.movePossible(moveField.character(1),3,5) should be(true)
+      cMove.movePossible(moveField.character(1),4,4) should be(true)
+      intercept[Exception] {cMove.movePossible(moveField.character(1),3,3)}
+      intercept[Exception] {cMove.movePossible(moveField.character(1),2,4)}
+      intercept[Exception] {cMove.movePossible(moveField.character(1), 3, 4)}
     }
     "have a methode shootpercentage" in{
       var shootingRange = Field(200,200,Vector[Cell](Cell(2,80,R),Cell(3,81,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(1, 1, C)),
@@ -285,7 +297,7 @@ class ControllerSpec extends  WordSpec{
       c.requestRepaint
       c.context.state shouldBe a[MenuState]
     }
-    "have a mockController" in{
+    "have a stub implementation" in{
       val mock = controllerComponent.controllerMockImpl.Controller(testField,new AttackScenario())
       val uManager = UndoManager()
       mock.output should be("")
@@ -315,7 +327,7 @@ class ControllerSpec extends  WordSpec{
       mock.testHero(0,0) should be(false)
       mock.getHero(0,0) shouldBe a[Character]
       mock.isHero("") shouldBe a[Some[Character]]
-      //mock.aStarMove(0,0,0,0) should be(false)
+      mock.aStarMove(new Character(),0,0) should be(false)
       mock.movePossible(new Character(),0,0) should be(false)
       mock.shootpercentage(new Character(), new Character()) should be(1)
       mock.out("")
