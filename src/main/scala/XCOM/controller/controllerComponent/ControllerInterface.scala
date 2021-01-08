@@ -1,5 +1,6 @@
 package XCOM.controller.controllerComponent
 
+import XCOM.model
 import XCOM.model.{AttackScenario, Field, TurnScenario}
 import XCOM.model.PlayerStatus.PlayerStatus
 import XCOM.util.UndoManager
@@ -37,7 +38,8 @@ trait ControllerInterface extends Publisher{
   def testHero(pX: Int, pY: Int): Boolean
   def getHero(pX: Int, pY: Int): XCOM.model.Character
   def isHero(input: String): Option[XCOM.model.Character]
-  def aStarMove(startX: Int, startY: Int, goalX: Int, goalY: Int): Boolean
+  def getFieldasArray() : Array[Array[Int]]
+  def aStarMove(hero:model.Character, goalX: Int, goalY: Int): Boolean
   def movePossible(hero: XCOM.model.Character, pX: Int, pY: Int): Boolean
   def shootpercentage(attHero: XCOM.model.Character, defHero: XCOM.model.Character): Int
   def out(str: String): Unit
