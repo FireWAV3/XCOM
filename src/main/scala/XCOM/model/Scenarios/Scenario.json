@@ -1,0 +1,349 @@
+{
+  "ammount": "2",
+  "Senario": [
+    {
+      "ID": "0",
+      "sizeX": "7",
+      "sizeY": "21",
+      "Characters": [
+        {
+          "Name": "Sniper",
+          "movementRange": "5",
+          "shootingRange": "10",
+          "damage": "70",
+          "hp": "40",
+          "side": "0",
+          "displayname": "C1",
+          "Cell": {
+            "x": "5",
+            "y": "1"
+          }
+        },
+        {
+          "Name": "Tank",
+          "movementRange": "5",
+          "shootingRange": "10",
+          "damage": "30",
+          "hp": "40",
+          "side": "0",
+          "displayname": "C2",
+          "Cell": {
+            "x": "4",
+            "y": "4"
+          }
+        },
+        {
+          "Name": "Assassin",
+          "movementRange": "8",
+          "shootingRange": "1",
+          "damage": "150",
+          "hp": "50",
+          "side": "1",
+          "displayname": "C3",
+          "Cell": {
+            "x": "6",
+            "y": "4"
+          }
+        },
+        {
+          "Name": "Assassin Nr.2",
+          "movementRange": "8",
+          "shootingRange": "1",
+          "damage": "150",
+          "hp": "10",
+          "side": "1",
+          "displayname": "C4",
+          "Cell": {
+            "x": "5",
+            "y": "5"
+          }
+        }
+      ],
+      "Rocks": [
+        {
+          "Cell": {
+            "x": "5",
+            "y": "0"
+          }
+        },
+        {
+          "Cell": {
+            "x": "2",
+            "y": "2"
+          }
+        },
+        {
+          "Cell": {
+            "x": "3",
+            "y": "2"
+          }
+        },
+        {
+          "Cell": {
+            "x": "3",
+            "y": "6"
+          }
+        },
+        {
+          "Cell": {
+            "x": "3",
+            "y": "7"
+          }
+        }
+      ]
+    },
+    {
+      "ID": "1",
+      "sizeX": "7",
+      "sizeY": "11",
+      "Characters": [
+        {
+          "Name": "Sniper",
+          "movementRange": "5",
+          "shootingRange": "10",
+          "damage": "70",
+          "hp": "40",
+          "side": "0",
+          "displayname": "C1",
+          "Cell": {
+            "x": "5",
+            "y": "1"
+          }
+        },
+        {
+          "Name": "Tank",
+          "movementRange": "5",
+          "shootingRange": "10",
+          "damage": "30",
+          "hp": "40",
+          "side": "0",
+          "displayname": "C2",
+          "Cell": {
+            "x": "4",
+            "y": "4"
+          }
+        },
+        {
+          "Name": "Assassin",
+          "movementRange": "8",
+          "shootingRange": "1",
+          "damage": "150",
+          "hp": "50",
+          "side": "1",
+          "displayname": "C3",
+          "Cell": {
+            "x": "6",
+            "y": "4"
+          }
+        },
+        {
+          "Name": "Assassin Nr.2",
+          "movementRange": "8",
+          "shootingRange": "1",
+          "damage": "150",
+          "hp": "10",
+          "side": "1",
+          "displayname": "C4",
+          "Cell": {
+            "x": "5",
+            "y": "5"
+          }
+        }
+      ],
+      "Rocks": [
+        {
+          "Cell": {
+            "x": "5",
+            "y": "0"
+          }
+        },
+        {
+          "Cell": {
+            "x": "2",
+            "y": "2"
+          }
+        },
+        {
+          "Cell": {
+            "x": "3",
+            "y": "2"
+          }
+        },
+        {
+          "Cell": {
+            "x": "3",
+            "y": "6"
+          }
+        },
+        {
+          "Cell": {
+            "x": "3",
+            "y": "7"
+          }
+        },
+        {
+          "Cell": {
+            "x": "3",
+            "y": "8"
+          }
+        },
+        {
+          "Cell": {
+            "x": "3",
+            "y": "9"
+          }
+        },
+        {
+          "Cell": {
+            "x": "3",
+            "y": "10"
+          }
+        }
+      ]
+    },
+    {
+      "ID": "2",
+      "sizeX": "9",
+      "sizeY": "21",
+      "Characters": [
+        {
+          "Name": "Sniper",
+          "movementRange": "5",
+          "shootingRange": "10",
+          "damage": "70",
+          "hp": "40",
+          "side": "0",
+          "displayname": "C1",
+          "Cell": {
+            "x": "5",
+            "y": "1"
+          }
+        },
+        {
+          "Name": "Tank",
+          "movementRange": "5",
+          "shootingRange": "10",
+          "damage": "30",
+          "hp": "40",
+          "side": "0",
+          "displayname": "C2",
+          "Cell": {
+            "x": "4",
+            "y": "4"
+          }
+        },
+        {
+          "Name": "Tank",
+          "movementRange": "5",
+          "shootingRange": "10",
+          "damage": "30",
+          "hp": "40",
+          "side": "0",
+          "displayname": "C3",
+          "Cell": {
+            "x": "5",
+            "y": "4"
+          }
+        },
+        {
+          "Name": "Tank",
+          "movementRange": "5",
+          "shootingRange": "10",
+          "damage": "30",
+          "hp": "40",
+          "side": "0",
+          "displayname": "C4",
+          "Cell": {
+            "x": "3",
+            "y": "4"
+          }
+        },
+        {
+          "Name": "Assassin",
+          "movementRange": "8",
+          "shootingRange": "1",
+          "damage": "150",
+          "hp": "50",
+          "side": "1",
+          "displayname": "C5",
+          "Cell": {
+            "x": "1",
+            "y": "18"
+          }
+        },
+        {
+          "Name": "Assassin Nr.2",
+          "movementRange": "8",
+          "shootingRange": "1",
+          "damage": "150",
+          "hp": "50",
+          "side": "1",
+          "displayname": "C6",
+          "Cell": {
+            "x": "3",
+            "y": "9"
+          }
+        },
+        {
+          "Name": "Assassin Nr.3",
+          "movementRange": "8",
+          "shootingRange": "1",
+          "damage": "150",
+          "hp": "50",
+          "side": "1",
+          "displayname": "C7",
+          "Cell": {
+            "x": "5",
+            "y": "10"
+          }
+        },
+        {
+          "Name": "Assassin Nr.4",
+          "movementRange": "8",
+          "shootingRange": "1",
+          "damage": "150",
+          "hp": "50",
+          "side": "1",
+          "displayname": "C8",
+          "Cell": {
+            "x": "4",
+            "y": "20"
+          }
+        }
+      ],
+      "Rocks": [
+        {
+          "Cell": {
+            "x": "5",
+            "y": "0"
+          }
+        },
+        {
+          "Cell": {
+            "x": "2",
+            "y": "2"
+          }
+        },
+        {
+          "Cell": {
+            "x": "3",
+            "y": "2"
+          }
+        },
+        {
+          "Cell": {
+            "x": "3",
+            "y": "6"
+          }
+        },
+        {
+          "Cell": {
+            "x": "3",
+            "y": "7"
+          }
+        }
+      ]
+    }
+  ]
+}
+

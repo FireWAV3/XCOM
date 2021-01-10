@@ -1,7 +1,12 @@
 package XCOM.model
 import XCOM.model.FieldStructure._
+import scala.io.Source
+
 
 case class Scenario() {
+  //val file = scala.xml.XML.loadFile("Senarios/Scenario.XML")
+  val source: String = Source.fromFile("Senarios/Scenario.json").getLines.mkString
+
   val amount = 2
   //TODO laod Scenario form .xml File
 
