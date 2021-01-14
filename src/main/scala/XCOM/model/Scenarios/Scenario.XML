@@ -1,7 +1,5 @@
-<Senarios>
-    <ammount>2</ammount>
-    <Senario>
-        <ID>0</ID>
+<Scenarios>
+    <Scenario>
         <sizeX>7</sizeX>
         <sizeY>21</sizeY>
         <Characters>
@@ -12,7 +10,6 @@
                 <damage>70</damage>
                 <hp>40</hp>
                 <side>0</side>
-                <displayname>C1</displayname>
                 <Cell>
                     <x>5</x>
                     <y>1</y>
@@ -25,7 +22,6 @@
                 <damage>30</damage>
                 <hp>40</hp>
                 <side>0</side>
-                <displayname>C2</displayname>
                 <Cell>
                     <x>4</x>
                     <y>4</y>
@@ -38,7 +34,6 @@
                 <damage>150</damage>
                 <hp>50</hp>
                 <side>1</side>
-                <displayname>C3</displayname>
                 <Cell>
                     <x>6</x>
                     <y>4</y>
@@ -51,7 +46,6 @@
                 <damage>150</damage>
                 <hp>10</hp>
                 <side>1</side>
-                <displayname>C4</displayname>
                 <Cell>
                     <x>5</x>
                     <y>5</y>
@@ -90,10 +84,9 @@
                 </Cell>
             </Rock>
         </Rocks>
-    </Senario>
+    </Scenario>
 
-    <Senario>
-        <ID>1</ID>
+    <Scenario>
         <sizeX>7</sizeX>
         <sizeY>11</sizeY>
         <Characters>
@@ -104,7 +97,6 @@
                 <damage>70</damage>
                 <hp>40</hp>
                 <side>0</side>
-                <displayname>C1</displayname>
                 <Cell>
                     <x>5</x>
                     <y>1</y>
@@ -117,7 +109,6 @@
                 <damage>30</damage>
                 <hp>40</hp>
                 <side>0</side>
-                <displayname>C2</displayname>
                 <Cell>
                     <x>4</x>
                     <y>4</y>
@@ -130,7 +121,6 @@
                 <damage>150</damage>
                 <hp>50</hp>
                 <side>1</side>
-                <displayname>C3</displayname>
                 <Cell>
                     <x>6</x>
                     <y>4</y>
@@ -143,7 +133,6 @@
                 <damage>150</damage>
                 <hp>10</hp>
                 <side>1</side>
-                <displayname>C4</displayname>
                 <Cell>
                     <x>5</x>
                     <y>5</y>
@@ -200,10 +189,9 @@
                 </Cell>
             </Rock>
         </Rocks>
-    </Senario>
+    </Scenario>
 
-    <Senario>
-        <ID>2</ID>
+    <Scenario>
         <sizeX>9</sizeX>
         <sizeY>21</sizeY>
         <Characters>
@@ -214,7 +202,6 @@
                 <damage>70</damage>
                 <hp>40</hp>
                 <side>0</side>
-                <displayname>C1</displayname>
                 <Cell>
                     <x>5</x>
                     <y>1</y>
@@ -227,7 +214,6 @@
                 <damage>30</damage>
                 <hp>40</hp>
                 <side>0</side>
-                <displayname>C2</displayname>
                 <Cell>
                     <x>4</x>
                     <y>4</y>
@@ -240,7 +226,6 @@
                 <damage>30</damage>
                 <hp>40</hp>
                 <side>0</side>
-                <displayname>C3</displayname>
                 <Cell>
                     <x>5</x>
                     <y>4</y>
@@ -253,7 +238,6 @@
                 <damage>30</damage>
                 <hp>40</hp>
                 <side>0</side>
-                <displayname>C4</displayname>
                 <Cell>
                     <x>3</x>
                     <y>4</y>
@@ -266,7 +250,6 @@
                 <damage>150</damage>
                 <hp>50</hp>
                 <side>1</side>
-                <displayname>C5</displayname>
                 <Cell>
                     <x>1</x>
                     <y>18</y>
@@ -279,7 +262,6 @@
                 <damage>150</damage>
                 <hp>50</hp>
                 <side>1</side>
-                <displayname>C6</displayname>
                 <Cell>
                     <x>3</x>
                     <y>9</y>
@@ -292,7 +274,6 @@
                 <damage>150</damage>
                 <hp>50</hp>
                 <side>1</side>
-                <displayname>C7</displayname>
                 <Cell>
                     <x>5</x>
                     <y>10</y>
@@ -305,7 +286,6 @@
                 <damage>150</damage>
                 <hp>50</hp>
                 <side>1</side>
-                <displayname>C8</displayname>
                 <Cell>
                     <x>4</x>
                     <y>20</y>
@@ -344,5 +324,51 @@
                 </Cell>
             </Rock>
         </Rocks>
-    </Senario>
-</Senarios>
+    </Scenario>
+
+    <Scenario>
+        <sizeX>10</sizeX>
+        <sizeY>10</sizeY>
+        <Characters>
+            <Character>
+                <Name>Assassin</Name>
+                <movementRange>8</movementRange>
+                <shootingRange>1</shootingRange>
+                <damage>150</damage>
+                <hp>50</hp>
+                <side>0</side>
+                <Cell>
+                    <x>0</x>
+                    <y>0</y>
+                </Cell>
+            </Character>
+            <Character>
+                <Name>Assassin</Name>
+                <movementRange>8</movementRange>
+                <shootingRange>1</shootingRange>
+                <damage>150</damage>
+                <hp>50</hp>
+                <side>1</side>
+                <Cell>
+                    <x>9</x>
+                    <y>9</y>
+                </Cell>
+            </Character>
+        </Characters>
+        <Rocks>
+            <Rock>
+                <Cell>
+                    <x>5</x>
+                    <y>5</y>
+                </Cell>
+            </Rock>
+            <Rock>
+                <Cell>
+                    <x>4</x>
+                    <y>4</y>
+                </Cell>
+            </Rock>
+        </Rocks>
+    </Scenario>
+
+</Scenarios>

@@ -1,15 +1,17 @@
 package XCOM.controller.controllerComponent.controllerBaseImpl
 
 import XCOM.controller.controllerComponent._
-import XCOM.model
+import XCOM.{XcomModule, model}
 import XCOM.model.PlayerStatus.{BLUE, PlayerStatus, RED}
 import XCOM.model.{AttackScenario, Character, Field, PlayerStatus, Scenario, TurnScenario}
 import XCOM.util.UndoManager
+import com.google.inject.{Guice, Inject}
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 import scala.collection.mutable.ListBuffer
 import scala.util.{Failure, Success, Try}
 
-case class Controller(var field: Field, var attack: AttackScenario) extends ControllerInterface {
+case class Controller @Inject() (var field: Field, var attack: AttackScenario) extends ControllerInterface {
 
   var context = new Context(this)
   var contextTravel = new ContextTravel(this)
@@ -17,6 +19,7 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
   var seed = 0
   var PlayerState: PlayerStatus = BLUE
   var turnS = TurnScenario()
+  val injector = Guice.createInjector(new XcomModule)
 
   def this() {
     this(new Field(0, 0), new AttackScenario())
@@ -166,7 +169,7 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
     None
   }
 
-  def getFieldasArray(): Array[Array[Int]] = { //TODO interdace
+  def getFieldasArray(): Array[Array[Int]] = {
     val matrix = Array.ofDim[Int](field.sizeY+1,field.sizeX+1)
     println(field.sizeY)
     println(field.sizeX)
@@ -377,8 +380,8 @@ case class Controller(var field: Field, var attack: AttackScenario) extends Cont
   }
 
   def scenarioAmmount: Int = {
-    val scenario = Scenario()
-    scenario.amount
+    val scenario = injector.instance[Scenario]
+    scenario.getAmmount()
   }
 
   def splitFlatString(input: String): Array[String] = {

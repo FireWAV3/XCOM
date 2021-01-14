@@ -1,345 +1,402 @@
 {
-  "ammount": "2",
-  "Senario": [
+  "ammount": 3,
+  "Scenario": [
     {
-      "ID": "0",
-      "sizeX": "7",
-      "sizeY": "21",
+      "sizeX": 7,
+      "sizeY": 21,
+      "ammountCharacter": 4,
+      "ammountRocks": 5,
       "Characters": [
         {
           "Name": "Sniper",
-          "movementRange": "5",
-          "shootingRange": "10",
-          "damage": "70",
-          "hp": "40",
-          "side": "0",
-          "displayname": "C1",
+          "movementRange": 5,
+          "shootingRange": 10,
+          "damage": 70,
+          "hp": 40,
+          "side": 0,
           "Cell": {
-            "x": "5",
-            "y": "1"
+            "x": 5,
+            "y": 1
           }
         },
         {
           "Name": "Tank",
-          "movementRange": "5",
-          "shootingRange": "10",
-          "damage": "30",
-          "hp": "40",
-          "side": "0",
-          "displayname": "C2",
+          "movementRange": 5,
+          "shootingRange": 10,
+          "damage": 30,
+          "hp": 40,
+          "side": 0,
           "Cell": {
-            "x": "4",
-            "y": "4"
+            "x": 4,
+            "y": 4
           }
         },
         {
           "Name": "Assassin",
-          "movementRange": "8",
-          "shootingRange": "1",
-          "damage": "150",
-          "hp": "50",
-          "side": "1",
-          "displayname": "C3",
+          "movementRange": 8,
+          "shootingRange": 1,
+          "damage": 150,
+          "hp": 50,
+          "side": 1,
           "Cell": {
-            "x": "6",
-            "y": "4"
+            "x": 6,
+            "y": 4
           }
         },
         {
           "Name": "Assassin Nr.2",
-          "movementRange": "8",
-          "shootingRange": "1",
-          "damage": "150",
-          "hp": "10",
-          "side": "1",
-          "displayname": "C4",
+          "movementRange": 8,
+          "shootingRange": 1,
+          "damage": 150,
+          "hp": 10,
+          "side": 1,
           "Cell": {
-            "x": "5",
-            "y": "5"
+            "x": 5,
+            "y": 5
           }
         }
       ],
       "Rocks": [
         {
           "Cell": {
-            "x": "5",
-            "y": "0"
+            "x": 5,
+            "y": 0
           }
         },
         {
           "Cell": {
-            "x": "2",
-            "y": "2"
+            "x": 2,
+            "y": 2
           }
         },
         {
           "Cell": {
-            "x": "3",
-            "y": "2"
+            "x": 3,
+            "y": 2
           }
         },
         {
           "Cell": {
-            "x": "3",
-            "y": "6"
+            "x": 3,
+            "y": 6
           }
         },
         {
           "Cell": {
-            "x": "3",
-            "y": "7"
+            "x": 3,
+            "y": 7
           }
         }
       ]
     },
     {
-      "ID": "1",
-      "sizeX": "7",
-      "sizeY": "11",
+      "sizeX": 7,
+      "sizeY": 11,
+      "ammountCharacter": 4,
+      "ammountRocks": 8,
       "Characters": [
         {
           "Name": "Sniper",
-          "movementRange": "5",
-          "shootingRange": "10",
-          "damage": "70",
-          "hp": "40",
-          "side": "0",
-          "displayname": "C1",
+          "movementRange": 5,
+          "shootingRange": 10,
+          "damage": 70,
+          "hp": 40,
+          "side": 0,
           "Cell": {
-            "x": "5",
-            "y": "1"
+            "x": 5,
+            "y": 1
           }
         },
         {
           "Name": "Tank",
-          "movementRange": "5",
-          "shootingRange": "10",
-          "damage": "30",
-          "hp": "40",
-          "side": "0",
-          "displayname": "C2",
+          "movementRange": 5,
+          "shootingRange": 10,
+          "damage": 30,
+          "hp": 40,
+          "side": 0,
           "Cell": {
-            "x": "4",
-            "y": "4"
+            "x": 4,
+            "y": 4
           }
         },
         {
           "Name": "Assassin",
-          "movementRange": "8",
-          "shootingRange": "1",
-          "damage": "150",
-          "hp": "50",
-          "side": "1",
-          "displayname": "C3",
+          "movementRange": 8,
+          "shootingRange": 1,
+          "damage": 150,
+          "hp": 50,
+          "side": 1,
           "Cell": {
-            "x": "6",
-            "y": "4"
+            "x": 6,
+            "y": 4
           }
         },
         {
           "Name": "Assassin Nr.2",
-          "movementRange": "8",
-          "shootingRange": "1",
-          "damage": "150",
-          "hp": "10",
-          "side": "1",
-          "displayname": "C4",
+          "movementRange": 8,
+          "shootingRange": 1,
+          "damage": 150,
+          "hp": 10,
+          "side": 1,
           "Cell": {
-            "x": "5",
-            "y": "5"
+            "x": 5,
+            "y": 5
           }
         }
       ],
       "Rocks": [
         {
           "Cell": {
-            "x": "5",
-            "y": "0"
+            "x": 5,
+            "y": 0
           }
         },
         {
           "Cell": {
-            "x": "2",
-            "y": "2"
+            "x": 2,
+            "y": 2
           }
         },
         {
           "Cell": {
-            "x": "3",
-            "y": "2"
+            "x": 3,
+            "y": 2
           }
         },
         {
           "Cell": {
-            "x": "3",
-            "y": "6"
+            "x": 3,
+            "y": 6
           }
         },
         {
           "Cell": {
-            "x": "3",
-            "y": "7"
+            "x": 3,
+            "y": 7
           }
         },
         {
           "Cell": {
-            "x": "3",
-            "y": "8"
+            "x": 3,
+            "y": 8
           }
         },
         {
           "Cell": {
-            "x": "3",
-            "y": "9"
+            "x": 3,
+            "y": 9
           }
         },
         {
           "Cell": {
-            "x": "3",
-            "y": "10"
+            "x": 3,
+            "y": 10
           }
         }
       ]
     },
     {
-      "ID": "2",
-      "sizeX": "9",
-      "sizeY": "21",
+      "sizeX": 9,
+      "sizeY": 21,
+      "ammountCharacter": 8,
+      "ammountRocks": 5,
       "Characters": [
         {
           "Name": "Sniper",
-          "movementRange": "5",
-          "shootingRange": "10",
-          "damage": "70",
-          "hp": "40",
-          "side": "0",
-          "displayname": "C1",
+          "movementRange": 5,
+          "shootingRange": 10,
+          "damage": 70,
+          "hp": 40,
+          "side": 0,
           "Cell": {
-            "x": "5",
-            "y": "1"
+            "x": 5,
+            "y": 1
           }
         },
         {
           "Name": "Tank",
-          "movementRange": "5",
-          "shootingRange": "10",
-          "damage": "30",
-          "hp": "40",
-          "side": "0",
-          "displayname": "C2",
+          "movementRange": 5,
+          "shootingRange": 10,
+          "damage": 30,
+          "hp": 40,
+          "side": 0,
           "Cell": {
-            "x": "4",
-            "y": "4"
+            "x": 4,
+            "y": 4
           }
         },
         {
           "Name": "Tank",
-          "movementRange": "5",
-          "shootingRange": "10",
-          "damage": "30",
-          "hp": "40",
-          "side": "0",
-          "displayname": "C3",
+          "movementRange": 5,
+          "shootingRange": 10,
+          "damage": 30,
+          "hp": 40,
+          "side": 0,
           "Cell": {
-            "x": "5",
-            "y": "4"
+            "x": 5,
+            "y": 4
           }
         },
         {
           "Name": "Tank",
-          "movementRange": "5",
-          "shootingRange": "10",
-          "damage": "30",
-          "hp": "40",
-          "side": "0",
-          "displayname": "C4",
+          "movementRange": 5,
+          "shootingRange": 10,
+          "damage": 30,
+          "hp": 40,
+          "side": 0,
           "Cell": {
-            "x": "3",
-            "y": "4"
+            "x": 3,
+            "y": 4
           }
         },
         {
           "Name": "Assassin",
-          "movementRange": "8",
-          "shootingRange": "1",
-          "damage": "150",
-          "hp": "50",
-          "side": "1",
-          "displayname": "C5",
+          "movementRange": 8,
+          "shootingRange": 1,
+          "damage": 150,
+          "hp": 50,
+          "side": 1,
           "Cell": {
-            "x": "1",
-            "y": "18"
+            "x": 1,
+            "y": 18
           }
         },
         {
           "Name": "Assassin Nr.2",
-          "movementRange": "8",
-          "shootingRange": "1",
-          "damage": "150",
-          "hp": "50",
-          "side": "1",
-          "displayname": "C6",
+          "movementRange": 8,
+          "shootingRange": 1,
+          "damage": 150,
+          "hp": 50,
+          "side": 1,
           "Cell": {
-            "x": "3",
-            "y": "9"
+            "x": 3,
+            "y": 9
           }
         },
         {
           "Name": "Assassin Nr.3",
-          "movementRange": "8",
-          "shootingRange": "1",
-          "damage": "150",
-          "hp": "50",
-          "side": "1",
-          "displayname": "C7",
+          "movementRange": 8,
+          "shootingRange": 1,
+          "damage": 150,
+          "hp": 50,
+          "side": 1,
           "Cell": {
-            "x": "5",
-            "y": "10"
+            "x": 5,
+            "y": 10
           }
         },
         {
           "Name": "Assassin Nr.4",
-          "movementRange": "8",
-          "shootingRange": "1",
-          "damage": "150",
-          "hp": "50",
-          "side": "1",
-          "displayname": "C8",
+          "movementRange": 8,
+          "shootingRange": 1,
+          "damage": 150,
+          "hp": 50,
+          "side": 1,
           "Cell": {
-            "x": "4",
-            "y": "20"
+            "x": 4,
+            "y": 20
           }
         }
       ],
       "Rocks": [
         {
           "Cell": {
-            "x": "5",
-            "y": "0"
+            "x": 5,
+            "y": 0
           }
         },
         {
           "Cell": {
-            "x": "2",
-            "y": "2"
+            "x": 2,
+            "y": 2
           }
         },
         {
           "Cell": {
-            "x": "3",
-            "y": "2"
+            "x": 3,
+            "y": 2
           }
         },
         {
           "Cell": {
-            "x": "3",
-            "y": "6"
+            "x": 3,
+            "y": 6
           }
         },
         {
           "Cell": {
-            "x": "3",
-            "y": "7"
+            "x": 3,
+            "y": 7
+          }
+        }
+      ]
+    },
+    {
+      "sizeX": 10,
+      "sizeY": 10,
+      "ammountCharacter": 4,
+      "ammountRocks": 2,
+      "Characters": [
+        {
+          "Name": "Assassin Nr.2",
+          "movementRange": 8,
+          "shootingRange": 1,
+          "damage": 150,
+          "hp": 50,
+          "side": 0,
+          "Cell": {
+            "x": 1,
+            "y": 0
+          }
+        },
+        {
+          "Name": "Assassin Nr.2",
+          "movementRange": 8,
+          "shootingRange": 1,
+          "damage": 150,
+          "hp": 50,
+          "side": 0,
+          "Cell": {
+            "x": 0,
+            "y": 1
+          }
+        },
+        {
+          "Name": "Assassin Nr.2",
+          "movementRange": 8,
+          "shootingRange": 1,
+          "damage": 150,
+          "hp": 50,
+          "side": 1,
+          "Cell": {
+            "x": 9,
+            "y": 8
+          }
+        },
+        {
+          "Name": "Assassin Nr.2",
+          "movementRange": 8,
+          "shootingRange": 1,
+          "damage": 150,
+          "hp": 50,
+          "side": 1,
+          "Cell": {
+            "x": 8,
+            "y": 9
+          }
+        }
+      ],
+      "Rocks": [
+        {
+          "Cell": {
+            "x": 5,
+            "y": 5
+          }
+        },
+        {
+          "Cell": {
+            "x": 4,
+            "y": 4
           }
         }
       ]
