@@ -13,8 +13,6 @@ class ScenarioXML extends Scenario{
   override def loadScenario(i: Int): Field = {
     val scenario = fields(i)
 
-    println("using XML")
-
     val nCharacter = (scenario \\ "Character")
     val character = new ListBuffer[Character]()
     var characterNumber = 1;

@@ -15,8 +15,6 @@ class ScenarioJson extends Scenario{
   override def loadScenario(i: Int): Field = {
     val scenario = jfields(0)(i)
 
-    println("using json")
-
     val nCharacter = (scenario \\ "Characters")
     val character = new ListBuffer[Character]()
     var characterNumber = 1

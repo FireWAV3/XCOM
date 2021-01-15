@@ -1,6 +1,6 @@
 package XCOM.controller
 import XCOM.controller.controllerComponent.controllerBaseImpl.Controller
-import XCOM.controller.controllerComponent.{AStar, Context, ContextTravel, MenuState, ShootState, SuiState, TravelStrategy, controllerBaseImpl}
+import XCOM.controller.controllerComponent._
 import XCOM.model.FieldStructure._
 import XCOM.model.PlayerStatus._
 import XCOM.model.{AttackScenario, Cell, Character, Field, TurnScenario}
@@ -271,7 +271,7 @@ class ControllerSpec extends  WordSpec{
       c.getRocks should be (Vector((4,4)))
     }
     "have a methode scenarioAmmount" in{
-      c.scenarioAmmount should be(2)
+      c.scenarioAmmount should be(3)
     }
     "have a methode splitFlatString" in{
       c.splitFlatString("a,b,c")(0) should be("a")
