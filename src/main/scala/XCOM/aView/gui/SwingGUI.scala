@@ -2,6 +2,7 @@ package XCOM.aView.gui
 import XCOM.controller.controllerComponent._
 import XCOM.util.UndoManager
 
+import scala.collection.mutable.ListBuffer
 import scala.swing.Swing.LineBorder
 import scala.swing.event.MouseClicked
 import scala.swing.{Label, _}
@@ -21,7 +22,9 @@ class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
     }
   }
 
-  val comboBox = new ComboBox(List("1","2")){
+  var selectLevelList = new ListBuffer[String]()
+  for (x <- 1 to  c.scenarioAmmount ){selectLevelList.append(x.toString)}
+  val comboBox = new ComboBox(selectLevelList){
     maximumSize = new Dimension(28, 28)
     background = java.awt.Color.BLUE.darker().darker().darker()
   }
