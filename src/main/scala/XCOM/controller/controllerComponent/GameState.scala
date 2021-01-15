@@ -1,7 +1,10 @@
 package XCOM.controller.controllerComponent
 
+import XCOM.XcomModule
 import XCOM.model.FieldStructure._
 import XCOM.model._
+import com.google.inject.{Guice, Inject}
+import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 import scala.util.{Failure, Success, Try}
 
@@ -63,14 +66,16 @@ class GameState(c:ControllerInterface) extends GameStateTrait{
   }
 }
 
-class MenuState(c : ControllerInterface) extends GameState(c){
 
+class MenuState @Inject() (c : ControllerInterface) extends GameState(c){
+
+  val injector = Guice.createInjector(new XcomModule)
   override def info(str: String): Boolean ={c.wrongGameState(); false}
 
   override def next(): Boolean ={c.wrongGameState(); false}
 
   override def loadScenario(index: Int): Boolean = {
-    val scenario = Scenario()
+    val scenario = injector.instance[Scenario]
     c.field = scenario.loadScenario(index)
     c.output = ("Successfully loaded scenario "+ index +"\n")
     c.publish(new UpdateMenu)

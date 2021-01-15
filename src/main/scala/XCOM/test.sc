@@ -1,3 +1,15 @@
+
+
+
+val i = 50
+val x = "top"
+
+println(raw"test \t t \n print $i $x 1+1 = ${1+1}")
+println(f"test print $i $x 1+1 = ${1+1}")
+
+
+
+
 var redoStack : List[String]= Nil
 
 redoStack
@@ -14,5 +26,4 @@ def testS (input: Option[String])={
 }
 
 testS(redoStack.lift(1))
-
 
