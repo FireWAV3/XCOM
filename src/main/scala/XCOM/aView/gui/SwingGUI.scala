@@ -8,6 +8,7 @@ import scala.swing.event.MouseClicked
 import scala.swing.{Label, _}
 import scala.util.Try
 
+//Start of the GUI Displaying the Menu
 class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
   listenTo(c)
   title = "Xcom Menu"
@@ -52,8 +53,6 @@ class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
 
     contents += new Label(){
       background = java.awt.Color.BLUE.darker().darker().darker()
-     // text = "Go!"
-      //icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/start_button.png")
       text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/start_button.png\" width = 100 height= 50> </html>"
 
       listenTo(mouse.clicks)
@@ -66,8 +65,6 @@ class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
 
     contents += new Label(){
       background = java.awt.Color.BLUE.darker().darker().darker()
-      //text = "Exit"
-      //icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/exit_button.png")
       text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/exit_button.png\" width = 100 height= 50> </html>"
       listenTo(mouse.clicks)
       reactions +={
@@ -83,11 +80,10 @@ class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
     preferredSize = s
   }
 
+  //Welcome to XCOM
   val gridtext = new GridPanel(2,1){
     background = java.awt.Color.BLUE.darker().darker().darker()
     contents += new Label(){
-     // text = "Welcome to XCOM!"
-     // icon = new ImageIcon("src/main/scala/XCOM/aView/gui/img/welcome_to_xcom.png")
       text = "<html> <img src=\"file:///"+ localFile +"/src/main/scala/XCOM/aView/gui/img/welcome_to_xcom.png\" width = 300 height= 100> </html>"
     }
     contents += menu
@@ -111,7 +107,6 @@ class SwingGUI(c: ControllerInterface, uManager: UndoManager) extends Frame {
 
   background = java.awt.Color.BLUE.darker().darker().darker()
   size = new Dimension(500,700)
-  //resizable = false
   open()
   centerOnScreen()
   def invisible = visible = false

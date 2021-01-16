@@ -1,5 +1,6 @@
 package XCOM.model
 
+//Used to keep track of which team currently is in charge
 object  PlayerStatus extends Enumeration {
   type PlayerStatus = Value
   val BLUE, RED = Value

@@ -3,10 +3,10 @@ import aView.UiTrait
 import aView.gui._
 import util.UndoManager
 import controller.controllerComponent.controllerBaseImpl.Controller
-
 import scala.util.{Failure, Success, Try}
 import scala.io._
 
+//Start the Game here
 object XCOM {
   var c = new Controller()
   val uManager = UndoManager()

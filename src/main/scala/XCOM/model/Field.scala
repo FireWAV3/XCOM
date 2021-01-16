@@ -1,6 +1,6 @@
 package XCOM.model
 
-
+//Used to store all informations of the Gamefield
 case class Field(pX: Int, pY: Int, rocks: Vector[Cell], character: Vector[Character]) {
   val sizeX = pX - 1
   val sizeY = pY - 1
@@ -32,6 +32,7 @@ case class Field(pX: Int, pY: Int, rocks: Vector[Cell], character: Vector[Charac
     temp
   }
 
+  //Writing x-Axis for toString
   def xAxisString(collums: Int): String = {
     var abc = "B"
     var tempReturn = "A\t"
@@ -47,6 +48,7 @@ case class Field(pX: Int, pY: Int, rocks: Vector[Cell], character: Vector[Charac
     tempReturn
   }
 
+  //Changing the Color of toString for Characters and Rocks
   def fieldPosReturn(x: Int, y: Int): String = {
     character.foreach { p =>
       if (p.cell.x == x && p.cell.y == y) {
@@ -66,6 +68,7 @@ case class Field(pX: Int, pY: Int, rocks: Vector[Cell], character: Vector[Charac
     "X\t"
   }
 
+  //Writing each row with y-Axis labeling for toString
   def printRow(yRow: Int): String = {
     var retString = ""
     for (j <- 0 to sizeX) {
