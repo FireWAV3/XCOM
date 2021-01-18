@@ -5,7 +5,7 @@ import model.Scenario
 import model.Scenarios.xml._
 //import model.Scenarios.json._
 
-
+//used to switch between loading Scenarios from Json or loading them from XML
 class XcomModule extends AbstractModule with ScalaModule{
   override def configure()={
 

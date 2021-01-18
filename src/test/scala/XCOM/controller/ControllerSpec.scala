@@ -13,8 +13,8 @@ import scala.util.Success
 
 class ControllerSpec extends  WordSpec{
   "A Controller" should{
-    var testField = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
-    var c = Controller(testField ,new AttackScenario())
+    val testField = Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
+    val c = Controller(testField ,new AttackScenario())
     "have a standard Constructor "in{
       controllerBaseImpl.Controller(testField ,new AttackScenario()).context.state shouldBe a [MenuState]
      }
@@ -46,8 +46,8 @@ class ControllerSpec extends  WordSpec{
       cC.loadScenario(0) should be(false)
     }
     "have a methode move" in{
-      var movementRange = new Field(5,10,Vector[Cell](Cell(3,3,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(4, 4, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(4, 5, C)),Character("SniperRED", 5, 10, 70, 40, 1,"C3", Cell(4, 3, C))))
-      var cMove = controllerBaseImpl.Controller(movementRange ,new AttackScenario())
+      val movementRange = Field(5,10,Vector[Cell](Cell(3,3,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(4, 4, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(4, 5, C)),Character("SniperRED", 5, 10, 70, 40, 1,"C3", Cell(4, 3, C))))
+      val cMove = controllerBaseImpl.Controller(movementRange ,new AttackScenario())
       cMove.turnS.load(0,movementRange)
       cMove.move("C1",5,7) should be(false)
       cMove.output should be("We should focus on other problems first")
@@ -78,9 +78,9 @@ class ControllerSpec extends  WordSpec{
       intercept[Exception] {cMove.contextTravel.travelState.movePossible(cMove.field.character(1),5,4)}
     }
     "have a methode aim" in{
-      var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),
+      val shootingRange = Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),
         Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C)),Character("Assassin", 5, 10, 50, 90, 1,"C3", Cell(6, 6, C))))
-      var cShoot = controllerBaseImpl.Controller(shootingRange ,new AttackScenario())
+      val cShoot = controllerBaseImpl.Controller(shootingRange ,new AttackScenario())
       cShoot.turnS.load(0,shootingRange)
       cShoot.aim(Some("C1"),Some("C2")) should be(true)
       cShoot.output should be("We should focus on other problems first")
@@ -98,8 +98,8 @@ class ControllerSpec extends  WordSpec{
       cShoot.aim(Some("C1"),None) should be(false)
     }
     "have a methode shoot" in{
-      var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C)),Character("TankR", 5, 10, 50, 90, 1,"C3", Cell(5, 6, C))))
-      var cShoot = controllerBaseImpl.Controller(shootingRange ,new AttackScenario())
+      val shootingRange = Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C)),Character("TankR", 5, 10, 50, 90, 1,"C3", Cell(5, 6, C))))
+      val cShoot = controllerBaseImpl.Controller(shootingRange ,new AttackScenario())
       cShoot.turnS.load(0,shootingRange)
       cShoot.shoot(true) should be(false)
       cShoot.output should be("We should focus on other problems first")
@@ -122,8 +122,8 @@ class ControllerSpec extends  WordSpec{
       intercept[Exception] {cShoot.shoot(true) should be(true)}
     }
     "have a methode fire" in{
-      var shootingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
-      var cShoot = controllerBaseImpl.Controller(shootingRange ,new AttackScenario())
+      val shootingRange = Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
+      val cShoot = controllerBaseImpl.Controller(shootingRange ,new AttackScenario())
       val attack1 = cShoot.fire(shootingRange.character(0),shootingRange.character(1))
       val attack2 = cShoot.fire(shootingRange.character(1),shootingRange.character(0))
       attack1._1 should be(70)
@@ -133,8 +133,8 @@ class ControllerSpec extends  WordSpec{
       cShoot.field.character should be(Vector[Character](Character("Tank", 5, 10, 50, 20, 0,"C2", Cell(5, 6, C))))
     }
     "have a methode next" in{
-      var sleepingRange = new Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
-      var cSleep = controllerBaseImpl.Controller( sleepingRange ,new AttackScenario())
+      val sleepingRange = Field(5,10,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
+      val cSleep = controllerBaseImpl.Controller( sleepingRange ,new AttackScenario())
       cSleep.next should be(false)
       cSleep.output should be("We should focus on other problems first")
       cSleep.context.state = new SuiState(cSleep)
@@ -169,9 +169,6 @@ class ControllerSpec extends  WordSpec{
     "have a methode isHero" in{
       c.isHero("C1")shouldBe a [Some[Character]]
       c.isHero("C3")should be(None)
-    }
-    "have a methode aStarMove" in{
-      //intercept[Exception] {c.aStarMove(0,0,0,0)}
     }
     "have a methode movePossible" in{
       var moveField = Field(15,20,Vector[Cell](Cell(4,4,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, -1,"C1", Cell(5, 5, C)),Character("Tank", 5, 10, 50, 90, 0,"C2", Cell(5, 6, C))))
@@ -214,13 +211,13 @@ class ControllerSpec extends  WordSpec{
       intercept[Exception] {cMove.movePossible(moveField.character(1), 3, 4)}
     }
     "have a methode shootpercentage" in{
-      var shootingRange = Field(200,200,Vector[Cell](Cell(2,80,R),Cell(3,81,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(1, 1, C)),
+      val shootingRange = Field(200,200,Vector[Cell](Cell(2,80,R),Cell(3,81,R)),Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(1, 1, C)),
         Character("Tank", 5, 1, 70, 40, 0,"C2", Cell(2, 1, C)),Character("Assassin", 5, 3, 70, 40, 0,"C3", Cell(1, 3, C)),
         Character("Gunner", 5, 10, 70, 40, 0,"C4", Cell(2, 2, C)),Character("Longrange", 5, 80, 70, 40, 0,"C5", Cell(2, 81, C)),
         Character("Target", 5, 10, 70, 40, 0,"C6", Cell(5, 81, C)),Character("Victim", 5, 10, 70, 40, 0,"C7", Cell(5, 78, C)),
         Character("Meelee", 5, 2, 70, 40, 0,"C8", Cell(1, 5, C)),Character("Blob", 5, 1, 70, 40, 0,"C9", Cell(50, 50, C)),
         Character("Blub", 5, 2, 70, 40, 0,"C8", Cell(51, 52, C))))
-      var cShoot = Controller(shootingRange,new AttackScenario())
+      val cShoot = Controller(shootingRange,new AttackScenario())
       cShoot.shootpercentage(shootingRange.character(1),shootingRange.character(0)) should be(95)
       cShoot.shootpercentage(shootingRange.character(8),shootingRange.character(9)) should be(0)
       cShoot.shootpercentage(shootingRange.character(2),shootingRange.character(1)) should be(0)
@@ -327,7 +324,7 @@ class ControllerSpec extends  WordSpec{
       mock.testHero(0,0) should be(false)
       mock.getHero(0,0) shouldBe a[Character]
       mock.isHero("") shouldBe a[Some[Character]]
-      mock.getFieldasArray() should be(Array.ofDim[Int](1,1))
+      mock.getFieldAsArray() should be(Array.ofDim[Int](1,1))
       mock.aStarMove(new Character(),0,0) should be(false)
       mock.movePossible(new Character(),0,0) should be(false)
       mock.shootpercentage(new Character(), new Character()) should be(1)

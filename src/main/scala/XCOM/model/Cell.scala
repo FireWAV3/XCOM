@@ -1,5 +1,5 @@
 package XCOM.model
-
+//Used to store information of each tile on the field
 object FieldStructure extends Enumeration {
   type FieldStructure = Value
   val X, R, C = Value

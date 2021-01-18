@@ -4,6 +4,7 @@ import XCOM.util.Observer
 
 import scala.swing._
 
+//deprecated because of Scala Swing Reactor
 case class Gui(var c : ControllerInterface) extends Observer with UiTrait {
   //c.add(this)
 
