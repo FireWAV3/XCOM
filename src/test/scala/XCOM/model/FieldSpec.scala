@@ -13,25 +13,25 @@ class FieldSpec extends WordSpec{
       new Field(10,20).sizeY should be(19)
     }
     "have a methode xAxisString" in {
-      var testField = new Field(6,6)
+      val testField = new Field(6,6)
       testField.xAxisString(5) should include("A\tB\tC\tD\tE\tF")
       testField.xAxisString(5) should not include("G")
     }
     "have a methode printRow" in {
-      var testField = new Field(6,6)
+      val testField = new Field(6,6)
       testField.printRow(0) should include("X")
       testField.printRow(0) should not include("C")
       testField.printRow(0) should not include("R")
     }
     "have a methode fieldPosReturn test with Character" in {
-      var testField = new Field(Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 1, C)),Character("Tank", 5, 10, 70, 40, 1,"C2", Cell(5, 2, C))))
+      val testField = new Field(Vector[Character](Character("Sniper", 5, 10, 70, 40, 0,"C1", Cell(5, 1, C)),Character("Tank", 5, 10, 70, 40, 1,"C2", Cell(5, 2, C))))
       testField.fieldPosReturn(5,1) should include("C1")
       testField.fieldPosReturn(5,2) should include("C2")
       testField.fieldPosReturn(5,1) should not include("X")
       testField.fieldPosReturn(5,1) should not include("R")
     }
     "have a methode fieldPosReturn test with Rocks" in {
-      var testField = new Field(Vector[Cell](Cell(5,0,R)),"")
+      val testField = new Field(Vector[Cell](Cell(5,0,R)),"")
       testField.fieldPosReturn(5,0) should include("R")
       testField.fieldPosReturn(5,0) should not include("C")
       testField.fieldPosReturn(5,0) should not include("X")

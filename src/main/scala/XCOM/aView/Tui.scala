@@ -5,17 +5,19 @@ import XCOM.util.UndoManager
 import scala.swing.Reactor
 import scala.util.{Failure, Success, Try}
 
+//All Console IO of the Game happens here
 case class Tui(var c : ControllerInterface, uManager: UndoManager) extends Reactor with UiTrait {
 
   listenTo(c)
+  //Start of Game
   println("Welcome to Xcom!\nFor more information enter Help\n")
   println("If you want to start, enter 'Load,Number' to choose a scenario with Number  between 1 and " + c.scenarioAmmount)
 
-
+  //Processing the Input
   def run(input: String): Unit = {
     val comInput = this.c.splitFlatString(input)
     if (comInput.length > 0) {
-      comInput(0) match {
+      comInput(0) match {//find Keywords
         case "EXIT" => c.exit
         case "HELP" | "H" => c.help
         case "NEXT" => {
@@ -62,11 +64,12 @@ case class Tui(var c : ControllerInterface, uManager: UndoManager) extends React
     }
   }
 
+  //check if load Command is correct
   def load(input: Option[String]): Boolean = {
     input match {
-      case Some(s) => {
+      case Some(s) => {//Second Parameter given?
         val isValid = c.scenarioAmmountTest(Try(s.toInt))
-        isValid match {
+        isValid match {//second Parameter an Int in given Range?
           case Success(value) => {
             if (value) c.loadScenario(s.toInt) else false
           }
@@ -77,9 +80,10 @@ case class Tui(var c : ControllerInterface, uManager: UndoManager) extends React
     }
   }
 
+  //check if move Command is correct
   def move(str: Option[String], str1: Option[String], str2: Option[String]): Boolean = {
     str2 match {
-      case Some(s) => {
+      case Some(s) => {//enough Parameters given
         if (c.testABC(str1.get)) {
           Try(c.move(str.get, c.abcToInt(str1.get), str2.get.toInt)) match {
             case Success(value) => return true

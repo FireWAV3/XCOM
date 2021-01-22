@@ -8,8 +8,8 @@ import net.codingwell.scalaguice.InjectorExtensions.ScalaInjector
 
 import scala.util.{Failure, Success, Try}
 
+//State Pattern for Gamestates
 trait GameStateTrait{
-  //def handle(c : Controller,str : Vector[String], num :Vector[Int])
   def help()
   def exit(str:String)
   def info(str:String):Boolean
@@ -20,10 +20,11 @@ trait GameStateTrait{
   def next(): Boolean
 }
 
+//keep track of the current state
 class Context(c : ControllerInterface){
 
   def deepCopy(): Context = {
-    var Cout = new Context(this.c)
+    val Cout = new Context(this.c)
     Cout.state = this.state
     Cout
   }
@@ -31,6 +32,7 @@ class Context(c : ControllerInterface){
   var state:GameStateTrait = new MenuState(c)
 }
 
+//default behavior of the states
 class GameState(c:ControllerInterface) extends GameStateTrait{
   override def help:Unit = {
     c.helpOut
@@ -43,7 +45,8 @@ class GameState(c:ControllerInterface) extends GameStateTrait{
 
   override def info(str: String): Boolean = {
     c.isHero(str) match {
-      case Some(value) => c.output = value.toString.replaceAll("Team:          0", "Team: Blue").replaceAll("Team:          1", "Team: Red"); c.infoOut; true
+      case Some(value) => c.output = value.toString.replaceAll("Team:          0",
+        "Team: Blue").replaceAll("Team:          1", "Team: Red"); c.infoOut; true
       case None =>  c.out("Who do you mean? We don't know " + str) ; false
     }
   }
@@ -66,10 +69,12 @@ class GameState(c:ControllerInterface) extends GameStateTrait{
   }
 }
 
-
+//Initial State to choose a Scenario to play
 class MenuState @Inject() (c : ControllerInterface) extends GameState(c){
 
   val injector = Guice.createInjector(new XcomModule)
+
+  //block methods which are avaiable in every state but this
   override def info(str: String): Boolean ={c.wrongGameState(); false}
 
   override def next(): Boolean ={c.wrongGameState(); false}
@@ -86,13 +91,15 @@ class MenuState @Inject() (c : ControllerInterface) extends GameState(c){
 
 }
 
+//default State while Playing where you can do almost everything
 class SuiState(c : ControllerInterface) extends GameState(c) {
 
+  //Moving a Character to a given position
   override def move(str: String, pX: Int, pY: Int): Boolean = {
     val hero = c.isHero(str)
-    hero match {
+    hero match {//check if Hero exists
       case Some(value) => {
-        val allowed = Try(
+        val allowed = Try(//check all illegal movements
               c.checkSide(value.side)
           && c.turnS.movable(value.displayname)
           && c.boundsX(pX)
@@ -102,7 +109,7 @@ class SuiState(c : ControllerInterface) extends GameState(c) {
           && c.movePossible(value, pX, pY)
         )
         allowed match {
-          case Success(bool) => {
+          case Success(bool) => {//move Character to his new position
             c.field = Field(c.field.pX, c.field.pY, c.field.rocks,
               c.field.character.map { i =>
                 i.displayname match {
@@ -125,20 +132,21 @@ class SuiState(c : ControllerInterface) extends GameState(c) {
     }
   }
 
+  //Set up a shot by checking for illegal shots and calculating shootingpercentage
   override def aim(str1: String, str2: String): Boolean = {
     val hero1 = c.isHero(str1)
     val hero2 = c.isHero(str2)
     hero1 match {
       case Some(valueH1) =>{
-        hero2 match {
+        hero2 match {//check if both Characters exist
           case Some(valueH2) =>{
-            val allowed = Try(
+            val allowed = Try(//check for illegal shots
                  c.checkSide(valueH1.side)
               && c.turnS.shootable(valueH1.displayname)
               && c.opponent(valueH1,valueH2)
             )
             allowed match {
-              case Success(bool) =>{
+              case Success(bool) =>{//calculate shootingpercentage and generate seed to prevent Undo-cheating
                 val percentage = c.shootpercentage(valueH1, valueH2)
                 c.attack = AttackScenario(valueH1, valueH2, percentage)
                 c.seed = scala.util.Random.nextInt()
@@ -158,15 +166,17 @@ class SuiState(c : ControllerInterface) extends GameState(c) {
   }
 }
 
+//State in which the player is asked whether he wants to shoot with given percentage
 class ShootState(c : ControllerInterface) extends GameState(c){
   override def shoot(approval: Boolean,seed: Int): Boolean = {
-    if(approval){
+    if(approval){//Try to hit the other Character with given percentage
       c.turnS.shootHero(c.attack.attHero.displayname)
       val random = new scala.util.Random(seed)
       val randInt = random.nextInt(101)
       if (randInt <= c.attack.probability){
         val result = c.fire(c.attack.attHero, c.attack.defHero)
-        c.output = ("Yes, got him. I took about " + result._1 + " hp, so he should have "  + result._2 + " hp left. What a great shot!")
+        c.output = ("Yes, got him. I took about " + result._1 + " hp, so he should have "
+          + result._2 + " hp left. What a great shot!")
         c.publish(new UpdateField)
         c.context.state = new SuiState(c)
         c.attack = new AttackScenario()
@@ -180,12 +190,12 @@ class ShootState(c : ControllerInterface) extends GameState(c){
         c.checkTurn()
         return true
       }else{
-        c.out(("Damnit I missed him. Would have taken only " + (randInt - c.attack.probability) + " cm"))
+        c.out("Damnit I missed him. Would have taken only " + (randInt - c.attack.probability) + " cm")
         c.context.state = new SuiState(c)
         c.attack = new AttackScenario()
       }
       c.checkTurn()
-    }else{
+    }else{//Shot canceled by user
       c.out("Affirmative. Target unlocked, safety back on")
       c.context.state = new SuiState(c)
       c.attack = new AttackScenario()

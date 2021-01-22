@@ -1,6 +1,6 @@
 package XCOM.util
 
-
+//Notify-Observer-Pattern
 trait Observer{
   def update : Unit = throw new Exception("override this methode")
 }

@@ -2,15 +2,18 @@ package XCOM.util
 
 import XCOM.controller.controllerComponent._
 
+//Used to undo and redo moves
 case class UndoManager() {
   private var undoStack : List[ControllerInterface]= Nil
   private var redoStack : List[ControllerInterface]= Nil
-  def doStep(c: ControllerInterface) ={
+
+  def doStep(c: ControllerInterface) ={//save the current state
     val newC = c.deepCopy()
     redoStack = Nil
     undoStack = newC::undoStack
   }
-  def undoStep(c: ControllerInterface) : ControllerInterface ={
+
+  def undoStep(c: ControllerInterface) : ControllerInterface ={//load the previous state
     undoStack match {
       case  Nil => c
       case head::stack => {
@@ -23,7 +26,7 @@ case class UndoManager() {
     }
   }
 
-  def undoClear(c: ControllerInterface) : ControllerInterface ={
+  def undoClear(c: ControllerInterface) : ControllerInterface ={//used to remove a failing state
     undoStack match {
       case  Nil => c
       case head::stack => {
@@ -34,7 +37,7 @@ case class UndoManager() {
     }
   }
 
-  def redoStep(c: ControllerInterface) : ControllerInterface ={
+  def redoStep(c: ControllerInterface) : ControllerInterface ={//used to reload the previous state on which the user called undo
     redoStack match {
       case Nil => c
       case head::stack =>{
