@@ -12,7 +12,7 @@ object XCOM {
   val uManager = UndoManager()
   val uiType = "TUI"
   val ui = UiTrait(uiType, c, uManager)
- // val gui = new SwingGUI(c, uManager)
+  val gui = new SwingGUI(c, uManager)
 
   def main(args: Array[String]): Unit = {
     while(true){
