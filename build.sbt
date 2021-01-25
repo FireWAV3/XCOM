@@ -14,3 +14,5 @@ libraryDependencies += "net.codingwell" %% "scala-guice" % "4.2.11"
 libraryDependencies += "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
 
 libraryDependencies += "com.typesafe.play" %% "play-json" % "2.6.6"
+
+coverageExcludedPackages := ".*gui.*;.*XCOM.scala"
